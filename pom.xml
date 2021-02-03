@@ -2,19 +2,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 	
-	<groupId>org.springdessert.framework</groupId>
+	<groupId>org.springtribe.framework</groupId>
 	<version>1.0-RC1</version>
-    <artifactId>transporter</artifactId>
+    <artifactId>gearless</artifactId>
 	
     <modules>
-		<module>transporter-common</module>
-		<module>transporter-spring-boot-starter</module>
+		<module>gearless-common</module>
+		<module>gearless-spring-boot-starter</module>
     </modules>
 	
     <packaging>pom</packaging>
-    <name>transporter</name>
+    <name>gearless</name>
     <description>Intergrate various external socket framework to develop socket programing easily</description>
-	<url>https://github.com/paganini2008/transporter</url>
+	<url>https://github.com/paganini2008/gearless</url>
 	
 	<licenses>
         <license>
@@ -31,9 +31,9 @@
     </developers>
 	
 	<scm>
-        <connection>https://github.com/paganini2008/transporter.git</connection>
-        <developerConnection>https://github.com/paganini2008/transporter.git</developerConnection>
-        <url>https://github.com/paganini2008/transporter</url>
+        <connection>https://github.com/paganini2008/gearless.git</connection>
+        <developerConnection>https://github.com/paganini2008/gearless.git</developerConnection>
+        <url>https://github.com/paganini2008/gearless</url>
     </scm>
 	
 	<properties>

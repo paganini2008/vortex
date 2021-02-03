@@ -1,0 +1,25 @@
+package org.springtribe.framework.gearless.buffer;
+
+import java.util.List;
+
+import org.springtribe.framework.gearless.common.Tuple;
+
+/**
+ * 
+ * BufferZone
+ * 
+ * @author Jimmy Hoff
+ *
+ * @since 1.0
+ */
+public interface BufferZone {
+	
+	static String DEFAULT_KEY_FORMAT = "spring:application:cluster:%s:transport:bufferzone:%s:%s";
+
+	void set(String collectionName, Tuple tuple) throws Exception;
+
+	List<Tuple> get(String collectionName, int pullSize) throws Exception;
+
+	long size(String collectionName) throws Exception;
+
+}
