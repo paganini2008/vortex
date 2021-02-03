@@ -17,7 +17,7 @@ public interface Tuple {
 	static final String KEYWORD_CONTENT = "content";
 	static final String KEYWORD_TOPIC = "topic";
 
-	static final String PARTITIONER_NAME = "com.github.paganini2008.xtransport.Partitioner";
+	static final String PARTITIONER_NAME = "org.springtribe.framework.gearless.common.Partitioner";
 
 	static final Tuple PING = Tuple.byString("PING");
 	static final Tuple PONG = Tuple.byString("PONG");

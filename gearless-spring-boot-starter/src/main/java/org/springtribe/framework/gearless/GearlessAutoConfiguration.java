@@ -60,14 +60,14 @@ import io.netty.channel.Channel;
 
 /**
  * 
- * XTransportAutoConfiguration
+ * GearlessAutoConfiguration
  * 
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Import({ ApplicationTransportController.class, BenchmarkController.class })
 @Configuration
-public class XTransportAutoConfiguration {
+public class GearlessAutoConfiguration {
 
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;
@@ -95,7 +95,7 @@ public class XTransportAutoConfiguration {
 
 	@ConditionalOnMissingBean(name = "loopProcessorThreads")
 	@Bean
-	public ThreadPoolTaskExecutor loopProcessorThreads(
+	public ThreadPoolTaskExecutor taskExecutor(
 			@Value("${spring.application.cluster.transport.processor.threads:-1}") int taskExecutorThreads) {
 		final int nThreads = taskExecutorThreads > 0 ? taskExecutorThreads : Runtime.getRuntime().availableProcessors() * 2;
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();

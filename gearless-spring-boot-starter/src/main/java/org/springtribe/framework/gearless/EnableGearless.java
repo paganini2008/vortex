@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Import;
 
 /**
  * 
- * EnableXTransport
+ * EnableGearless
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -18,6 +18,6 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(XTransportAutoConfiguration.class)
-public @interface EnableXTransport {
+@Import(GearlessAutoConfiguration.class)
+public @interface EnableGearless {
 }
