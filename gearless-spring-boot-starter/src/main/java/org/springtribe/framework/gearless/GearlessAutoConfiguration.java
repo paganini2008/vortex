@@ -95,7 +95,7 @@ public class GearlessAutoConfiguration {
 
 	@ConditionalOnMissingBean(name = "loopProcessorThreads")
 	@Bean
-	public ThreadPoolTaskExecutor taskExecutor(
+	public ThreadPoolTaskExecutor loopProcessorTaskExecutor(
 			@Value("${spring.application.cluster.transport.processor.threads:-1}") int taskExecutorThreads) {
 		final int nThreads = taskExecutorThreads > 0 ? taskExecutorThreads : Runtime.getRuntime().availableProcessors() * 2;
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
