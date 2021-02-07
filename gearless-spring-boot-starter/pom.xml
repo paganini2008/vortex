@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>org.springtribe.framework</groupId>
+		<groupId>indi.atlantis.framework</groupId>
 		<version>1.0-RC1</version>
 		<artifactId>gearless</artifactId>
 		<relativePath>../pom.xml</relativePath>
@@ -82,20 +82,20 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springtribe.framework</groupId>
+			<groupId>indi.atlantis.framework</groupId>
 			<artifactId>xmemcached-spring-boot-starter</artifactId>
 			<version>1.0-RC1</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springtribe.framework</groupId>
-			<artifactId>cluster-spring-boot-starter</artifactId>
+			<groupId>indi.atlantis.framework</groupId>
+			<artifactId>seafloor-spring-boot-starter</artifactId>
 			<version>1.0-RC1</version>
 		</dependency>
 
 		<dependency>
-			<groupId>org.springtribe.framework</groupId>
+			<groupId>indi.atlantis.framework</groupId>
 			<artifactId>gearless-common</artifactId>
 			<version>1.0-RC1</version>
 		</dependency>
