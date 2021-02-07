@@ -20,12 +20,12 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springtribe.framework.reditools.common.RedisCounter;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.gearless.common.Tuple;
 import indi.atlantis.framework.gearless.utils.FstKafkaSerializer;
+import indi.atlantis.framework.reditools.common.RedisCounter;
 import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
 import lombok.extern.slf4j.Slf4j;
 

@@ -5,11 +5,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springtribe.framework.reditools.common.RedisCounter;
 
 import com.github.paganini2008.devtools.multithreads.Executable;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
+import indi.atlantis.framework.reditools.common.RedisCounter;
 import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
 
 /**

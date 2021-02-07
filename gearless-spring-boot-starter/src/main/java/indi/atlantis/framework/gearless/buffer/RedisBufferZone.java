@@ -11,11 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springtribe.framework.reditools.serializer.FstRedisSerializer;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.gearless.common.Tuple;
+import indi.atlantis.framework.reditools.serializer.FstRedisSerializer;
 import indi.atlantis.framework.seafloor.InstanceId;
 import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
 import lombok.extern.slf4j.Slf4j;
