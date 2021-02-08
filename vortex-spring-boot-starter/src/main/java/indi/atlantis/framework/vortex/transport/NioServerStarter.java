@@ -8,8 +8,8 @@ import org.springframework.context.ApplicationListener;
 
 import indi.atlantis.framework.seafloor.ApplicationInfo;
 import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastGroup;
 import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent.MulticastEventType;
+import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastGroup;
 import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
 import indi.atlantis.framework.vortex.ApplicationTransportContext;
 import indi.atlantis.framework.vortex.ServerInfo;
@@ -25,8 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NioServerStarter implements BeanLifeCycle, ApplicationListener<ApplicationMulticastEvent> {
 
-	public static final String DEFAULT_CHANNEL_PATTERN = "spring:application:cluster:%s:transport:starter";
-
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;
 
@@ -36,11 +34,11 @@ public class NioServerStarter implements BeanLifeCycle, ApplicationListener<Appl
 	@Autowired
 	private ApplicationMulticastGroup applicationMulticastGroup;
 
-	private InetSocketAddress socketAddress;
+	private InetSocketAddress localAddress;
 
 	@Override
 	public void configure() throws Exception {
-		socketAddress = (InetSocketAddress) nioServer.start();
+		localAddress = (InetSocketAddress) nioServer.start();
 	}
 
 	@Override
@@ -48,7 +46,7 @@ public class NioServerStarter implements BeanLifeCycle, ApplicationListener<Appl
 		if (event.getMulticastEventType() == MulticastEventType.ON_ACTIVE) {
 			ApplicationInfo applicationInfo = event.getApplicationInfo();
 			applicationMulticastGroup.send(applicationInfo.getId(), ApplicationTransportContext.class.getName(),
-					new ServerInfo(socketAddress));
+					new ServerInfo(localAddress));
 			log.info("Application '{}' join transport cluster '{}'", applicationInfo, clusterName);
 		}
 	}

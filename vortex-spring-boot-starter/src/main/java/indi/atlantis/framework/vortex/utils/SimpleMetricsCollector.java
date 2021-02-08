@@ -24,12 +24,15 @@ public class SimpleMetricsCollector<T extends Metric<T>> implements MetricsColle
 	}
 
 	public SimpleMetricsCollector(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
-		this.store = bufferSize > 0 ? new ScrollingMetricsCollectorMap<T>(ordered, bufferSize, historicalMetricsHandler)
+		this.store = bufferSize > 0 ? new MetricsCollectorLruMap<T>(ordered, bufferSize, historicalMetricsHandler)
 				: new MetricsCollectorMap<T>(ordered);
 	}
 
 	@Override
-	public T set(String metric, T metricUnit) {
+	public T set(String metric, T metricUnit, boolean merged) {
+		if (merged) {
+			return store.putIfAbsent(metric, metricUnit);
+		}
 		return store.put(metric, metricUnit);
 	}
 

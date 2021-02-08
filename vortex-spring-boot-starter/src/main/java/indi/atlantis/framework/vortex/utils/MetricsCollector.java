@@ -11,16 +11,16 @@ import java.util.Map;
  */
 public interface MetricsCollector<T extends Metric<T>> {
 
-	T set(String metric, T metricUnit);
+	T set(String metric, T metricUnit, boolean merged);
 
 	T get(String metric);
 
 	String[] metrics();
 
 	Map<String, T> all();
-	
+
 	int size();
-	
+
 	void clear();
 
 }

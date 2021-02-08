@@ -16,11 +16,11 @@ public interface SequentialMetricsCollector<T extends Metric<T>> extends Metrics
 
 	static final String DEFAULT_DATETIME_PATTERN = "HH:mm:ss";
 
-	default T set(String metric, T metricUnit) {
-		return set(metric, Long.min(System.currentTimeMillis(), metricUnit.getTimestamp()), metricUnit);
+	default T set(String metric, T metricUnit, boolean merged) {
+		return set(metric, Long.min(System.currentTimeMillis(), metricUnit.getTimestamp()), metricUnit, merged);
 	}
 
-	T set(String metric, long timestamp, T metricUnit);
+	T set(String metric, long timestamp, T metricUnit, boolean merged);
 
 	default T get(String metric) {
 		Map<String, T> data = sequence(metric);

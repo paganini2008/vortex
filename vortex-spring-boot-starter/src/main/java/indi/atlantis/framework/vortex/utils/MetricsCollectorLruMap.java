@@ -1,19 +1,20 @@
 package indi.atlantis.framework.vortex.utils;
 
+import com.github.paganini2008.devtools.Console;
 import com.github.paganini2008.devtools.collection.LruMap;
 
 /**
  * 
- * ScrollingMetricsCollectorMap
+ * MetricsCollectorLruMap
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class ScrollingMetricsCollectorMap<T extends Metric<T>> extends LruMap<String, T> {
+public class MetricsCollectorLruMap<T extends Metric<T>> extends LruMap<String, T> {
 
 	private static final long serialVersionUID = -3875714100550051178L;
 
-	public ScrollingMetricsCollectorMap(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
+	public MetricsCollectorLruMap(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
 		super(new MetricsCollectorMap<T>(ordered), bufferSize);
 		this.historicalMetricsHandler = historicalMetricsHandler;
 	}
@@ -25,6 +26,14 @@ public class ScrollingMetricsCollectorMap<T extends Metric<T>> extends LruMap<St
 		if (historicalMetricsHandler != null) {
 			historicalMetricsHandler.handleHistoricalMetrics(metric, metricUnit);
 		}
+	}
+	
+	public static void main(String[] args) {
+		MetricsCollectorLruMap<StatisticalMetric> map = new MetricsCollectorLruMap<StatisticalMetric>(true, 10, null);
+		for(int i=0;i<15;i++) {
+			map.putIfAbsent(String.valueOf(i), StatisticalMetrics.valueOf(i, System.currentTimeMillis()));
+		}
+		Console.log(map);
 	}
 
 }

@@ -41,13 +41,13 @@ public class SimpleSequentialMetricsCollector<T extends Metric<T>> implements Se
 	}
 
 	@Override
-	public T set(String metric, long timestamp, T metricUnit) {
+	public T set(String metric, long timestamp, T metricUnit, boolean merged) {
 		Assert.hasNoText(metric, "No metric defined");
-		Assert.isNull(metricUnit, "No metricUnit inputted");
+		Assert.isNull(metricUnit, "No metric unit inputted");
 		Calendar calendar = calendarLocal.get();
 		long time = spanUnit.startsInMsWith(calendar, timestamp, span);
 		MetricsCollector<T> metricsCollector = MapUtils.get(store, metric, supplier);
-		return metricsCollector.set(DateUtils.format(time, datetimePattern), metricUnit);
+		return metricsCollector.set(DateUtils.format(time, datetimePattern), metricUnit, merged);
 	}
 
 	@Override
