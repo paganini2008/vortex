@@ -4,17 +4,17 @@
 	
 	<groupId>indi.atlantis.framework</groupId>
 	<version>1.0-RC1</version>
-    <artifactId>gearless</artifactId>
+    <artifactId>vortex</artifactId>
 	
     <modules>
-		<module>gearless-common</module>
-		<module>gearless-spring-boot-starter</module>
+		<module>vortex-common</module>
+		<module>vortex-spring-boot-starter</module>
     </modules>
 	
     <packaging>pom</packaging>
-    <name>gearless</name>
+    <name>vortex</name>
     <description>Intergrate various external socket framework to develop socket programing easily</description>
-	<url>https://github.com/paganini2008/gearless</url>
+	<url>https://github.com/paganini2008/vortex</url>
 	
 	<licenses>
         <license>
@@ -31,9 +31,9 @@
     </developers>
 	
 	<scm>
-        <connection>https://github.com/paganini2008/gearless.git</connection>
-        <developerConnection>https://github.com/paganini2008/gearless.git</developerConnection>
-        <url>https://github.com/paganini2008/gearless</url>
+        <connection>https://github.com/paganini2008/vortex.git</connection>
+        <developerConnection>https://github.com/paganini2008/vortex.git</developerConnection>
+        <url>https://github.com/paganini2008/vortex</url>
     </scm>
 	
 	<properties>
