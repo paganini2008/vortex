@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.utils;
+package indi.atlantis.framework.vortex.aggregation;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -9,6 +9,8 @@ import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.date.DateUtils;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
+
+import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
 
 /**
  * 

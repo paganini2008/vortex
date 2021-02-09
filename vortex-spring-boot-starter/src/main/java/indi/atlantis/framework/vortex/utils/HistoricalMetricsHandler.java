@@ -1,5 +1,7 @@
 package indi.atlantis.framework.vortex.utils;
 
+import indi.atlantis.framework.vortex.aggregation.Metric;
+
 /**
  * 
  * HistoricalMetricsHandler

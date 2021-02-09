@@ -55,7 +55,7 @@ import io.netty.channel.Channel;
 
 /**
  * 
- * GearlessAutoConfiguration
+ * VortexAutoConfiguration
  * 
  * @author Jimmy Hoff
  * @version 1.0

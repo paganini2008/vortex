@@ -64,7 +64,7 @@ public class TupleLoopProcessor implements Runnable, ApplicationListener<Context
 			return new CopyOnWriteArrayList<Handler>();
 		});
 		handlers.add(handler);
-		log.info("Add handler: {}", handler);
+		log.info("Add handler: {}/{}", handler.getTopic(), handler);
 	}
 
 	public void removeHandler(Handler handler) {
@@ -74,7 +74,7 @@ public class TupleLoopProcessor implements Runnable, ApplicationListener<Context
 			while (handlers.contains(handler)) {
 				handlers.remove(handler);
 			}
-			log.info("Remove handler: {}", handler);
+			log.info("Remove handler: {}/{}", handler.getTopic(), handler);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.utils;
+package indi.atlantis.framework.vortex.aggregation;
 
 import com.github.paganini2008.devtools.collection.AtomicReferenceMap;
 

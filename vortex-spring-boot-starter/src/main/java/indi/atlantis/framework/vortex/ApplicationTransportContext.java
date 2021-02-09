@@ -59,7 +59,7 @@ public class ApplicationTransportContext implements ApplicationMessageListener, 
 	}
 
 	@Override
-	public void onApplicationEvent(ApplicationMulticastEvent event) {
+	public synchronized void onApplicationEvent(ApplicationMulticastEvent event) {
 		if (event.getMulticastEventType() == MulticastEventType.ON_INACTIVE) {
 			serverInfos.remove(event.getApplicationInfo());
 			log.info("Application '{}' has left transport cluster '{}'", event.getApplicationInfo(), clusterName);

@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.utils;
+package indi.atlantis.framework.vortex.aggregation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

@@ -1,7 +1,8 @@
-package indi.atlantis.framework.vortex.utils;
+package indi.atlantis.framework.vortex.aggregation;
 
-import com.github.paganini2008.devtools.Console;
 import com.github.paganini2008.devtools.collection.LruMap;
+
+import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
 
 /**
  * 
@@ -26,14 +27,6 @@ public class MetricsCollectorLruMap<T extends Metric<T>> extends LruMap<String, 
 		if (historicalMetricsHandler != null) {
 			historicalMetricsHandler.handleHistoricalMetrics(metric, metricUnit);
 		}
-	}
-	
-	public static void main(String[] args) {
-		MetricsCollectorLruMap<StatisticalMetric> map = new MetricsCollectorLruMap<StatisticalMetric>(true, 10, null);
-		for(int i=0;i<15;i++) {
-			map.putIfAbsent(String.valueOf(i), StatisticalMetrics.valueOf(i, System.currentTimeMillis()));
-		}
-		Console.log(map);
 	}
 
 }

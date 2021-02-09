@@ -12,3 +12,5 @@
 /*.iml
 *.iml
 /bin/
+.factorypath
+
