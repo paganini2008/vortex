@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import com.github.paganini2008.devtools.collection.LruMap;
 
@@ -6,17 +6,17 @@ import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
 
 /**
  * 
- * MetricsCollectorLruMap
+ * MetricCollectorLruMap
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class MetricsCollectorLruMap<T extends Metric<T>> extends LruMap<String, T> {
+public class MetricCollectorLruMap<T extends Metric<T>> extends LruMap<String, T> {
 
 	private static final long serialVersionUID = -3875714100550051178L;
 
-	public MetricsCollectorLruMap(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
-		super(new MetricsCollectorMap<T>(ordered), bufferSize);
+	public MetricCollectorLruMap(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
+		super(new MetricCollectorMap<T>(ordered), bufferSize);
 		this.historicalMetricsHandler = historicalMetricsHandler;
 	}
 

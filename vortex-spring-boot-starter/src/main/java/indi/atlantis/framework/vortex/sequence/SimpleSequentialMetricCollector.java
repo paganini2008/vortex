@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.util.Calendar;
 import java.util.Map;
@@ -14,25 +14,25 @@ import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
 
 /**
  * 
- * SimpleSequentialMetricsCollector
+ * SimpleSequentialMetricCollector
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class SimpleSequentialMetricsCollector<T extends Metric<T>> implements SequentialMetricsCollector<T> {
+public class SimpleSequentialMetricCollector<T extends Metric<T>> implements SequentialMetricCollector<T> {
 
-	public SimpleSequentialMetricsCollector(int bufferSize, int span, SpanUnit spanUnit,
+	public SimpleSequentialMetricCollector(int bufferSize, int span, SpanUnit spanUnit,
 			HistoricalMetricsHandler<T> historicalMetricsHandler) {
 		Assert.lt(bufferSize, 1, "MetricsCollector's bufferSize must greater than zero");
 		Assert.lt(span, 1, "MetricsCollector's sequential span must greater than zero");
-		this.store = new ConcurrentHashMap<String, MetricsCollector<T>>();
-		this.supplier = () -> new SimpleMetricsCollector<T>(true, bufferSize, historicalMetricsHandler);
+		this.store = new ConcurrentHashMap<String, MetricCollector<T>>();
+		this.supplier = () -> new SimpleMetricCollector<T>(true, bufferSize, historicalMetricsHandler);
 		this.span = span;
 		this.spanUnit = spanUnit;
 	}
 
-	private final Map<String, MetricsCollector<T>> store;
-	private final Supplier<MetricsCollector<T>> supplier;
+	private final Map<String, MetricCollector<T>> store;
+	private final Supplier<MetricCollector<T>> supplier;
 	private final SpanUnit spanUnit;
 	private final int span;
 	private final ThreadLocal<Calendar> calendarLocal = ThreadUtils.newThreadLocal(() -> Calendar.getInstance());
@@ -48,7 +48,7 @@ public class SimpleSequentialMetricsCollector<T extends Metric<T>> implements Se
 		Assert.isNull(metricUnit, "No metric unit inputted");
 		Calendar calendar = calendarLocal.get();
 		long time = spanUnit.startsInMsWith(calendar, timestamp, span);
-		MetricsCollector<T> metricsCollector = MapUtils.get(store, metric, supplier);
+		MetricCollector<T> metricsCollector = MapUtils.get(store, metric, supplier);
 		return metricsCollector.set(DateUtils.format(time, datetimePattern), metricUnit, merged);
 	}
 

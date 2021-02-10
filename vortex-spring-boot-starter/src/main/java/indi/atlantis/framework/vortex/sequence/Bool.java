@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Bool {
+public final class Bool {
 
 	private long yes;
 	private long no;

@@ -1,15 +1,15 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.util.Map;
 
 /**
  * 
- * MetricsCollector
+ * MetricCollector
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public interface MetricsCollector<T extends Metric<T>> {
+public interface MetricCollector<T extends Metric<T>> {
 
 	T set(String metric, T metricUnit, boolean merged);
 

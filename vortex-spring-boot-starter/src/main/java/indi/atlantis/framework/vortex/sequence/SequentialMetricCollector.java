@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -7,12 +7,12 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 
 /**
  * 
- * SequentialMetricsCollector
+ * SequentialMetricCollector
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public interface SequentialMetricsCollector<T extends Metric<T>> extends MetricsCollector<T> {
+public interface SequentialMetricCollector<T extends Metric<T>> extends MetricCollector<T> {
 
 	static final String DEFAULT_DATETIME_PATTERN = "HH:mm:ss";
 

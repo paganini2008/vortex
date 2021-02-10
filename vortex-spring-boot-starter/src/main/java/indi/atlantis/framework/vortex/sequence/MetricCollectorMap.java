@@ -1,19 +1,19 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import com.github.paganini2008.devtools.collection.AtomicReferenceMap;
 
 /**
  * 
- * MetricsCollectorMap
+ * MetricCollectorMap
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class MetricsCollectorMap<T extends Metric<T>> extends AtomicReferenceMap<String, T> {
+public class MetricCollectorMap<T extends Metric<T>> extends AtomicReferenceMap<String, T> {
 
 	private static final long serialVersionUID = 6743810257952172449L;
 
-	public MetricsCollectorMap(boolean ordered) {
+	public MetricCollectorMap(boolean ordered) {
 		super(ordered);
 	}
 

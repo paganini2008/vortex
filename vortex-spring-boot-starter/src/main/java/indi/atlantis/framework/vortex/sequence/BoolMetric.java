@@ -1,4 +1,6 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
+
+import lombok.ToString;
 
 /**
  * 
@@ -7,7 +9,8 @@ package indi.atlantis.framework.vortex.aggregation;
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class BoolMetric implements CustomizedMetric<Bool> {
+@ToString
+public class BoolMetric implements UserMetric<Bool> {
 
 	private Bool bool;
 	private long timestamp;
@@ -38,7 +41,7 @@ public class BoolMetric implements CustomizedMetric<Bool> {
 	}
 
 	@Override
-	public CustomizedMetric<Bool> reset(CustomizedMetric<Bool> currentMetric) {
+	public UserMetric<Bool> reset(UserMetric<Bool> currentMetric) {
 		Bool current = this.get();
 		Bool update = currentMetric.get();
 		long yes = current.getYes() - update.getYes();
@@ -48,7 +51,7 @@ public class BoolMetric implements CustomizedMetric<Bool> {
 	}
 
 	@Override
-	public CustomizedMetric<Bool> merge(CustomizedMetric<Bool> anotherMetric) {
+	public UserMetric<Bool> merge(UserMetric<Bool> anotherMetric) {
 		Bool current = this.get();
 		Bool update = anotherMetric.get();
 		long yes = current.getYes() + update.getYes();

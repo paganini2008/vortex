@@ -1,5 +1,7 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -7,14 +9,14 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 
 /**
  * 
- * Sequencer
+ * MetricSequencer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class Sequencer<I, T extends Metric<T>> {
+public class MetricSequencer<I, T extends Metric<T>> {
 
-	private final Map<I, SequentialMetricsCollector<T>> collectors = new ConcurrentHashMap<I, SequentialMetricsCollector<T>>();
+	private final Map<I, SequentialMetricCollector<T>> collectors = new ConcurrentHashMap<I, SequentialMetricCollector<T>>();
 	private int span = 1;
 	private SpanUnit spanUnit = SpanUnit.MINUTE;
 	private int bufferSize = 60;
@@ -48,13 +50,17 @@ public class Sequencer<I, T extends Metric<T>> {
 		return bufferSize;
 	}
 
+	public Collection<I> identifiers() {
+		return Collections.unmodifiableCollection(collectors.keySet());
+	}
+
 	public int update(I identifier, String metric, long timestamp, T metricUnit) {
 		return update(identifier, metric, timestamp, metricUnit, true);
 	}
 
 	public int update(I identifier, String metric, long timestamp, T metricUnit, boolean merged) {
-		SequentialMetricsCollector<T> collector = MapUtils.get(collectors, identifier, () -> {
-			return new SimpleSequentialMetricsCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
+		SequentialMetricCollector<T> collector = MapUtils.get(collectors, identifier, () -> {
+			return new SimpleSequentialMetricCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
 				if (evictionHandler != null) {
 					evictionHandler.onEldestMetricRemoval(identifier, eldestMetric, eldestMetricUnit);
 				}
@@ -65,13 +71,26 @@ public class Sequencer<I, T extends Metric<T>> {
 	}
 
 	public Map<String, T> sequence(I identifier, String metric) {
-		SequentialMetricsCollector<T> collector = collectors.get(identifier);
+		SequentialMetricCollector<T> collector = collectors.get(identifier);
 		return collector != null ? collector.sequence(metric) : MapUtils.emptyMap();
 	}
 
 	public int size(I identifier) {
-		SequentialMetricsCollector<T> collector = collectors.get(identifier);
+		SequentialMetricCollector<T> collector = collectors.get(identifier);
 		return collector != null ? collector.size() : 0;
+	}
+
+	public void scan(ScanHandler<I, T> handler) {
+		I identifier;
+		SequentialMetricCollector<T> collector;
+		for (Map.Entry<I, SequentialMetricCollector<T>> entry : collectors.entrySet()) {
+			identifier = entry.getKey();
+			collector = entry.getValue();
+			for (String metric : collector.metrics()) {
+				Map<String, T> data = collector.sequence(metric);
+				handler.handleSequence(identifier, metric, data);
+			}
+		}
 	}
 
 }

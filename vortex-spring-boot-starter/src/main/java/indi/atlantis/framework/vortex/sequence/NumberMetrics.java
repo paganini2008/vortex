@@ -1,35 +1,37 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.paganini2008.devtools.beans.ToStringBuilder;
 import com.github.paganini2008.devtools.primitives.Doubles;
+
+import lombok.ToString;
 
 /**
  * 
- * StatisticalMetrics
+ * NumberMetrics
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public abstract class StatisticalMetrics {
+public abstract class NumberMetrics {
 
-	public static StatisticalMetric valueOf(long value, long timestamp) {
+	public static NumberMetric<Long> valueOf(long value, long timestamp) {
 		return new LongMetric(value, timestamp);
 	}
 
-	public static StatisticalMetric valueOf(double value, long timestamp) {
+	public static NumberMetric<Double> valueOf(double value, long timestamp) {
 		return new DoubleMetric(value, timestamp);
 	}
 
-	public static StatisticalMetric valueOf(BigDecimal value, long timestamp) {
-		return new BigDecimalMetric(value, timestamp);
+	public static NumberMetric<BigDecimal> valueOf(BigDecimal value, long timestamp) {
+		return new DecimalMetric(value, timestamp);
 	}
 
-	public static class DoubleMetric implements StatisticalMetric {
+	@ToString
+	public static class DoubleMetric implements NumberMetric<Double> {
 
 		DoubleMetric(double value, long timestamp) {
 			this.highestValue = value;
@@ -77,8 +79,8 @@ public abstract class StatisticalMetrics {
 		}
 
 		@Override
-		public Double getMiddleValue(int scale) {
-			return count > 0 ? scale > 0 ? Doubles.toFixed(totalValue / count, scale) : totalValue / count : 0;
+		public Double getMiddleValue() {
+			return count > 0 ? Doubles.toFixed(totalValue / count, 1) : 0;
 		}
 
 		@Override
@@ -92,14 +94,14 @@ public abstract class StatisticalMetrics {
 		}
 
 		@Override
-		public StatisticalMetric reset(StatisticalMetric currentMetric) {
+		public NumberMetric<Double> reset(NumberMetric<Double> currentMetric) {
 			double totalValue = this.totalValue - currentMetric.getTotalValue().doubleValue();
 			long count = this.count - currentMetric.getCount();
 			return new DoubleMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 
 		@Override
-		public StatisticalMetric merge(StatisticalMetric anotherMetric) {
+		public NumberMetric<Double> merge(NumberMetric<Double> anotherMetric) {
 			double highestValue = Double.max(this.highestValue, anotherMetric.getHighestValue().doubleValue());
 			double lowestValue = Double.min(this.lowestValue, anotherMetric.getLowestValue().doubleValue());
 			double totalValue = this.totalValue + anotherMetric.getTotalValue().doubleValue();
@@ -113,19 +115,16 @@ public abstract class StatisticalMetrics {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("highestValue", getHighestValue());
 			data.put("lowestValue", getLowestValue());
-			data.put("middleValue", getMiddleValue(1));
+			data.put("middleValue", getMiddleValue());
 			data.put("count", getCount());
 			data.put("timestamp", getTimestamp());
 			return data;
 		}
 
-		public String toString() {
-			return ToStringBuilder.reflectionToString(this);
-		}
-
 	}
 
-	public static class LongMetric implements StatisticalMetric {
+	@ToString
+	public static class LongMetric implements NumberMetric<Long> {
 
 		LongMetric(long value, long timestamp) {
 			this.highestValue = value;
@@ -173,8 +172,8 @@ public abstract class StatisticalMetrics {
 		}
 
 		@Override
-		public Double getMiddleValue(int scale) {
-			return count > 0 ? scale > 0 ? Doubles.toFixed((double) totalValue / count, scale) : totalValue / count : 0;
+		public Long getMiddleValue() {
+			return count > 0 ? totalValue / count : 0;
 		}
 
 		@Override
@@ -188,14 +187,14 @@ public abstract class StatisticalMetrics {
 		}
 
 		@Override
-		public StatisticalMetric reset(StatisticalMetric currentMetric) {
+		public NumberMetric<Long> reset(NumberMetric<Long> currentMetric) {
 			long totalValue = this.totalValue - currentMetric.getTotalValue().longValue();
 			long count = this.count - currentMetric.getCount();
 			return new LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 
 		@Override
-		public StatisticalMetric merge(StatisticalMetric anotherMetric) {
+		public NumberMetric<Long> merge(NumberMetric<Long> anotherMetric) {
 			long highestValue = Long.max(this.highestValue, anotherMetric.getHighestValue().longValue());
 			long lowestValue = Long.min(this.lowestValue, anotherMetric.getLowestValue().longValue());
 			long totalValue = this.totalValue + anotherMetric.getTotalValue().longValue();
@@ -209,21 +208,18 @@ public abstract class StatisticalMetrics {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("highestValue", getHighestValue());
 			data.put("lowestValue", getLowestValue());
-			data.put("middleValue", getMiddleValue(0));
+			data.put("middleValue", getMiddleValue());
 			data.put("count", getCount());
 			data.put("timestamp", getTimestamp());
 			return data;
 		}
 
-		public String toString() {
-			return ToStringBuilder.reflectionToString(this);
-		}
-
 	}
 
-	public static class BigDecimalMetric implements StatisticalMetric {
+	@ToString
+	public static class DecimalMetric implements NumberMetric<BigDecimal> {
 
-		BigDecimalMetric(BigDecimal value, long timestamp) {
+		DecimalMetric(BigDecimal value, long timestamp) {
 			this.highestValue = value;
 			this.lowestValue = value;
 			this.totalValue = value;
@@ -232,7 +228,7 @@ public abstract class StatisticalMetrics {
 			this.reset = false;
 		}
 
-		public BigDecimalMetric(BigDecimal highestValue, BigDecimal lowestValue, BigDecimal totalValue, long count, long timestamp,
+		public DecimalMetric(BigDecimal highestValue, BigDecimal lowestValue, BigDecimal totalValue, long count, long timestamp,
 				boolean reset) {
 			this.highestValue = highestValue;
 			this.lowestValue = lowestValue;
@@ -270,11 +266,8 @@ public abstract class StatisticalMetrics {
 		}
 
 		@Override
-		public BigDecimal getMiddleValue(int scale) {
-			return count > 0
-					? scale > 0 ? totalValue.divide(BigDecimal.valueOf(count), scale, RoundingMode.HALF_UP)
-							: totalValue.divide(BigDecimal.valueOf(count))
-					: BigDecimal.ZERO;
+		public BigDecimal getMiddleValue() {
+			return count > 0 ? totalValue.divide(BigDecimal.valueOf(count), 1, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 		}
 
 		@Override
@@ -288,20 +281,20 @@ public abstract class StatisticalMetrics {
 		}
 
 		@Override
-		public StatisticalMetric reset(StatisticalMetric currentMetric) {
+		public NumberMetric<BigDecimal> reset(NumberMetric<BigDecimal> currentMetric) {
 			BigDecimal totalValue = this.totalValue.subtract((BigDecimal) currentMetric.getTotalValue());
 			long count = this.count - currentMetric.getCount();
-			return new BigDecimalMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
+			return new DecimalMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 
 		@Override
-		public StatisticalMetric merge(StatisticalMetric anotherMetric) {
+		public NumberMetric<BigDecimal> merge(NumberMetric<BigDecimal> anotherMetric) {
 			BigDecimal highestValue = this.highestValue.max((BigDecimal) anotherMetric.getHighestValue());
 			BigDecimal lowestValue = this.lowestValue.min((BigDecimal) anotherMetric.getLowestValue());
 			BigDecimal totalValue = this.totalValue.add((BigDecimal) anotherMetric.getTotalValue());
 			long count = this.count + anotherMetric.getCount();
 			long timestamp = anotherMetric.getTimestamp();
-			return new BigDecimalMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
+			return new DecimalMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 
 		@Override
@@ -309,14 +302,10 @@ public abstract class StatisticalMetrics {
 			Map<String, Object> data = new HashMap<String, Object>();
 			data.put("highestValue", getHighestValue());
 			data.put("lowestValue", getLowestValue());
-			data.put("middleValue", getMiddleValue(1));
+			data.put("middleValue", getMiddleValue());
 			data.put("count", getCount());
 			data.put("timestamp", getTimestamp());
 			return data;
-		}
-
-		public String toString() {
-			return ToStringBuilder.reflectionToString(this);
 		}
 
 	}

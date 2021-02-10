@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -42,7 +42,7 @@ public enum SpanUnit {
 			c.set(Calendar.MINUTE, 0);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), SequentialMetricsCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
+				map.put(DateUtils.format(c.getTime(), SequentialMetricCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
 				c.add(Calendar.HOUR_OF_DAY, -1 * span);
 			}
 			return MapUtils.reverse(map);
@@ -72,7 +72,7 @@ public enum SpanUnit {
 			c.setTimeInMillis(System.currentTimeMillis());
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), SimpleSequentialMetricsCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
+				map.put(DateUtils.format(c.getTime(), SimpleSequentialMetricCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
 				c.add(Calendar.MINUTE, -1 * span);
 			}
 			return MapUtils.reverse(map);
@@ -100,7 +100,7 @@ public enum SpanUnit {
 			Calendar c = Calendar.getInstance();
 			c.setTimeInMillis(System.currentTimeMillis());
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), SimpleSequentialMetricsCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
+				map.put(DateUtils.format(c.getTime(), SimpleSequentialMetricCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
 				c.add(Calendar.SECOND, -1 * span);
 			}
 			return MapUtils.reverse(map);

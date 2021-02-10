@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.aggregation;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -8,26 +8,26 @@ import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
 
 /**
  * 
- * SimpleMetricsCollector
+ * SimpleMetricCollector
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class SimpleMetricsCollector<T extends Metric<T>> implements MetricsCollector<T> {
+public class SimpleMetricCollector<T extends Metric<T>> implements MetricCollector<T> {
 
 	private final Map<String, T> store;
 
-	public SimpleMetricsCollector() {
+	public SimpleMetricCollector() {
 		this(-1, null);
 	}
 
-	public SimpleMetricsCollector(int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
+	public SimpleMetricCollector(int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
 		this(true, bufferSize, historicalMetricsHandler);
 	}
 
-	public SimpleMetricsCollector(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
-		this.store = bufferSize > 0 ? new MetricsCollectorLruMap<T>(ordered, bufferSize, historicalMetricsHandler)
-				: new MetricsCollectorMap<T>(ordered);
+	public SimpleMetricCollector(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
+		this.store = bufferSize > 0 ? new MetricCollectorLruMap<T>(ordered, bufferSize, historicalMetricsHandler)
+				: new MetricCollectorMap<T>(ordered);
 	}
 
 	@Override
