@@ -16,10 +16,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class LongMetricSynchronizer implements Synchronizer {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<Long>> sequencer;
+	private final Sequencer<String, NumberMetric<Long>> sequencer;
 	private final boolean incremental;
 
-	public LongMetricSynchronizer(String topic, MetricSequencer<String, NumberMetric<Long>> sequencer, boolean incremental) {
+	public LongMetricSynchronizer(String topic, Sequencer<String, NumberMetric<Long>> sequencer, boolean incremental) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 		this.incremental = incremental;

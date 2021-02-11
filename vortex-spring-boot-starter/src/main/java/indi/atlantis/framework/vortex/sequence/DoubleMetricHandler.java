@@ -13,9 +13,9 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class DoubleMetricHandler implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<Double>> sequencer;
+	private final Sequencer<String, NumberMetric<Double>> sequencer;
 
-	public DoubleMetricHandler(String topic, MetricSequencer<String, NumberMetric<Double>> sequencer) {
+	public DoubleMetricHandler(String topic, Sequencer<String, NumberMetric<Double>> sequencer) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 	}

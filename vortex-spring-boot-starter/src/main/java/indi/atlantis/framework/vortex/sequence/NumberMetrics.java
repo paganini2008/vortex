@@ -80,7 +80,7 @@ public abstract class NumberMetrics {
 
 		@Override
 		public Double getMiddleValue() {
-			return count > 0 ? Doubles.toFixed(totalValue / count, 1) : 0;
+			return count > 0 ? Doubles.toFixed(totalValue / count, 4) : 0;
 		}
 
 		@Override
@@ -267,7 +267,7 @@ public abstract class NumberMetrics {
 
 		@Override
 		public BigDecimal getMiddleValue() {
-			return count > 0 ? totalValue.divide(BigDecimal.valueOf(count), 1, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+			return count > 0 ? totalValue.divide(BigDecimal.valueOf(count), 4, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 		}
 
 		@Override

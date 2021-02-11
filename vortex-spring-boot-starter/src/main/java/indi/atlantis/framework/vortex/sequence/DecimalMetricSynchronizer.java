@@ -17,10 +17,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class DecimalMetricSynchronizer implements Synchronizer {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<BigDecimal>> sequencer;
+	private final Sequencer<String, NumberMetric<BigDecimal>> sequencer;
 	private final boolean incremental;
 
-	public DecimalMetricSynchronizer(String topic, MetricSequencer<String, NumberMetric<BigDecimal>> sequencer, boolean incremental) {
+	public DecimalMetricSynchronizer(String topic, Sequencer<String, NumberMetric<BigDecimal>> sequencer, boolean incremental) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 		this.incremental = incremental;

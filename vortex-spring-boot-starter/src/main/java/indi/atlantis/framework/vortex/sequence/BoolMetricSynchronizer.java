@@ -16,10 +16,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class BoolMetricSynchronizer implements Synchronizer {
 
 	private final String topic;
-	private final MetricSequencer<String, UserMetric<Bool>> sequencer;
+	private final Sequencer<String, UserMetric<Bool>> sequencer;
 	private final boolean incremental;
 
-	public BoolMetricSynchronizer(String topic, MetricSequencer<String, UserMetric<Bool>> sequencer, boolean incremental) {
+	public BoolMetricSynchronizer(String topic, Sequencer<String, UserMetric<Bool>> sequencer, boolean incremental) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 		this.incremental = incremental;

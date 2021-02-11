@@ -13,10 +13,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class BoolMetricSynchronizationHandler implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, UserMetric<Bool>> sequencer;
+	private final Sequencer<String, UserMetric<Bool>> sequencer;
 	private final boolean merged;
 
-	public BoolMetricSynchronizationHandler(String topic, MetricSequencer<String, UserMetric<Bool>> sequencer, boolean merged) {
+	public BoolMetricSynchronizationHandler(String topic, Sequencer<String, UserMetric<Bool>> sequencer, boolean merged) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 		this.merged = merged;

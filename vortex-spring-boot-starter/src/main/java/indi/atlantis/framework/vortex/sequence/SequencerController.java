@@ -15,13 +15,13 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * MetricSequenceController
+ * SequencerController
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @RestController
-public class MetricSequenceController {
+public class SequencerController {
 
 	@Autowired
 	private NioClient nioClient;

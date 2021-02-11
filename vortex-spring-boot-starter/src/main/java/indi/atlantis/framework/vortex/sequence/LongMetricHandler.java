@@ -13,9 +13,9 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class LongMetricHandler implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<Long>> sequencer;
+	private final Sequencer<String, NumberMetric<Long>> sequencer;
 
-	public LongMetricHandler(String topic, MetricSequencer<String, NumberMetric<Long>> sequencer) {
+	public LongMetricHandler(String topic, Sequencer<String, NumberMetric<Long>> sequencer) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 	}

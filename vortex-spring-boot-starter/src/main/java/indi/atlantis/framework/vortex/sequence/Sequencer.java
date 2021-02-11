@@ -9,12 +9,12 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 
 /**
  * 
- * MetricSequencer
+ * Sequencer
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-public class MetricSequencer<I, T extends Metric<T>> {
+public class Sequencer<I, T extends Metric<T>> {
 
 	private final Map<I, SequentialMetricCollector<T>> collectors = new ConcurrentHashMap<I, SequentialMetricCollector<T>>();
 	private int span = 1;

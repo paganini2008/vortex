@@ -3,6 +3,7 @@ package indi.atlantis.framework.vortex.sequence;
 import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -42,10 +43,14 @@ public class IncrementalSynchronizationExecutor implements ApplicationListener<A
 
 	private volatile ScheduledFuture<?> future;
 
-	public void addSynchronizer(Synchronizer synchronizer) {
-		if (synchronizer != null) {
-			synchronizers.add(synchronizer);
+	public void addSynchronizers(Synchronizer... synchronizers) {
+		if (synchronizers != null) {
+			this.synchronizers.addAll(Arrays.asList(synchronizers));
 		}
+	}
+
+	public void clearSynchronizers() {
+		this.synchronizers.clear();
 	}
 
 	@Override

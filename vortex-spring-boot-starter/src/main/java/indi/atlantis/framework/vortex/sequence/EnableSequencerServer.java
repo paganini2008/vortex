@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex;
+package indi.atlantis.framework.vortex.sequence;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,9 +8,11 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+import indi.atlantis.framework.vortex.EnableEmbeddedServer;
+
 /**
  * 
- * EnableVortex
+ * EnableSequencerServer
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Import;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(VortexAutoConfiguration.class)
-public @interface EnableVortex {
+@EnableEmbeddedServer
+@Import(SequencerAutoConfiguration.class)
+public @interface EnableSequencerServer {
 }

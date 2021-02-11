@@ -55,14 +55,14 @@ import io.netty.channel.Channel;
 
 /**
  * 
- * VortexAutoConfiguration
+ * EmbeddedServerAutoConfiguration
  * 
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Import({ ApplicationTransportController.class, BenchmarkController.class })
 @Configuration
-public class VortexAutoConfiguration {
+public class EmbeddedServerAutoConfiguration {
 
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;

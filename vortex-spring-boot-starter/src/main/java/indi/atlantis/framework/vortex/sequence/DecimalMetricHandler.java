@@ -15,9 +15,9 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class DecimalMetricHandler implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<BigDecimal>> sequencer;
+	private final Sequencer<String, NumberMetric<BigDecimal>> sequencer;
 
-	public DecimalMetricHandler(String topic, MetricSequencer<String, NumberMetric<BigDecimal>> sequencer) {
+	public DecimalMetricHandler(String topic, Sequencer<String, NumberMetric<BigDecimal>> sequencer) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 	}

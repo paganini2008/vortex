@@ -15,10 +15,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class DecimalMetricSynchronizationHandler implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<BigDecimal>> sequencer;
+	private final Sequencer<String, NumberMetric<BigDecimal>> sequencer;
 	private final boolean merged;
 
-	public DecimalMetricSynchronizationHandler(String topic, MetricSequencer<String, NumberMetric<BigDecimal>> sequencer, boolean merged) {
+	public DecimalMetricSynchronizationHandler(String topic, Sequencer<String, NumberMetric<BigDecimal>> sequencer, boolean merged) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 		this.merged = merged;
