@@ -9,6 +9,7 @@
     <modules>
 		<module>vortex-common</module>
 		<module>vortex-spring-boot-starter</module>
+		<module>vortex-sequencer</module>
     </modules>
 	
     <packaging>pom</packaging>

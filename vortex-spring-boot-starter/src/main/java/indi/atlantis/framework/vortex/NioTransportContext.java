@@ -20,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * ApplicationTransportContext
+ * NioTransportContext
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @Slf4j
-public class ApplicationTransportContext implements ApplicationMessageListener, ApplicationListener<ApplicationMulticastEvent> {
+public class NioTransportContext implements ApplicationMessageListener, ApplicationListener<ApplicationMulticastEvent> {
 
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;
@@ -77,7 +77,7 @@ public class ApplicationTransportContext implements ApplicationMessageListener, 
 
 	@Override
 	public String getTopic() {
-		return ApplicationTransportContext.class.getName();
+		return NioTransportContext.class.getName();
 	}
 
 }

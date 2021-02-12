@@ -11,7 +11,7 @@ import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent;
 import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent.MulticastEventType;
 import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastGroup;
 import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
-import indi.atlantis.framework.vortex.ApplicationTransportContext;
+import indi.atlantis.framework.vortex.NioTransportContext;
 import indi.atlantis.framework.vortex.ServerInfo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +45,7 @@ public class NioServerStarter implements BeanLifeCycle, ApplicationListener<Appl
 	public void onApplicationEvent(ApplicationMulticastEvent event) {
 		if (event.getMulticastEventType() == MulticastEventType.ON_ACTIVE) {
 			ApplicationInfo applicationInfo = event.getApplicationInfo();
-			applicationMulticastGroup.send(applicationInfo.getId(), ApplicationTransportContext.class.getName(),
+			applicationMulticastGroup.send(applicationInfo.getId(), NioTransportContext.class.getName(),
 					new ServerInfo(localAddress));
 			log.info("Application '{}' join transport cluster '{}'", applicationInfo, clusterName);
 		}

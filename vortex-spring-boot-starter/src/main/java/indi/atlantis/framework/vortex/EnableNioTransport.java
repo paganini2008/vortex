@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.sequence;
+package indi.atlantis.framework.vortex;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -8,11 +8,9 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
-import indi.atlantis.framework.vortex.EnableEmbeddedServer;
-
 /**
  * 
- * EnableSequencerServer
+ * EnableNioTransport
  *
  * @author Jimmy Hoff
  * @version 1.0
@@ -20,7 +18,6 @@ import indi.atlantis.framework.vortex.EnableEmbeddedServer;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@EnableEmbeddedServer
-@Import(SequencerAutoConfiguration.class)
-public @interface EnableSequencerServer {
+@Import(NioTransportAutoConfiguration.class)
+public @interface EnableNioTransport {
 }

@@ -6,6 +6,9 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.glassfish.grizzly.Connection;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.health.AbstractHealthIndicator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -55,21 +58,21 @@ import io.netty.channel.Channel;
 
 /**
  * 
- * EmbeddedServerAutoConfiguration
+ * NioTransportAutoConfiguration
  * 
  * @author Jimmy Hoff
  * @version 1.0
  */
-@Import({ ApplicationTransportController.class, BenchmarkController.class })
-@Configuration
-public class EmbeddedServerAutoConfiguration {
+@Import({ NioTransportController.class, BenchmarkController.class })
+@Configuration(proxyBeanMethods = false)
+public class NioTransportAutoConfiguration {
 
 	@Value("${spring.application.cluster.name}")
 	private String clusterName;
 
 	@Bean
-	public ApplicationTransportContext applicationTransportContext() {
-		return new ApplicationTransportContext();
+	public NioTransportContext nioTransportContext() {
+		return new NioTransportContext();
 	}
 
 	@Bean
@@ -118,6 +121,12 @@ public class EmbeddedServerAutoConfiguration {
 	@Bean("producer")
 	public Counter producer(RedisConnectionFactory redisConnectionFactory) {
 		return new Counter(clusterName, "producer", redisConnectionFactory);
+	}
+
+	@ConditionalOnClass({ AbstractHealthIndicator.class, HealthContributorAutoConfiguration.class })
+	@Bean
+	public NioTransportHealthIndicator nioTransportHealthIndicator() {
+		return new NioTransportHealthIndicator();
 	}
 
 	@ConditionalOnMissingBean

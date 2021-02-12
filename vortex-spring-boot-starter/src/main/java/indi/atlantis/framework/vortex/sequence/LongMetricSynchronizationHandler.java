@@ -13,10 +13,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class LongMetricSynchronizationHandler implements Handler {
 
 	private final String topic;
-	private final Sequencer<String, NumberMetric<Long>> sequencer;
+	private final MetricSequencer<String, NumberMetric<Long>> sequencer;
 	private final boolean merged;
 
-	public LongMetricSynchronizationHandler(String topic, Sequencer<String, NumberMetric<Long>> sequencer, boolean merged) {
+	public LongMetricSynchronizationHandler(String topic, MetricSequencer<String, NumberMetric<Long>> sequencer, boolean merged) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 		this.merged = merged;

@@ -13,9 +13,9 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class BoolMetricHandler implements Handler {
 
 	private final String topic;
-	private final Sequencer<String, UserMetric<Bool>> sequencer;
+	private final MetricSequencer<String, UserMetric<Bool>> sequencer;
 
-	public BoolMetricHandler(String topic, Sequencer<String, UserMetric<Bool>> sequencer) {
+	public BoolMetricHandler(String topic, MetricSequencer<String, UserMetric<Bool>> sequencer) {
 		this.topic = topic;
 		this.sequencer = sequencer;
 	}

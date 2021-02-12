@@ -15,7 +15,7 @@ import indi.atlantis.framework.seafloor.ApplicationInfo;
 import indi.atlantis.framework.seafloor.InstanceId;
 import indi.atlantis.framework.seafloor.LeaderState;
 import indi.atlantis.framework.seafloor.election.ApplicationClusterLeaderEvent;
-import indi.atlantis.framework.vortex.ApplicationTransportContext;
+import indi.atlantis.framework.vortex.NioTransportContext;
 import indi.atlantis.framework.vortex.ServerInfo;
 import indi.atlantis.framework.vortex.common.NioClient;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class FullSynchronizationExecutor implements ApplicationListener<Applicat
 	private InstanceId instanceId;
 
 	@Autowired
-	private ApplicationTransportContext applicationTransportContext;
+	private NioTransportContext applicationTransportContext;
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;

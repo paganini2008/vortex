@@ -3,18 +3,20 @@ package indi.atlantis.framework.vortex.sequence;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import indi.atlantis.framework.vortex.Handler;
 
 /**
  * 
- * SequencerAutoConfiguration
+ * MetricSequencerAutoConfiguration
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
-@Configuration
-public class SequencerAutoConfiguration {
+@Import({ MetricSequencerController.class })
+@Configuration(proxyBeanMethods = false)
+public class MetricSequencerAutoConfiguration {
 
 	@Bean
 	public Environment primaryEnvironment() {

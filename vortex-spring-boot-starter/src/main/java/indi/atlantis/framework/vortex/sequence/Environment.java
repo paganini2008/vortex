@@ -11,24 +11,24 @@ import java.math.BigDecimal;
  */
 public class Environment {
 
-	private final Sequencer<String, NumberMetric<Long>> longMetricSequencer = new Sequencer<String, NumberMetric<Long>>();
-	private final Sequencer<String, NumberMetric<Double>> doubleMetricSequencer = new Sequencer<String, NumberMetric<Double>>();
-	private final Sequencer<String, NumberMetric<BigDecimal>> decimalMetricSequencer = new Sequencer<String, NumberMetric<BigDecimal>>();
-	private final Sequencer<String, UserMetric<Bool>> boolMetricSequencer = new Sequencer<String, UserMetric<Bool>>();
+	private final MetricSequencer<String, NumberMetric<Long>> longMetricSequencer = new MetricSequencer<String, NumberMetric<Long>>();
+	private final MetricSequencer<String, NumberMetric<Double>> doubleMetricSequencer = new MetricSequencer<String, NumberMetric<Double>>();
+	private final MetricSequencer<String, NumberMetric<BigDecimal>> decimalMetricSequencer = new MetricSequencer<String, NumberMetric<BigDecimal>>();
+	private final MetricSequencer<String, UserMetric<Bool>> boolMetricSequencer = new MetricSequencer<String, UserMetric<Bool>>();
 
-	public Sequencer<String, NumberMetric<Long>> longMetricSequencer() {
+	public MetricSequencer<String, NumberMetric<Long>> longMetricSequencer() {
 		return longMetricSequencer;
 	}
 
-	public Sequencer<String, NumberMetric<Double>> doubleMetricSequencer() {
+	public MetricSequencer<String, NumberMetric<Double>> doubleMetricSequencer() {
 		return doubleMetricSequencer;
 	}
 
-	public Sequencer<String, NumberMetric<BigDecimal>> decimalMetricSequencer() {
+	public MetricSequencer<String, NumberMetric<BigDecimal>> decimalMetricSequencer() {
 		return decimalMetricSequencer;
 	}
 
-	public Sequencer<String, UserMetric<Bool>> boolMetricSequencer() {
+	public MetricSequencer<String, UserMetric<Bool>> boolMetricSequencer() {
 		return boolMetricSequencer;
 	}
 

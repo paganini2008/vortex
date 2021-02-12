@@ -2,10 +2,11 @@ package indi.atlantis.framework.vortex;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
+import com.github.paganini2008.devtools.date.DateUtils;
+import com.github.paganini2008.devtools.multithreads.AtomicLongSequence;
 import com.github.paganini2008.devtools.multithreads.Executable;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
@@ -21,34 +22,37 @@ import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
  */
 public final class Counter implements BeanLifeCycle, Executable {
 
-	private static final String defaultRedisKeyPattern = "spring:application:transport:cluster:%s:counter:%s";
+	private static final String defaultRedisKeyPattern = "atlantis:framework:vortex:counter:%s:%s";
 
 	public Counter(String name, String roleName, RedisConnectionFactory connectionFactory) {
 		redisCounter = new RedisCounter(String.format(defaultRedisKeyPattern, name, roleName), connectionFactory);
 	}
 
-	private final AtomicLong counter = new AtomicLong(0);
+	private final AtomicLongSequence counter = new AtomicLongSequence(0);
 	private final RedisCounter redisCounter;
 	private final AtomicBoolean running = new AtomicBoolean();
+	private long timestamp;
 
-	private volatile long increment;
+	private volatile long lastCount;
 	private volatile long tps;
-	private volatile long totalIncrement;
+	private volatile long lastTotalCount;
 	private volatile long totalTps;
 
 	public void incrementCount() {
 		counter.incrementAndGet();
+		timestamp = System.currentTimeMillis();
 	}
 
-	public void incrementCount(int value) {
-		counter.addAndGet(value);
+	public void incrementCount(long size) {
+		counter.addAndGet(size);
+		timestamp = System.currentTimeMillis();
 	}
 
-	public long get() {
+	public long count() {
 		return counter.get();
 	}
 
-	public long getTotal() {
+	public long totalCount() {
 		return redisCounter.get();
 	}
 
@@ -63,12 +67,16 @@ public final class Counter implements BeanLifeCycle, Executable {
 		redisCounter.destroy();
 	}
 
-	public long getTps() {
+	public long tps() {
 		return tps;
 	}
 
-	public long getTotalTps() {
+	public long totalTps() {
 		return totalTps;
+	}
+
+	public boolean isIdleTimeout(long period, TimeUnit timeUnit) {
+		return (System.currentTimeMillis() - timestamp) > DateUtils.convertToMillis(period, timeUnit);
 	}
 
 	@Override
@@ -76,22 +84,24 @@ public final class Counter implements BeanLifeCycle, Executable {
 		long value = counter.get();
 		if (value > 0) {
 			long current = value;
-			tps = current - increment;
-			increment = current;
+			tps = current - lastCount;
+			lastCount = current;
 		}
 		value = redisCounter.addAndGet(value);
 		if (value > 0) {
 			long current = value;
-			totalTps = current - totalIncrement;
-			totalIncrement = current;
+			totalTps = current - lastTotalCount;
+			lastTotalCount = current;
 		}
 		return running.get();
 	}
 
 	public String toString() {
-		StringBuilder str = new StringBuilder("<Counter>");
-		str.append(" count: ").append(get() + "/" + getTotal());
-		str.append(", tps: ").append(getTps() + "/" + getTotalTps());
+		StringBuilder str = new StringBuilder();
+		str.append("count: ").append(count());
+		str.append(", totalCount: ").append(totalCount());
+		str.append(", tps: ").append(tps());
+		str.append(", totalTps: ").append(totalTps());
 		return str.toString();
 	}
 

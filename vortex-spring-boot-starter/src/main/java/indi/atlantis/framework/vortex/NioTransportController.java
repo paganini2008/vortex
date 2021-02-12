@@ -1,6 +1,5 @@
 package indi.atlantis.framework.vortex;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * ApplicationTransportController
+ * NioTransportController
  * 
  * @author Jimmy Hoff
  *
@@ -31,7 +30,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  */
 @RequestMapping("/application/cluster/transport")
 @RestController
-public class ApplicationTransportController {
+public class NioTransportController {
 
 	@Autowired
 	private NioClient nioClient;
@@ -40,7 +39,7 @@ public class ApplicationTransportController {
 	private Partitioner partitioner;
 
 	@Autowired
-	private ApplicationTransportContext context;
+	private NioTransportContext context;
 
 	@Qualifier("producer")
 	@Autowired
@@ -63,14 +62,6 @@ public class ApplicationTransportController {
 		Tuple data = Tuple.wrap(body);
 		nioClient.send(data, partitioner);
 		return ResponseEntity.ok(body);
-	}
-
-	@GetMapping("/tps")
-	public ResponseEntity<Map<String, Object>> tps() {
-		Map<String, Object> data = new HashMap<String, Object>();
-		data.put("producer", producer.getTps() + "/" + producer.getTotalTps());
-		data.put("consumer", consumer.getTps() + "/" + consumer.getTotalTps());
-		return ResponseEntity.ok(data);
 	}
 
 	@GetMapping("/tcp/services")
