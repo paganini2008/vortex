@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 /**
@@ -59,6 +60,8 @@ public class MetricSequencer<I, T extends Metric<T>> {
 	}
 
 	public int update(I identifier, String metric, long timestamp, T metricUnit, boolean merged) {
+		Assert.isNull(identifier, "Undefined collector identifier");
+		Assert.hasNoText(metric, "Undefined collector metric name");
 		SequentialMetricCollector<T> collector = MapUtils.get(collectors, identifier, () -> {
 			return new SimpleSequentialMetricCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
 				if (evictionHandler != null) {

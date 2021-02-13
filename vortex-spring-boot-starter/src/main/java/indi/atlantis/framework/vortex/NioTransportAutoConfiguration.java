@@ -91,13 +91,13 @@ public class NioTransportAutoConfiguration {
 		return new TupleLoopProcessor();
 	}
 
-	@ConditionalOnMissingBean(name = "loopProcessorThreads")
+	@ConditionalOnMissingBean(name = "loopProcessorThreadPool")
 	@Bean
-	public ThreadPoolTaskExecutor loopProcessorTaskExecutor(@Value("${atlantis.framework.vortex.processor.threads:8}") int nThreads) {
+	public ThreadPoolTaskExecutor loopProcessorThreadPool(@Value("${atlantis.framework.vortex.processor.threads:8}") int nThreads) {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 		taskExecutor.setCorePoolSize(nThreads);
 		taskExecutor.setMaxPoolSize(nThreads);
-		taskExecutor.setThreadFactory(new PooledThreadFactory("atlantis-vortex-executor-"));
+		taskExecutor.setThreadFactory(new PooledThreadFactory("atlantis-vortex-loop-processor-threads"));
 		taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 		return taskExecutor;
 	}

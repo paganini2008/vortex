@@ -39,6 +39,8 @@ public class BoolMetricSynchronizer implements Synchronizer {
 		long no = metricUnit.get().getNo();
 		long timestamp = metricUnit.getTimestamp();
 		Tuple tuple = Tuple.newOne(topic);
+		tuple.setField("name", name);
+		tuple.setField("metric", metric);
 		tuple.setField("yes", yes);
 		tuple.setField("no", no);
 		tuple.setField("timestamp", timestamp);

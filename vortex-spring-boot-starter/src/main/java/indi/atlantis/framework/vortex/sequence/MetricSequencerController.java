@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import indi.atlantis.framework.vortex.common.NioClient;
@@ -24,7 +26,8 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@RestController("/metric")
+@RestController
+@RequestMapping("/metric")
 public class MetricSequencerController {
 
 	@Autowired
@@ -37,11 +40,16 @@ public class MetricSequencerController {
 	@Autowired
 	private Environment environment;
 
-	@GetMapping("/{type}/{name}/{metric}/sequence")
-	public Map<String, Map<String, Object>> sequence(@PathVariable("type") String type, @PathVariable("name") String name,
+	@GetMapping("/echo")
+	public Map<String, Object> echo(@RequestParam("q") String q) {
+		return Collections.singletonMap("q", q);
+	}
+
+	@GetMapping("/sequence/{dataType}/{name}/{metric}")
+	public Map<String, Map<String, Object>> sequence(@PathVariable("dataType") String dataType, @PathVariable("name") String name,
 			@PathVariable("metric") String metric) {
 		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
-		switch (type) {
+		switch (dataType) {
 		case "bool":
 			MetricSequencer<String, UserMetric<Bool>> boolMetricSequencer = environment.boolMetricSequencer();
 			Map<String, UserMetric<Bool>> boolSequence = boolMetricSequencer.sequence(name, metric);
@@ -75,13 +83,13 @@ public class MetricSequencerController {
 			return DataRenderer.renderNumberMetric(data, decimalMetricSequencer.getSpanUnit(), decimalMetricSequencer.getSpan(),
 					decimalMetricSequencer.getBufferSize());
 		default:
-			throw new UnsupportedOperationException(type);
+			throw new UnsupportedOperationException(dataType);
 		}
 	}
 
-	@PostMapping("/{type}/sequence")
-	public Map<String, Object> sequence(@PathVariable("type") String type, @RequestBody SequenceRequest sequenceRequest) {
-		Tuple tuple = Tuple.newOne(type);
+	@PostMapping("/sequence/{dataType}")
+	public Map<String, Object> sequence(@PathVariable("dataType") String dataType, @RequestBody SequenceRequest sequenceRequest) {
+		Tuple tuple = Tuple.newOne(dataType);
 		tuple.setField("name", sequenceRequest.getName());
 		tuple.setField("metric", sequenceRequest.getMetric());
 		tuple.setField("value", sequenceRequest.getValue());

@@ -42,6 +42,8 @@ public class DoubleMetricSynchronizer implements Synchronizer {
 		long timestamp = metricUnit.getTimestamp();
 
 		Tuple tuple = Tuple.newOne(topic);
+		tuple.setField("name", name);
+		tuple.setField("metric", metric);
 		tuple.setField("highestValue", highestValue);
 		tuple.setField("lowestValue", lowestValue);
 		tuple.setField("totalValue", totalValue);

@@ -39,7 +39,7 @@ public class TupleLoopProcessor implements Runnable, ApplicationListener<Context
 	@Autowired
 	private BufferZone bufferZone;
 
-	@Qualifier("loopProcessorThreads")
+	@Qualifier("loopProcessorThreadPool")
 	@Autowired(required = false)
 	private ThreadPoolTaskExecutor threadPool;
 

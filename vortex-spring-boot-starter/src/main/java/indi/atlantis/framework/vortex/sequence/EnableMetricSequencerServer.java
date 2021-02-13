@@ -23,6 +23,6 @@ import indi.atlantis.framework.vortex.EnableNioTransport;
 @Documented
 @EnableNioTransport
 @EnableApplicationCluster(enableLeaderElection = true, enableMonitor = true)
-@Import(MetricSequencerAutoConfiguration.class)
+@Import({ MetricSequencerAutoConfiguration.class })
 public @interface EnableMetricSequencerServer {
 }

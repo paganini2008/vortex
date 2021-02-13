@@ -14,7 +14,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  */
 public interface BufferZone {
 
-	static String DEFAULT_COLLECTION_NAME_PREFIX = "atlantis:framework:vortex:bufferzone:";
+	static String DEFAULT_COLLECTION_NAME_PREFIX = "atlantis:framework:vortex:bufferzone";
 
 	default void setCollectionNamePrefix(String namePrefix, String subNamePrefix) {
 	}

@@ -44,18 +44,18 @@ public class RedisBufferZone implements BufferZone {
 
 	@Override
 	public void setCollectionNamePrefix(String namePrefix, String subNamePrefix) {
-		this.collectionNamePrefix = namePrefix + subNamePrefix;
+		this.collectionNamePrefix = namePrefix + ":" + subNamePrefix;
 	}
 
 	@Override
 	public void set(String collectionName, Tuple tuple) {
-		String key = collectionNamePrefix + collectionName;
+		String key = collectionNamePrefix + ":" + collectionName;
 		redisTemplate.opsForList().leftPush(key, tuple);
 	}
 
 	@Override
 	public List<Tuple> get(String collectionName, int pullSize) {
-		String key = collectionNamePrefix + collectionName;
+		String key = collectionNamePrefix + ":" + collectionName;
 		Tuple tuple;
 		if (pullSize > 1) {
 			List<Tuple> list = new ArrayList<Tuple>();
@@ -72,7 +72,7 @@ public class RedisBufferZone implements BufferZone {
 
 	@Override
 	public long size(String collectionName) {
-		String key = collectionNamePrefix + collectionName;
+		String key = collectionNamePrefix + ":" + collectionName;
 		return redisTemplate.opsForList().size(key).intValue();
 	}
 

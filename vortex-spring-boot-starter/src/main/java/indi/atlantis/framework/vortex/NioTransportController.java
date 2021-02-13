@@ -67,7 +67,7 @@ public class NioTransportController {
 	@GetMapping("/tcp/services")
 	public ResponseEntity<String[]> tcpServices() {
 		ServerInfo[] serverInfos = context.getServerInfos();
-		String[] services = ArrayUtils.map(serverInfos, info -> {
+		String[] services = ArrayUtils.map(serverInfos, String.class, info -> {
 			return info.toString();
 		});
 		return ResponseEntity.ok(services);

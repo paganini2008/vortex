@@ -30,18 +30,18 @@ public class MemcachedBufferZone implements BufferZone {
 
 	@Override
 	public void setCollectionNamePrefix(String namePrefix, String subNamePrefix) {
-		this.collectionNamePrefix = namePrefix + subNamePrefix;
+		this.collectionNamePrefix = namePrefix + ":" + subNamePrefix;
 	}
 
 	@Override
 	public void set(String collectionName, Tuple tuple) throws Exception {
-		String key = collectionNamePrefix + collectionName;
+		String key = collectionNamePrefix + ":" + collectionName;
 		memcachedOperations.push(key, DEFAULT_EXPIRATION, tuple);
 	}
 
 	@Override
 	public List<Tuple> get(String collectionName, int pullSize) throws Exception {
-		String key = collectionNamePrefix + collectionName;
+		String key = collectionNamePrefix + ":" + collectionName;
 		List<Tuple> list = new ArrayList<Tuple>();
 		Tuple tuple;
 		int i = 0;
