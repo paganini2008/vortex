@@ -9,8 +9,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>vortex-sequencer</artifactId>
-	<name>vortex-sequencer</name>
+	<artifactId>vortex-metric-sequencer</artifactId>
+	<name>vortex-metric-sequencer</name>
 	<url>https://github.com/paganini2008/vortex</url>
 
 	<dependencies>
