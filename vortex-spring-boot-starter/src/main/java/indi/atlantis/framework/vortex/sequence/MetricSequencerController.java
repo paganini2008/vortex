@@ -2,6 +2,7 @@ package indi.atlantis.framework.vortex.sequence;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,48 +41,66 @@ public class MetricSequencerController {
 	@Autowired
 	private Environment environment;
 
-	@GetMapping("/echo")
-	public Map<String, Object> echo(@RequestParam("q") String q) {
-		return Collections.singletonMap("q", q);
-	}
-
 	@GetMapping("/sequence/{dataType}/{name}/{metric}")
 	public Map<String, Map<String, Object>> sequence(@PathVariable("dataType") String dataType, @PathVariable("name") String name,
-			@PathVariable("metric") String metric) {
+			@PathVariable("metric") String metric,
+			@RequestParam(name = "rendered", required = false, defaultValue = "true") boolean rendered,
+			@RequestParam(name = "asc", required = false, defaultValue = "true") boolean asc) {
 		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
-		switch (dataType) {
+		long timestamp = 0;
+		switch (dataType.toLowerCase()) {
 		case "bool":
 			MetricSequencer<String, UserMetric<Bool>> boolMetricSequencer = environment.boolMetricSequencer();
 			Map<String, UserMetric<Bool>> boolSequence = boolMetricSequencer.sequence(name, metric);
 			for (Map.Entry<String, UserMetric<Bool>> entry : boolSequence.entrySet()) {
-				data.put(entry.getKey(), entry.getValue().get().toEntries());
+				data.put(entry.getKey(), entry.getValue().toEntries());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
-			return DataRenderer.renderBoolMetric(data, boolMetricSequencer.getSpanUnit(), boolMetricSequencer.getSpan(),
-					boolMetricSequencer.getBufferSize());
+			if (rendered) {
+				Date startTime = asc ? new Date(timestamp) : new Date();
+				return DataRenderer.renderBoolMetric(data, startTime, asc, boolMetricSequencer.getSpanUnit(), boolMetricSequencer.getSpan(),
+						boolMetricSequencer.getBufferSize());
+			}
+			return data;
 		case "long":
 			MetricSequencer<String, NumberMetric<Long>> longMetricSequencer = environment.longMetricSequencer();
 			Map<String, NumberMetric<Long>> longSequence = longMetricSequencer.sequence(name, metric);
 			for (Map.Entry<String, NumberMetric<Long>> entry : longSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
-			return DataRenderer.renderNumberMetric(data, longMetricSequencer.getSpanUnit(), longMetricSequencer.getSpan(),
-					longMetricSequencer.getBufferSize());
+			if (rendered) {
+				Date startTime = asc ? new Date(timestamp) : new Date();
+				return DataRenderer.renderNumberMetric(data, startTime, asc, longMetricSequencer.getSpanUnit(),
+						longMetricSequencer.getSpan(), longMetricSequencer.getBufferSize());
+			}
+			return data;
 		case "double":
 			MetricSequencer<String, NumberMetric<Double>> doubleMetricSequencer = environment.doubleMetricSequencer();
 			Map<String, NumberMetric<Double>> doubleSequence = doubleMetricSequencer.sequence(name, metric);
 			for (Map.Entry<String, NumberMetric<Double>> entry : doubleSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
-			return DataRenderer.renderNumberMetric(data, doubleMetricSequencer.getSpanUnit(), doubleMetricSequencer.getSpan(),
-					doubleMetricSequencer.getBufferSize());
+			if (rendered) {
+				Date startTime = asc ? new Date(timestamp) : new Date();
+				return DataRenderer.renderNumberMetric(data, startTime, asc, doubleMetricSequencer.getSpanUnit(),
+						doubleMetricSequencer.getSpan(), doubleMetricSequencer.getBufferSize());
+			}
+			return data;
 		case "decimal":
 			MetricSequencer<String, NumberMetric<BigDecimal>> decimalMetricSequencer = environment.decimalMetricSequencer();
 			Map<String, NumberMetric<BigDecimal>> decimalSequence = decimalMetricSequencer.sequence(name, metric);
 			for (Map.Entry<String, NumberMetric<BigDecimal>> entry : decimalSequence.entrySet()) {
 				data.put(entry.getKey(), entry.getValue().toEntries());
+				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
-			return DataRenderer.renderNumberMetric(data, decimalMetricSequencer.getSpanUnit(), decimalMetricSequencer.getSpan(),
-					decimalMetricSequencer.getBufferSize());
+			if (rendered) {
+				Date startTime = asc ? new Date(timestamp) : new Date();
+				return DataRenderer.renderNumberMetric(data, startTime, asc, decimalMetricSequencer.getSpanUnit(),
+						decimalMetricSequencer.getSpan(), decimalMetricSequencer.getBufferSize());
+			}
+			return data;
 		default:
 			throw new UnsupportedOperationException(dataType);
 		}

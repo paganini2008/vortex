@@ -8,6 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * 
  * MetricSequencer
@@ -15,6 +17,7 @@ import com.github.paganini2008.devtools.collection.MapUtils;
  * @author Jimmy Hoff
  * @version 1.0
  */
+@Slf4j
 public class MetricSequencer<I, T extends Metric<T>> {
 
 	private final Map<I, SequentialMetricCollector<T>> collectors = new ConcurrentHashMap<I, SequentialMetricCollector<T>>();
@@ -66,6 +69,9 @@ public class MetricSequencer<I, T extends Metric<T>> {
 			return new SimpleSequentialMetricCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
 				if (evictionHandler != null) {
 					evictionHandler.onEldestMetricRemoval(identifier, eldestMetric, eldestMetricUnit);
+				}
+				if (log.isTraceEnabled()) {
+					log.trace("Discard metric data: {}/{}/{}", identifier, eldestMetric, eldestMetricUnit);
 				}
 			});
 		});

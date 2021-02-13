@@ -34,7 +34,7 @@ public class MetricSequencerServer {
 
 	public static void main(String[] args) {
 		int port = NetUtils.getRandomPort(Constants.RANDOM_PORT_RANGE_START, Constants.RANDOM_PORT_RANGE_END);
-		port = 12001;
+		port = 12000;
 		System.setProperty("server.port", String.valueOf(port));
 		SpringApplication.run(MetricSequencerServer.class, args);
 		System.out.println(Env.getPid());

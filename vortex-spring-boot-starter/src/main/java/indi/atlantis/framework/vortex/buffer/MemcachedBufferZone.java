@@ -26,7 +26,7 @@ public class MemcachedBufferZone implements BufferZone {
 		this.memcachedOperations = memcachedOperations;
 	}
 
-	private String collectionNamePrefix = DEFAULT_COLLECTION_NAME_PREFIX;
+	private String collectionNamePrefix = DEFAULT_COLLECTION_NAME_PREFIX; 
 
 	@Override
 	public void setCollectionNamePrefix(String namePrefix, String subNamePrefix) {

@@ -1,5 +1,8 @@
 package indi.atlantis.framework.vortex.sequence;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import lombok.ToString;
 
 /**
@@ -63,6 +66,14 @@ public class BoolMetric implements UserMetric<Bool> {
 	@Override
 	public Bool get() {
 		return bool;
+	}
+
+	public Map<String, Object> toEntries() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("yes", bool.getYes());
+		map.put("no", bool.getNo());
+		map.put("timestamp", timestamp);
+		return map;
 	}
 
 }

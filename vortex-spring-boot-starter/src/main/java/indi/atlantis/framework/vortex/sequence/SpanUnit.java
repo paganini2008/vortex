@@ -1,10 +1,13 @@
 package indi.atlantis.framework.vortex.sequence;
 
+import static indi.atlantis.framework.vortex.sequence.SequentialMetricCollector.DEFAULT_DATETIME_PATTERN;
+
 import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.date.DateUtils;
@@ -35,17 +38,31 @@ public enum SpanUnit {
 		}
 
 		@Override
-		public <T> Map<String, T> newSequentialMap(int span, int bufferSize, Supplier<T> valueSupplier) {
+		public <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
 			Map<String, T> map = new LinkedHashMap<String, T>();
 			Calendar c = Calendar.getInstance();
-			c.setTimeInMillis(System.currentTimeMillis());
+			c.setTime(startTime);
 			c.set(Calendar.MINUTE, 0);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), SequentialMetricCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
+				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
 				c.add(Calendar.HOUR_OF_DAY, -1 * span);
 			}
 			return MapUtils.reverse(map);
+		}
+
+		@Override
+		public <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
+			Map<String, T> map = new LinkedHashMap<String, T>();
+			Calendar c = Calendar.getInstance();
+			c.setTime(startTime);
+			c.set(Calendar.MINUTE, 0);
+			c.set(Calendar.SECOND, 0);
+			for (int i = 0; i < bufferSize; i++) {
+				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				c.add(Calendar.HOUR_OF_DAY, span);
+			}
+			return map;
 		}
 
 	},
@@ -66,16 +83,29 @@ public enum SpanUnit {
 		}
 
 		@Override
-		public <T> Map<String, T> newSequentialMap(int span, int bufferSize, Supplier<T> valueSupplier) {
+		public <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
 			Map<String, T> map = new LinkedHashMap<String, T>();
 			Calendar c = Calendar.getInstance();
-			c.setTimeInMillis(System.currentTimeMillis());
+			c.setTime(startTime);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), SimpleSequentialMetricCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
+				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
 				c.add(Calendar.MINUTE, -1 * span);
 			}
 			return MapUtils.reverse(map);
+		}
+
+		@Override
+		public <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
+			Map<String, T> map = new LinkedHashMap<String, T>();
+			Calendar c = Calendar.getInstance();
+			c.setTime(startTime);
+			c.set(Calendar.SECOND, 0);
+			for (int i = 0; i < bufferSize; i++) {
+				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				c.add(Calendar.MINUTE, span);
+			}
+			return map;
 		}
 	},
 	SECOND {
@@ -95,15 +125,27 @@ public enum SpanUnit {
 		}
 
 		@Override
-		public <T> Map<String, T> newSequentialMap(int span, int bufferSize, Supplier<T> valueSupplier) {
+		public <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
 			Map<String, T> map = new LinkedHashMap<String, T>();
 			Calendar c = Calendar.getInstance();
-			c.setTimeInMillis(System.currentTimeMillis());
+			c.setTime(startTime);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), SimpleSequentialMetricCollector.DEFAULT_DATETIME_PATTERN), valueSupplier.get());
+				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
 				c.add(Calendar.SECOND, -1 * span);
 			}
 			return MapUtils.reverse(map);
+		}
+
+		@Override
+		public <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
+			Map<String, T> map = new LinkedHashMap<String, T>();
+			Calendar c = Calendar.getInstance();
+			c.setTime(startTime);
+			for (int i = 0; i < bufferSize; i++) {
+				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				c.add(Calendar.SECOND, span);
+			}
+			return map;
 		}
 
 	};
@@ -112,6 +154,8 @@ public enum SpanUnit {
 
 	public abstract long startsInMsWith(Calendar c, long timestamp, int span);
 
-	public abstract <T> Map<String, T> newSequentialMap(int span, int bufferSize, Supplier<T> valueSupplier);
+	public abstract <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f);
+
+	public abstract <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f);
 
 }

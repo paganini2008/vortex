@@ -1,5 +1,7 @@
 package indi.atlantis.framework.vortex.sequence;
 
+import java.util.Map;
+
 /**
  * 
  * UserMetric
@@ -10,5 +12,7 @@ package indi.atlantis.framework.vortex.sequence;
 public interface UserMetric<T> extends Metric<UserMetric<T>> {
 
 	T get();
+
+	Map<String, Object> toEntries();
 
 }
