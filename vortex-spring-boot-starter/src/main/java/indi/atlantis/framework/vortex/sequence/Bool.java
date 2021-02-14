@@ -1,5 +1,7 @@
 package indi.atlantis.framework.vortex.sequence;
 
+import java.io.Serializable;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,8 +16,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public final class Bool {
+public final class Bool implements Serializable{
 
+	private static final long serialVersionUID = -3013190689650409680L;
 	private long yes;
 	private long no;
 

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -26,12 +27,12 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class IncrementalSynchronizationExecutor implements ApplicationListener<ApplicationClusterRefreshedEvent> {
+public class IncrementalSynchronizationExecutor implements ApplicationListener<ApplicationClusterRefreshedEvent>, DisposableBean {
 
-	private static final int DEFAULT_SYNCHRONIZATION_PERIOD = 5;
+	public static final int DEFAULT_SYNCHRONIZATION_PERIOD = 5;
 
 	@Autowired
-	private NioTransportContext applicationTransportContext;
+	private NioTransportContext transportContext;
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
@@ -63,7 +64,7 @@ public class IncrementalSynchronizationExecutor implements ApplicationListener<A
 			future.cancel(false);
 		}
 		future = taskScheduler.scheduleWithFixedDelay(() -> {
-			ServerInfo serverInfo = applicationTransportContext.getServerInfo(leaderInfo);
+			ServerInfo serverInfo = transportContext.getServerInfo(leaderInfo);
 			if (serverInfo != null) {
 				InetSocketAddress remoteAddress = new InetSocketAddress(serverInfo.getHostName(), serverInfo.getPort());
 				for (Synchronizer synchronizer : synchronizers) {
@@ -74,6 +75,13 @@ public class IncrementalSynchronizationExecutor implements ApplicationListener<A
 			}
 		}, Duration.ofSeconds(DEFAULT_SYNCHRONIZATION_PERIOD));
 		log.info("Start incremental synchronization to {} with {} seconds.", leaderInfo, DEFAULT_SYNCHRONIZATION_PERIOD);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if (future != null) {
+			future.cancel(true);
+		}
 	}
 
 }

@@ -95,8 +95,11 @@ public abstract class NumberMetrics {
 
 		@Override
 		public NumberMetric<Double> reset(NumberMetric<Double> currentMetric) {
+			double highestValue = Double.max(this.highestValue, currentMetric.getHighestValue().doubleValue());
+			double lowestValue = Double.min(this.lowestValue, currentMetric.getLowestValue().doubleValue());
 			double totalValue = this.totalValue - currentMetric.getTotalValue().doubleValue();
 			long count = this.count - currentMetric.getCount();
+			long timestamp = currentMetric.getTimestamp();
 			return new DoubleMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 
@@ -188,8 +191,11 @@ public abstract class NumberMetrics {
 
 		@Override
 		public NumberMetric<Long> reset(NumberMetric<Long> currentMetric) {
+			long highestValue = Long.max(this.highestValue, currentMetric.getHighestValue().longValue());
+			long lowestValue = Long.min(this.lowestValue, currentMetric.getLowestValue().longValue());
 			long totalValue = this.totalValue - currentMetric.getTotalValue().longValue();
 			long count = this.count - currentMetric.getCount();
+			long timestamp = currentMetric.getTimestamp();
 			return new LongMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 
@@ -282,8 +288,11 @@ public abstract class NumberMetrics {
 
 		@Override
 		public NumberMetric<BigDecimal> reset(NumberMetric<BigDecimal> currentMetric) {
+			BigDecimal highestValue = this.highestValue.max((BigDecimal) currentMetric.getHighestValue());
+			BigDecimal lowestValue = this.lowestValue.min((BigDecimal) currentMetric.getLowestValue());
 			BigDecimal totalValue = this.totalValue.subtract((BigDecimal) currentMetric.getTotalValue());
 			long count = this.count - currentMetric.getCount();
+			long timestamp = currentMetric.getTimestamp();
 			return new DecimalMetric(highestValue, lowestValue, totalValue, count, timestamp, false);
 		}
 

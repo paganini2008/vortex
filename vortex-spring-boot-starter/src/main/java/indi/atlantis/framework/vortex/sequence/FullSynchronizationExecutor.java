@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -28,15 +29,15 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class FullSynchronizationExecutor implements ApplicationListener<ApplicationClusterLeaderEvent> {
+public class FullSynchronizationExecutor implements ApplicationListener<ApplicationClusterLeaderEvent>, DisposableBean {
 
-	private static final int DEFAULT_SYNCHRONIZATION_PERIOD = 5;
+	public static final int DEFAULT_SYNCHRONIZATION_PERIOD = 5;
 
 	@Autowired
 	private InstanceId instanceId;
 
 	@Autowired
-	private NioTransportContext applicationTransportContext;
+	private NioTransportContext transportContext;
 
 	@Autowired
 	private ThreadPoolTaskScheduler taskScheduler;
@@ -71,7 +72,7 @@ public class FullSynchronizationExecutor implements ApplicationListener<Applicat
 		}
 		future = taskScheduler.scheduleWithFixedDelay(() -> {
 			ApplicationInfo leaderInfo = instanceId.getApplicationInfo();
-			ServerInfo[] serverInfos = applicationTransportContext.getServerInfos(info -> {
+			ServerInfo[] serverInfos = transportContext.getServerInfos(info -> {
 				return !info.equals(leaderInfo);
 			});
 			InetSocketAddress remoteAddress;
@@ -83,6 +84,13 @@ public class FullSynchronizationExecutor implements ApplicationListener<Applicat
 			}
 		}, Duration.ofSeconds(DEFAULT_SYNCHRONIZATION_PERIOD));
 		log.info("Start full synchronization from {} with {} seconds.", instanceId.getApplicationInfo(), DEFAULT_SYNCHRONIZATION_PERIOD);
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		if (future != null) {
+			future.cancel(true);
+		}
 	}
 
 }
