@@ -21,7 +21,7 @@ import com.github.paganini2008.devtools.date.DateUtils;
  */
 public enum SpanUnit {
 
-	HOUR {
+	HOUR(Calendar.HOUR_OF_DAY) {
 
 		@Override
 		public Calendar startsWith(Calendar c, long timestamp, int span) {
@@ -66,7 +66,7 @@ public enum SpanUnit {
 		}
 
 	},
-	MINUTE {
+	MINUTE(Calendar.MINUTE) {
 
 		@Override
 		public Calendar startsWith(Calendar c, long timestamp, int span) {
@@ -108,7 +108,7 @@ public enum SpanUnit {
 			return map;
 		}
 	},
-	SECOND {
+	SECOND(Calendar.SECOND) {
 
 		@Override
 		public Calendar startsWith(Calendar c, long timestamp, int span) {
@@ -130,7 +130,7 @@ public enum SpanUnit {
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				map.put(DateUtils.format(c.getTimeInMillis(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
 				c.add(Calendar.SECOND, -1 * span);
 			}
 			return MapUtils.reverse(map);
@@ -142,13 +142,23 @@ public enum SpanUnit {
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				map.put(DateUtils.format(c.getTimeInMillis(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
 				c.add(Calendar.SECOND, span);
 			}
 			return map;
 		}
 
 	};
+
+	private SpanUnit(int calendarField) {
+		this.calendarField = calendarField;
+	}
+
+	private final int calendarField;
+
+	public int getCalendarField() {
+		return calendarField;
+	}
 
 	public abstract Calendar startsWith(Calendar c, long timestamp, int span);
 

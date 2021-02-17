@@ -92,7 +92,7 @@ public class NioTransportAutoConfiguration {
 	}
 
 	@ConditionalOnMissingBean(name = "loopProcessorThreadPool")
-	@Bean
+	@Bean(destroyMethod = "shutdown")
 	public ThreadPoolTaskExecutor loopProcessorThreadPool(@Value("${atlantis.framework.vortex.processor.threads:8}") int nThreads) {
 		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
 		taskExecutor.setCorePoolSize(nThreads);
@@ -102,7 +102,6 @@ public class NioTransportAutoConfiguration {
 		return taskExecutor;
 	}
 
-	@ConditionalOnMissingBean
 	@Bean
 	public Partitioner partitioner() {
 		return new NamedSelectionPartitioner();

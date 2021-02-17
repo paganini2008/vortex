@@ -115,7 +115,7 @@ public abstract class NumberMetrics {
 
 		@Override
 		public Map<String, Object> toEntries() {
-			Map<String, Object> data = new HashMap<String, Object>();
+			Map<String, Object> data = new HashMap<String, Object>(5);
 			data.put("highestValue", getHighestValue());
 			data.put("lowestValue", getLowestValue());
 			data.put("middleValue", getMiddleValue());
@@ -211,7 +211,7 @@ public abstract class NumberMetrics {
 
 		@Override
 		public Map<String, Object> toEntries() {
-			Map<String, Object> data = new HashMap<String, Object>();
+			Map<String, Object> data = new HashMap<String, Object>(5);
 			data.put("highestValue", getHighestValue());
 			data.put("lowestValue", getLowestValue());
 			data.put("middleValue", getMiddleValue());
@@ -308,7 +308,7 @@ public abstract class NumberMetrics {
 
 		@Override
 		public Map<String, Object> toEntries() {
-			Map<String, Object> data = new HashMap<String, Object>();
+			Map<String, Object> data = new HashMap<String, Object>(5);
 			data.put("highestValue", getHighestValue());
 			data.put("lowestValue", getLowestValue());
 			data.put("middleValue", getMiddleValue());
