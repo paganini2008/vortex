@@ -8,9 +8,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.github.paganini2008.devtools.collection.BoundedMapSupplier;
 import com.github.paganini2008.devtools.collection.CollectionUtils;
 import com.github.paganini2008.devtools.collection.EvictionListener;
+import com.github.paganini2008.devtools.collection.LruMapSupplier;
 import com.github.paganini2008.devtools.collection.LruQueue;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.googlecode.concurrentlinkedhashmap.Weighers;
@@ -44,7 +44,7 @@ public class MemoryBufferZone implements BufferZone {
 	public void set(String collectionName, Tuple tuple) {
 		LruQueue<Tuple> q = cache.get(collectionName);
 		if (q == null) {
-			cache.putIfAbsent(collectionName, new LruQueue<Tuple>(maxSize, new ConcurrentLruBoundedMapSupplier()));
+			cache.putIfAbsent(collectionName, new LruQueue<Tuple>(maxSize, new ConcurrentLruMapSupplier()));
 			q = cache.get(collectionName);
 		}
 		q.offer(tuple);
@@ -78,12 +78,12 @@ public class MemoryBufferZone implements BufferZone {
 
 	/**
 	 * 
-	 * ConcurrentLruBoundedMapSupplier
+	 * ConcurrentLruMapSupplier
 	 *
 	 * @author Jimmy Hoff
 	 * @version 1.0
 	 */
-	private static class ConcurrentLruBoundedMapSupplier implements BoundedMapSupplier<Integer, Tuple> {
+	private static class ConcurrentLruMapSupplier implements LruMapSupplier<Integer, Tuple> {
 
 		@Override
 		public Map<Integer, Tuple> get(final int maxSize, final EvictionListener<Integer, Tuple> evictionListener) {

@@ -22,11 +22,11 @@ public class SimpleMetricCollector<T extends Metric<T>> implements MetricCollect
 	}
 
 	public SimpleMetricCollector(int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
-		this(true, bufferSize, historicalMetricsHandler);
+		this(bufferSize, true, historicalMetricsHandler);
 	}
 
-	public SimpleMetricCollector(boolean ordered, int bufferSize, HistoricalMetricsHandler<T> historicalMetricsHandler) {
-		this.store = bufferSize > 0 ? new MetricCollectorLruMap<T>(ordered, bufferSize, historicalMetricsHandler)
+	public SimpleMetricCollector(int bufferSize, boolean ordered, HistoricalMetricsHandler<T> historicalMetricsHandler) {
+		this.store = bufferSize > 0 ? new MetricCollectorBoundedMap<T>(ordered, bufferSize, historicalMetricsHandler)
 				: new MetricCollectorMap<T>(ordered);
 	}
 

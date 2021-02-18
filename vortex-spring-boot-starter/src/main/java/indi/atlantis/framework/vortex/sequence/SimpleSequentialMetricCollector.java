@@ -23,10 +23,13 @@ public class SimpleSequentialMetricCollector<T extends Metric<T>> implements Seq
 
 	public SimpleSequentialMetricCollector(int bufferSize, int span, SpanUnit spanUnit,
 			HistoricalMetricsHandler<T> historicalMetricsHandler) {
-		Assert.lt(bufferSize, 1, "MetricsCollector's bufferSize must greater than zero");
-		Assert.lt(span, 1, "MetricsCollector's sequential span must greater than zero");
+		Assert.lt(bufferSize, 1, "MetricCollector's bufferSize must greater than zero.");
+		Assert.lt(span, 1, "MetricCollector's sequential span must greater than zero.");
+		if (spanUnit == SpanUnit.SECOND) {
+			Assert.isTrue((span % 10) != 0, "MetricCollector's sequential span must be divided by 10 exactly when spanUnit is second.");
+		}
 		this.store = new ConcurrentHashMap<String, MetricCollector<T>>();
-		this.supplier = () -> new SimpleMetricCollector<T>(true, bufferSize, historicalMetricsHandler);
+		this.supplier = () -> new SimpleMetricCollector<T>(bufferSize, true, historicalMetricsHandler);
 		this.span = span;
 		this.spanUnit = spanUnit;
 	}
