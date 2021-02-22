@@ -9,7 +9,7 @@
     <modules>
 		<module>vortex-common</module>
 		<module>vortex-spring-boot-starter</module>
-		<module>vortex-metric-sequencer</module>
+		<module>vortex-metrics</module>
     </modules>
 	
     <packaging>pom</packaging>

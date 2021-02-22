@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.ui;
+package indi.atlantis.framework.vortex.metrics;
 
 import java.io.File;
 
@@ -14,14 +14,14 @@ import indi.atlantis.framework.vortex.sequence.EnableMetricSequencerServer;
 
 /**
  * 
- * MetricSequencerServer
+ * MetricsApplicationMain
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @EnableMetricSequencerServer
 @SpringBootApplication
-public class MetricSequencerServer {
+public class MetricsApplicationMain {
 
 	static {
 		System.setProperty("spring.devtools.restart.enabled", "false");
@@ -36,7 +36,7 @@ public class MetricSequencerServer {
 		int port = NetUtils.getRandomPort(Constants.RANDOM_PORT_RANGE_START, Constants.RANDOM_PORT_RANGE_END);
 		port = 12000;
 		System.setProperty("server.port", String.valueOf(port));
-		SpringApplication.run(MetricSequencerServer.class, args);
+		SpringApplication.run(MetricsApplicationMain.class, args);
 		System.out.println(Env.getPid());
 	}
 

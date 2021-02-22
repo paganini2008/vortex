@@ -1,4 +1,4 @@
-package indi.atlantis.framework.vortex.ui;
+package indi.atlantis.framework.vortex.metrics;
 
 import java.time.Duration;
 

@@ -10,7 +10,7 @@ import com.github.paganini2008.devtools.logging.Log;
 import com.github.paganini2008.devtools.logging.LogFactory;
 import com.github.paganini2008.devtools.multithreads.Executable;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
-import com.github.paganini2008.devtools.net.UrlUtils;
+import com.github.paganini2008.devtools.net.Urls;
 
 import indi.atlantis.framework.vortex.common.netty.NettyClient;
 
@@ -89,7 +89,7 @@ public class TcpTransportClient implements TransportClient, Executable {
 	private String[] getChannels() {
 		String content;
 		try {
-			content = UrlUtils.toString(brokerUrl + servicePath, "utf-8");
+			content = Urls.toString(brokerUrl + servicePath, "utf-8");
 		} catch (IOException ignored) {
 			logger.warn("");
 			return new String[0];
