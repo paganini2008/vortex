@@ -71,7 +71,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	 */
 	public static class BasicHandlerInterceptor implements HandlerInterceptor {
 
-		private static final String WEB_ATTRIBUTE_VERSION = "version";
 		private static final String WEB_ATTRIBUTE_CONTEXT_PATH = "contextPath";
 
 		@Override

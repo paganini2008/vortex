@@ -4,6 +4,7 @@ import static indi.atlantis.framework.vortex.sequence.SequentialMetricCollector.
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -167,5 +168,20 @@ public enum SpanUnit {
 	public abstract <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f);
 
 	public abstract <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f);
+
+	private static final Map<Integer, SpanUnit> cache = new HashMap<Integer, SpanUnit>();
+
+	static {
+		for (SpanUnit spanUnit : SpanUnit.values()) {
+			cache.put(spanUnit.getCalendarField(), spanUnit);
+		}
+	}
+
+	public static SpanUnit valueOf(int calendarField) {
+		if (!cache.containsKey(calendarField)) {
+			throw new IllegalArgumentException("Unknown calendar field: " + calendarField);
+		}
+		return cache.get(calendarField);
+	}
 
 }

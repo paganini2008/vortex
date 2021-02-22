@@ -7,9 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.github.paganini2008.devtools.Env;
 import com.github.paganini2008.devtools.io.FileUtils;
-import com.github.paganini2008.devtools.net.NetUtils;
 
-import indi.atlantis.framework.seafloor.Constants;
 import indi.atlantis.framework.vortex.sequence.EnableMetricSequencerServer;
 
 /**
@@ -33,9 +31,6 @@ public class MetricsApplicationMain {
 	}
 
 	public static void main(String[] args) {
-		int port = NetUtils.getRandomPort(Constants.RANDOM_PORT_RANGE_START, Constants.RANDOM_PORT_RANGE_END);
-		port = 12000;
-		System.setProperty("server.port", String.valueOf(port));
 		SpringApplication.run(MetricsApplicationMain.class, args);
 		System.out.println(Env.getPid());
 	}

@@ -26,16 +26,24 @@ public class MetricSequencer<I, T extends Metric<T>> {
 	private int bufferSize = 60;
 	private MetricEvictionHandler<I, T> evictionHandler;
 
-	public void setSpan(int span) {
+	public MetricSequencer<I, T> setSpan(int span) {
 		this.span = span;
+		return this;
 	}
 
-	public void setSpanUnit(SpanUnit spanUnit) {
+	public MetricSequencer<I, T> setSpanUnit(int spanUnitValue) {
+		this.spanUnit = SpanUnit.valueOf(spanUnitValue);
+		return this;
+	}
+
+	public MetricSequencer<I, T> setSpanUnit(SpanUnit spanUnit) {
 		this.spanUnit = spanUnit;
+		return this;
 	}
 
-	public void setBufferSize(int bufferSize) {
+	public MetricSequencer<I, T> setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
+		return this;
 	}
 
 	public void setMetricEvictionHandler(MetricEvictionHandler<I, T> evictionHandler) {

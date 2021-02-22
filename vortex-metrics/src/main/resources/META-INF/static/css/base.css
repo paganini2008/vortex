@@ -1,0 +1,428 @@
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	background-color: #F0F0F0;
+	font-style: normal;
+	font-size: 12px;
+	font-family: Open Sans, sans-serif;
+	color: #000;
+}
+
+#top {
+	height: 50px;
+	line-height: 50px;
+	background-color: #000;
+	width: 100%;
+	position: absolute;
+	z-index: 5;
+	top: 0;
+	text-align: center;
+	clear: both;
+}
+
+#title {
+	font-size: 20pt;
+	display: inline-block;
+	float: left;
+	margin-left: 10px;
+}
+
+#nav {
+	display: inline-block;
+	float: right;
+	height: 28px;
+	line-height: 28px;
+	margin-top: 20px;
+}
+
+#nav li {
+	list-style: none;
+	float: left;
+	margin-right: 5px;
+	height: 28px;
+	line-height: 28px;
+	padding-right: 5px;
+	cursor: pointer;
+	font-weight: bolder;
+}
+
+#nav li a {
+	text-decoration: none;
+}
+
+#foot {
+	height: 50px;
+	line-height: 50px;
+	background-color: #000;
+	color: #fff;
+	width: 100%;
+	position: absolute;
+	z-index: 200;
+	bottom: 0;
+	text-align: center;
+	clear: both;
+	font-weight: bold;
+}
+
+#container {
+	width: calc(100% - 100px);
+	height: calc(100% - 100px);
+	overflow: hidden;
+	top: 50px;
+	bottom: 50px;
+	left: 10px;
+	right: 0px;
+	position: absolute;
+	z-index: 0;
+	clear: both;
+	text-align: left;
+	margin: 0px auto;
+}
+
+#searchBox {
+	width: 100%;
+	height: 120px;
+	line-height: 120px;
+	clear: both;
+	margin: 10px 0px;
+	background-color: #F0F0F0;
+	clear: both;
+}
+
+#chartBox {
+	width: 100%;
+	height: 360px;
+	margin: 5px auto;
+	clear: both;
+}
+
+#searchBox label {
+	display: inline-block;
+	float: left;
+	text-align: right;
+	padding-right: 10px;
+	height: 28px;
+	line-height: 28px;
+	width: 80px;
+	margin-top: 30px;
+}
+
+#searchBox input {
+	display: inline-block;
+	margin-top: 30px;
+}
+
+#searchBox input[type="text"] {
+	width: calc(100% - 200px);
+	height: 22px;
+	line-height: 22px;
+	float: left;
+}
+
+#searchBox input[type="button"] {
+	width: 80px;
+	height: 26px;
+	padding: 5px 20px;
+	text-align: center;
+	margin-right: 10px;
+	cursor: pointer;
+	float: right;
+}
+
+#keyword {
+	width: calc(100% - 160px);
+}
+
+img {
+	cursor: pointer;
+}
+
+.fatal {
+	color: #AE57A4;
+}
+
+.error {
+	color: #FF0000;
+}
+
+.warn {
+	color: #FF8800;
+}
+
+.info {
+	color: #00FF00;
+}
+
+.debug {
+	color: #8080C0;
+}
+
+.trace {
+	color: #A5A552;
+}
+
+#logoText {
+	font-weight: bold;
+	font-size: 26pt;
+	float: left;
+	display: inline-block;
+	height: 100%;
+	color: #fff;
+	margin-left: 110px;
+	cursor: pointer;
+}
+
+#navBox {
+	width: 100%;
+	display: block;
+	margin-top: 60px;
+	font-size: 14pt;
+}
+
+#navBox li {
+	list-style: none;
+	display: block;
+	width: 100%;
+	height: 36px;
+	line-height: 36px;
+	text-align: left;
+	margin-top: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	clear: both;
+}
+
+#navBox li a {
+	display: inline-block;
+	float: left;
+	margin-left: 10px;
+}
+
+#sec-nav {
+	width: 100%;
+	clear: both;
+	padding: 5px 0px 10px 0px;
+}
+
+#sec-nav ul {
+	width: auto;
+	height: 28px;
+	line-height: 28px;
+	display: block;
+	font-size: 13px;
+}
+
+#sec-nav ul li {
+	list-style: none;
+	float: left;
+	display: inline-block;
+	margin-right: 5px;
+	width: 80px;
+	height: 28px;
+	line-height: 28px;
+	text-align: center;
+	border: 1px solid #DCDCDC;
+	cursor: pointer;
+	background-color: #fff;
+	border-radius: 10px;
+	padding: 0px 10px;
+}
+
+#leftTop {
+	width: 70%;
+	height: 50px;
+	float: left;
+	display: inline-block;
+	margin-top: 5px;
+}
+
+#rightTop {
+	width: 30%;
+	height: 50px;
+	float: left;
+	display: inline-block;
+	margin-top: 20px;
+}
+
+#rightTop span {
+	display: block;
+	text-align: right;
+	left: right;
+	height: 20px;
+	margin: 2px 20px 2px;
+}
+
+.cBtn {
+	width: 80px;
+	padding: 5px 20px;
+	cursor: pointer;
+}
+
+.tblCom {
+	table-layout: fixed;
+}
+
+.tblCom thead tr {
+	height: 38px;
+	line-height: 38px;
+	border-top: 1px solid #BEBEBE;
+	background-color: #000;
+}
+
+.tblCom thead tr td {
+	height: 38px;
+	line-height: 38px;
+	font-weight: bold;
+	color: #fff;
+	border-left: 1px solid #BEBEBE;
+	border-top: 1px solid #BEBEBE;
+	border-bottom: 1px solid #BEBEBE;
+}
+
+.tblCom thead tr td:nth-child(1) {
+	border-left: 1px solid #BEBEBE;
+	text-align: center;
+}
+
+.tblCom thead tr td:last-child {
+	border-right: 1px solid #BEBEBE;
+}
+
+.tblCom tbody tr {
+	height: 38px;
+	line-height: 38px;
+}
+
+.tblCom tbody tr td {
+	height: 38px;
+	line-height: 38px;
+	word-break: keep-all;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	border-left: 1px solid #BEBEBE;
+	border-bottom: 1px solid #BEBEBE;
+	text-indent: 5px;
+}
+
+.tblCom tbody tr td:nth-child(1) {
+	border-left: 1px solid #BEBEBE;
+	text-align: center;
+}
+
+.tblCom tbody tr td:last-child {
+	border-right: 1px solid #BEBEBE;
+	text-align: center;
+}
+
+.tdLeft5 {
+	text-align: left;
+	padding-left: 5px;
+}
+
+.tdLeft10 {
+	text-align: left;
+	padding-left: 10px;
+}
+
+.tdRight5 {
+	text-align: right;
+	padding-right: 5px;
+}
+
+.tdRight10 {
+	text-align: right;
+	padding-right: 10px;
+}
+
+.trGreen {
+	color: #00BB00;
+}
+
+.trRed {
+	color: #D9006C;
+}
+
+.popTop {
+	width: 520px;
+	height: 30px;
+	line-height: 30px;
+	margin: 0px 10px 15px;
+	text-align: left;
+}
+
+.popTitle {
+	font-weight: bold;
+	font-size: 15px;
+	letter-spacing: 1px;
+}
+
+.popClose {
+	display: inline-block;
+	float: right;
+	width: 22px;
+	height: 22px;
+	margin: 4px 0px;
+	background: url('../img/mod_close.png') no-repeat scroll transparent;
+	cursor: pointer;
+}
+
+.popBox {
+	width: 550px;
+	text-align: left;
+	padding: 5px 10px;
+	height: auto;
+	overflow: hidden;
+}
+
+.popContent p {
+	height: auto;
+	display: block;
+	line-height: 30px;
+	margin-bottom: 2px;
+	width: 100%;
+}
+
+.popContent p label {
+	display: inline-block;
+	width: 100px;
+	height: 30px;
+	text-align: right;
+	padding-right: 10px;
+	font-weight: bold;
+}
+
+a:link {
+	text-decoration: none;
+	color: #000;
+}
+
+a:visited {
+	text-decoration: none;
+	color: #000;
+}
+
+a:hover {
+	text-decoration: none;
+	color: #000;
+}
+
+a:active {
+	text-decoration: none;
+	color: #000;
+}
+
+.tabNoData {
+	display: table;
+	width: 100%;
+	height: 600px;
+	line-height: 600px;
+}
