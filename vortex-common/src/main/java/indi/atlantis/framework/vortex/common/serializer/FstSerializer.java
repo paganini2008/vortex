@@ -22,7 +22,9 @@ public class FstSerializer implements Serializer {
 	}
 
 	public Tuple deserialize(byte[] bytes) {
-		return (Tuple) configuration.asObject(bytes);
+		Tuple tuple = (Tuple) configuration.asObject(bytes);
+		tuple.setLength(bytes.length);
+		return tuple;
 	}
 
 }

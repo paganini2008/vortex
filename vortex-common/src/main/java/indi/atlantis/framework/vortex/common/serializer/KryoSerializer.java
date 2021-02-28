@@ -52,7 +52,9 @@ public class KryoSerializer implements Serializer {
 		Input input = inputPool.obtain();
 		try {
 			input.setBuffer(bytes);
-			return kryo.readObject(input, TupleImpl.class);
+			Tuple tuple = kryo.readObject(input, TupleImpl.class);
+			tuple.setLength(bytes.length);
+			return tuple;
 		} finally {
 			inputPool.free(input);
 			pool.free(kryo);

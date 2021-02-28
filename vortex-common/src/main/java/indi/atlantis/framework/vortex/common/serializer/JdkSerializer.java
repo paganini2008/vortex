@@ -9,8 +9,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * JdkSerializer
  * 
  * @author Jimmy Hoff
- * 
- * 
+ *
  * @version 1.0
  */
 public class JdkSerializer implements Serializer {
@@ -30,7 +29,9 @@ public class JdkSerializer implements Serializer {
 	}
 
 	public Tuple deserialize(byte[] bytes) {
-		return (Tuple) SerializationUtils.deserialize(bytes, compress);
+		Tuple tuple = (Tuple) SerializationUtils.deserialize(bytes, compress);
+		tuple.setLength(bytes.length);
+		return tuple;
 	}
 
 }

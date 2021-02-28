@@ -1,15 +1,14 @@
 package indi.atlantis.framework.vortex.transport;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-import indi.atlantis.framework.vortex.Counter;
+import indi.atlantis.framework.vortex.Accumulator;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.ChannelEvent;
+import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import indi.atlantis.framework.vortex.common.ChannelEventListener;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,9 +29,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 	@Autowired
 	private BufferZone bufferZone;
 
-	@Qualifier("producer")
 	@Autowired
-	private Counter counter;
+	private Accumulator accumulator;
 
 	@Autowired(required = false)
 	private ChannelEventListener<Channel> channelEventListener;
@@ -61,8 +59,8 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object message) throws Exception {
-		counter.incrementCount();
 		bufferZone.set(collectionName, (Tuple) message);
+		accumulator.accumulate((Tuple) message);
 	}
 
 	private void fireChannelEvent(Channel channel, EventType eventType, Throwable cause) {

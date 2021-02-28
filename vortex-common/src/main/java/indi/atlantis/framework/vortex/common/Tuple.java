@@ -14,9 +14,9 @@ import com.github.paganini2008.devtools.beans.BeanUtils;
 public interface Tuple {
 
 	static final String DEFAULT_TOPIC = "default";
-	static final String KEYWORD_CONTENT = "content";
-	static final String KEYWORD_TOPIC = "topic";
-
+	static final String KW_CONTENT = "content";
+	static final String KW_TOPIC = "topic";
+	static final String KW_LENGTH = "length";
 	static final String PARTITIONER_NAME = "indi.atlantis.framework.vortex.common.Partitioner";
 
 	static final Tuple PING = Tuple.byString("PING");
@@ -28,6 +28,10 @@ public interface Tuple {
 
 	Object getField(String fieldName);
 
+	default void setLength(int length) {
+		setField(KW_LENGTH, length);
+	}
+
 	default Object getField(String fieldName, Object defaultValue) {
 		Object value;
 		if ((value = getField(fieldName)) == null) {
@@ -37,6 +41,14 @@ public interface Tuple {
 	}
 
 	<T> T getField(String fieldName, Class<T> requiredType);
+
+	default <T> T getField(String fieldName, Class<T> requiredType, T defaultValue) {
+		T value;
+		if ((value = getField(fieldName, requiredType)) == null) {
+			value = defaultValue;
+		}
+		return value;
+	}
 
 	void append(Map<String, ?> m);
 
@@ -54,14 +66,14 @@ public interface Tuple {
 
 	default String getTopic() {
 		try {
-			return (String) getField(KEYWORD_TOPIC, DEFAULT_TOPIC);
+			return (String) getField(KW_TOPIC, DEFAULT_TOPIC);
 		} catch (RuntimeException e) {
 			throw new TransportClientException("Don't use topic as key to put into Tuple because it is a keyword.", e);
 		}
 	}
 
 	default String getContent() {
-		return getField(KEYWORD_CONTENT, String.class);
+		return getField(KW_CONTENT, String.class);
 	}
 
 	default long getTimestamp() {
@@ -70,6 +82,10 @@ public interface Tuple {
 
 	default String getPartitionerName() {
 		return getField(PARTITIONER_NAME, String.class);
+	}
+
+	default int getLength() {
+		return getField(KW_LENGTH, Integer.class, 0);
 	}
 
 	default boolean isPing() {
@@ -86,13 +102,13 @@ public interface Tuple {
 
 	public static Tuple newOne(String topic) {
 		Tuple tuple = new TupleImpl();
-		tuple.setField(KEYWORD_TOPIC, topic);
+		tuple.setField(KW_TOPIC, topic);
 		return tuple;
 	}
 
 	public static Tuple byString(String content) {
 		Tuple tuple = newOne();
-		tuple.setField(KEYWORD_CONTENT, content);
+		tuple.setField(KW_CONTENT, content);
 		return tuple;
 	}
 

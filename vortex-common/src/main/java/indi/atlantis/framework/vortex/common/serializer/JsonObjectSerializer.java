@@ -5,7 +5,6 @@ import java.nio.charset.Charset;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.github.paganini2008.devtools.CharsetUtils;
 import com.github.paganini2008.devtools.io.SerializationException;
 
@@ -27,7 +26,6 @@ public class JsonObjectSerializer implements Serializer {
 	private final Charset charset;
 
 	{
-		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
@@ -42,7 +40,7 @@ public class JsonObjectSerializer implements Serializer {
 	@Override
 	public byte[] serialize(Tuple tuple) {
 		try {
-			String content = (String) tuple.getField(Tuple.KEYWORD_CONTENT);
+			String content = (String) tuple.getField(Tuple.KW_CONTENT);
 			return content.getBytes(charset);
 		} catch (Exception e) {
 			throw new SerializationException(e);
@@ -55,11 +53,14 @@ public class JsonObjectSerializer implements Serializer {
 		if (PING.equals(content) || PONG.equals(content)) {
 			return Tuple.byString(content);
 		}
+		Tuple tuple;
 		try {
-			return objectMapper.readValue(content, TupleImpl.class);
+			tuple = objectMapper.readValue(content, TupleImpl.class);
+			tuple.setLength(bytes.length);
 		} catch (IOException e) {
 			throw new SerializationException(e);
 		}
+		return tuple;
 	}
 
 	public ObjectMapper getObjectMapper() {

@@ -3,19 +3,18 @@ package indi.atlantis.framework.vortex.transport;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.github.paganini2008.embeddedio.Channel;
 import com.github.paganini2008.embeddedio.ChannelHandler;
 import com.github.paganini2008.embeddedio.MessagePacket;
 
-import indi.atlantis.framework.vortex.Counter;
+import indi.atlantis.framework.vortex.Accumulator;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.ChannelEvent;
+import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import indi.atlantis.framework.vortex.common.ChannelEventListener;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -31,9 +30,8 @@ public class EmbeddedServerHandler implements ChannelHandler {
 	@Autowired
 	private BufferZone store;
 
-	@Qualifier("producer")
 	@Autowired
-	private Counter counter;
+	private Accumulator accumulator;
 
 	@Value("${atlantis.framework.vortex.bufferzone.collectionName}")
 	private String collectionName;
@@ -65,8 +63,8 @@ public class EmbeddedServerHandler implements ChannelHandler {
 			}
 		} else {
 			for (Object message : packet.getMessages()) {
-				counter.incrementCount();
 				store.set(collectionName, (Tuple) message);
+				accumulator.accumulate((Tuple) message);
 			}
 		}
 	}

@@ -7,15 +7,14 @@ import org.glassfish.grizzly.filterchain.BaseFilter;
 import org.glassfish.grizzly.filterchain.FilterChainContext;
 import org.glassfish.grizzly.filterchain.NextAction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-import indi.atlantis.framework.vortex.Counter;
+import indi.atlantis.framework.vortex.Accumulator;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.ChannelEvent;
+import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import indi.atlantis.framework.vortex.common.ChannelEventListener;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,10 +32,9 @@ public class GrizzlyServerHandler extends BaseFilter {
 
 	@Autowired
 	private BufferZone bufferZone;
-	
-	@Qualifier("producer")
+
 	@Autowired
-	private Counter counter;
+	private Accumulator accumulator;
 
 	@Value("${atlantis.framework.vortex.bufferzone.collectionName}")
 	private String collectionName;
@@ -56,9 +54,9 @@ public class GrizzlyServerHandler extends BaseFilter {
 			}
 			return ctx.getStopAction();
 		} else {
-			counter.incrementCount();
 			try {
 				bufferZone.set(collectionName, message);
+				accumulator.accumulate(message);
 			} catch (Exception e) {
 				if (e instanceof IOException) {
 					throw (IOException) e;

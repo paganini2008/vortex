@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,14 +39,6 @@ public class NioTransportController {
 
 	@Autowired
 	private NioTransportContext context;
-
-	@Qualifier("producer")
-	@Autowired
-	private Counter producer;
-
-	@Qualifier("consumer")
-	@Autowired
-	private Counter consumer;
 
 	@GetMapping("/emit")
 	public ResponseEntity<Map<String, String>> emit0(HttpServletRequest request) {

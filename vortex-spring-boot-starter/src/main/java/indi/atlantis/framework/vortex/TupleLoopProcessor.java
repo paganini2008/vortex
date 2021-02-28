@@ -44,10 +44,6 @@ public class TupleLoopProcessor
 	@Autowired(required = false)
 	private ThreadPoolTaskExecutor threadPool;
 
-	@Qualifier("consumer")
-	@Autowired
-	private Counter counter;
-
 	@Value("${atlantis.framework.vortex.bufferzone.collectionName}")
 	private String collectionName;
 
@@ -165,7 +161,6 @@ public class TupleLoopProcessor
 						}
 					}
 				}
-				counter.incrementCount(tuples.size());
 				tuples = null;
 			} else {
 				ThreadUtils.randomSleep(1000L);

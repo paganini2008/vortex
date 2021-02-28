@@ -3,15 +3,14 @@ package indi.atlantis.framework.vortex.transport;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 
-import indi.atlantis.framework.vortex.Counter;
+import indi.atlantis.framework.vortex.Accumulator;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.common.ChannelEvent;
+import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import indi.atlantis.framework.vortex.common.ChannelEventListener;
 import indi.atlantis.framework.vortex.common.Tuple;
-import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -26,10 +25,9 @@ public class MinaServerHandler extends IoHandlerAdapter {
 
 	@Autowired
 	private BufferZone bufferZone;
-	
-	@Qualifier("producer")
+
 	@Autowired
-	private Counter counter;
+	private Accumulator accumulator;
 
 	@Value("${atlantis.framework.vortex.bufferzone.collectionName}")
 	private String collectionName;
@@ -55,8 +53,8 @@ public class MinaServerHandler extends IoHandlerAdapter {
 
 	@Override
 	public void messageReceived(IoSession session, Object message) throws Exception {
-		counter.incrementCount();
 		bufferZone.set(collectionName, (Tuple) message);
+		accumulator.accumulate((Tuple) message);
 	}
 
 	private void fireChannelEvent(IoSession channel, EventType eventType, Throwable cause) {
