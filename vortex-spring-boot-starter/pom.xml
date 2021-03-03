@@ -96,7 +96,7 @@
 
 		<dependency>
 			<groupId>indi.atlantis.framework</groupId>
-			<artifactId>seafloor-spring-boot-starter</artifactId>
+			<artifactId>tridenter-spring-boot-starter</artifactId>
 			<version>1.0-RC1</version>
 		</dependency>
 

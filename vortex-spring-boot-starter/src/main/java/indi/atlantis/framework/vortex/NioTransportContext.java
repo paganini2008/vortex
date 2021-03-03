@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 
-import indi.atlantis.framework.seafloor.ApplicationInfo;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMessageListener;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent.MulticastEventType;
+import indi.atlantis.framework.tridenter.ApplicationInfo;
+import indi.atlantis.framework.tridenter.multicast.ApplicationMessageListener;
+import indi.atlantis.framework.tridenter.multicast.ApplicationMulticastEvent;
+import indi.atlantis.framework.tridenter.multicast.ApplicationMulticastEvent.MulticastEventType;
 import indi.atlantis.framework.vortex.common.NioClient;
 import lombok.extern.slf4j.Slf4j;
 

@@ -12,10 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import indi.atlantis.framework.seafloor.ApplicationInfo;
-import indi.atlantis.framework.seafloor.InstanceId;
-import indi.atlantis.framework.seafloor.LeaderState;
-import indi.atlantis.framework.seafloor.election.ApplicationClusterLeaderEvent;
+import indi.atlantis.framework.tridenter.ApplicationInfo;
+import indi.atlantis.framework.tridenter.InstanceId;
+import indi.atlantis.framework.tridenter.LeaderState;
+import indi.atlantis.framework.tridenter.election.ApplicationClusterLeaderEvent;
 import indi.atlantis.framework.vortex.NioTransportContext;
 import indi.atlantis.framework.vortex.ServerInfo;
 import indi.atlantis.framework.vortex.common.NioClient;

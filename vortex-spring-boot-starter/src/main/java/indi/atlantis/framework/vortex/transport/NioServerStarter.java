@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 
-import indi.atlantis.framework.seafloor.ApplicationInfo;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastEvent.MulticastEventType;
-import indi.atlantis.framework.seafloor.multicast.ApplicationMulticastGroup;
-import indi.atlantis.framework.seafloor.utils.BeanLifeCycle;
+import indi.atlantis.framework.tridenter.ApplicationInfo;
+import indi.atlantis.framework.tridenter.multicast.ApplicationMulticastEvent;
+import indi.atlantis.framework.tridenter.multicast.ApplicationMulticastEvent.MulticastEventType;
+import indi.atlantis.framework.tridenter.multicast.ApplicationMulticastGroup;
+import indi.atlantis.framework.tridenter.utils.BeanLifeCycle;
 import indi.atlantis.framework.vortex.NioTransportContext;
 import indi.atlantis.framework.vortex.ServerInfo;
 import lombok.extern.slf4j.Slf4j;
