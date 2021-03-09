@@ -1,7 +1,5 @@
 package indi.atlantis.framework.vortex.metric;
 
-import java.util.Map;
-
 /**
  * 
  * NumberMetric
@@ -20,7 +18,5 @@ public interface NumberMetric<T extends Number> extends Metric<NumberMetric<T>> 
 	long getCount();
 
 	T getMiddleValue();
-
-	Map<String, Object> toEntries();
 
 }

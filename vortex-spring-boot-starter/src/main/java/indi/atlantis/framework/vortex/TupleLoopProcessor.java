@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
@@ -19,6 +20,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.CollectionUtils;
 import com.github.paganini2008.devtools.collection.MapUtils;
+import com.github.paganini2008.devtools.multithreads.ExecutorUtils;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
 import indi.atlantis.framework.vortex.buffer.BufferZone;
@@ -34,8 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 1.0
  */
 @Slf4j
-public class TupleLoopProcessor
-		implements Runnable, ApplicationListener<ContextRefreshedEvent>, BeanPostProcessor, DisposableBean {
+public class TupleLoopProcessor implements Runnable, ApplicationListener<ContextRefreshedEvent>, BeanPostProcessor, DisposableBean {
 
 	@Autowired
 	private BufferZone bufferZone;
@@ -140,8 +141,18 @@ public class TupleLoopProcessor
 			}
 			if (CollectionUtils.isNotEmpty(tuples)) {
 				if (bulkHandlers.size() > 0) {
-					for (BulkHandler handler : bulkHandlers) {
-						handler.onBatch(tuples);
+					Map<String, List<Tuple>> data = tuples.stream()
+							.collect(Collectors.groupingBy(tuple -> tuple.getTopic(), Collectors.toList()));
+					for (Map.Entry<String, List<Tuple>> entry : data.entrySet()) {
+						String topic = entry.getKey();
+						List<Tuple> bulk = entry.getValue();
+						if (CollectionUtils.isNotEmpty(bulk)) {
+							for (BulkHandler handler : bulkHandlers) {
+								ExecutorUtils.runInBackground(threadPool, () -> {
+									handler.onBatch(topic, bulk.stream().collect(Collectors.mapping(Tuple::copy, Collectors.toList())));
+								});
+							}
+						}
 					}
 				}
 				if (topicHandlers.size() > 0) {
@@ -150,13 +161,9 @@ public class TupleLoopProcessor
 						if (CollectionUtils.isNotEmpty(handlers)) {
 							for (Handler handler : handlers) {
 								Tuple copy = tuple.copy();
-								if (threadPool != null) {
-									threadPool.execute(() -> {
-										handler.onData(copy);
-									});
-								} else {
+								ExecutorUtils.runInBackground(threadPool, () -> {
 									handler.onData(copy);
-								}
+								});
 							}
 						}
 					}

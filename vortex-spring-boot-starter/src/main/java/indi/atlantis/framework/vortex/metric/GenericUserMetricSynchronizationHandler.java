@@ -5,28 +5,30 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * DoubleMetricHandler
- *
+ * GenericUserMetricSynchronizationHandler
+ * 
  * @author Jimmy Hoff
+ *
  * @version 1.0
  */
-public class DoubleMetricHandler implements Handler {
+public class GenericUserMetricSynchronizationHandler<V> implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, NumberMetric<Double>> sequencer;
+	private final UserMetricListener<String, V> listener;
+	private final boolean merged;
 
-	public DoubleMetricHandler(String topic, MetricSequencer<String, NumberMetric<Double>> sequencer) {
+	public GenericUserMetricSynchronizationHandler(String topic, boolean merged, UserMetricListener<String, V> listener) {
 		this.topic = topic;
-		this.sequencer = sequencer;
+		this.merged = merged;
+		this.listener = listener;
 	}
 
 	@Override
 	public void onData(Tuple tuple) {
 		String name = tuple.getField("name", String.class);
 		String metric = tuple.getField("metric", String.class);
-		Double value = tuple.getField("value", Double.class);
 		long timestamp = tuple.getTimestamp();
-		sequencer.update(name, metric, timestamp, new NumberMetrics.DoubleMetric(value, timestamp), true);
+		listener.onSync(name, metric, timestamp, tuple, merged);
 	}
 
 	@Override

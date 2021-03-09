@@ -5,28 +5,28 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * BoolMetricHandler
- *
+ * GenericUserMetricHandler
+ * 
  * @author Jimmy Hoff
+ *
  * @version 1.0
  */
-public class BoolMetricHandler implements Handler {
+public class GenericUserMetricHandler<V> implements Handler {
 
 	private final String topic;
-	private final MetricSequencer<String, UserMetric<Bool>> sequencer;
+	private final UserMetricListener<String, V> listener;
 
-	public BoolMetricHandler(String topic, MetricSequencer<String, UserMetric<Bool>> sequencer) {
+	public GenericUserMetricHandler(String topic, UserMetricListener<String, V> listener) {
 		this.topic = topic;
-		this.sequencer = sequencer;
+		this.listener = listener;
 	}
 
 	@Override
 	public void onData(Tuple tuple) {
 		String name = tuple.getField("name", String.class);
 		String metric = tuple.getField("metric", String.class);
-		boolean value = tuple.getField("value", Boolean.class);
 		long timestamp = tuple.getTimestamp();
-		sequencer.update(name, metric, timestamp, new BoolMetric(value, timestamp), true);
+		listener.onMerge(name, metric, timestamp, tuple);
 	}
 
 	@Override

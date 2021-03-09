@@ -1,5 +1,7 @@
 package indi.atlantis.framework.vortex.metric;
 
+import java.util.Map;
+
 /**
  * 
  * Metric
@@ -13,7 +15,9 @@ public interface Metric<T extends Metric<T>> {
 
 	boolean reset();
 
-	T reset(T currentMetric);
+	T reset(T newMetric);
 
-	T merge(T anotherMetric);
+	T merge(T newMetric);
+
+	Map<String, Object> toEntries();
 }

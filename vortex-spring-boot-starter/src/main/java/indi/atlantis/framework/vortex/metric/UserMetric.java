@@ -1,7 +1,5 @@
 package indi.atlantis.framework.vortex.metric;
 
-import java.util.Map;
-
 /**
  * 
  * UserMetric
@@ -9,10 +7,8 @@ import java.util.Map;
  * @author Jimmy Hoff
  * @version 1.0
  */
-public interface UserMetric<T> extends Metric<UserMetric<T>> {
+public interface UserMetric<V> extends Metric<UserMetric<V>> {
 
-	T get();
-
-	Map<String, Object> toEntries();
+	V get();
 
 }

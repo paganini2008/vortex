@@ -61,7 +61,7 @@ public class FullSynchronizationExecutor implements ApplicationListener<Applicat
 
 	@Override
 	public void onApplicationEvent(ApplicationClusterLeaderEvent event) {
-		if (event.getLeaderState() == LeaderState.LEADABLE) {
+		if (event.getLeaderState() == LeaderState.UP) {
 			synchronizePeriodically();
 		}
 	}

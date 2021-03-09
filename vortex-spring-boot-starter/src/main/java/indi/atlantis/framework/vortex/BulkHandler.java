@@ -14,6 +14,6 @@ import indi.atlantis.framework.vortex.common.Tuple;
  */
 public interface BulkHandler {
 
-	void onBatch(List<Tuple> list);
+	void onBatch(String topic, List<Tuple> list);
 
 }

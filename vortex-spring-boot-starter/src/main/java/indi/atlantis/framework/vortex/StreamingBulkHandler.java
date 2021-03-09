@@ -1,7 +1,7 @@
 package indi.atlantis.framework.vortex;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.github.paganini2008.devtools.beans.streaming.Selector;
 import com.github.paganini2008.devtools.collection.CollectionUtils;
@@ -24,14 +24,11 @@ public abstract class StreamingBulkHandler<T> implements BulkHandler {
 	}
 
 	@Override
-	public final void onBatch(List<Tuple> list) {
+	public final void onBatch(String topic, List<Tuple> list) {
 		if (CollectionUtils.isEmpty(list)) {
 			return;
 		}
-		List<T> dataList = new ArrayList<T>();
-		list.forEach(tuple -> {
-			dataList.add(tuple.toBean(requiredType));
-		});
+		List<T> dataList = list.stream().collect(Collectors.mapping(tuple -> tuple.toBean(requiredType), Collectors.toList()));
 		forBulk(Selector.from(dataList));
 	}
 
