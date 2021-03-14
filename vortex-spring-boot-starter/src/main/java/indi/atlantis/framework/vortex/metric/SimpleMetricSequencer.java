@@ -89,7 +89,13 @@ public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequ
 	}
 
 	@Override
-	public Map<String, Map<String, Object>> sequence(String identifier, String metric, boolean asc,
+	public Map<String, T> sequence(I identifier, String metric) {
+		SequentialMetricCollector<T> collector = collectors.get(identifier);
+		return collector != null ? collector.sequence(metric) : MapUtils.emptyMap();
+	}
+
+	@Override
+	public Map<String, Map<String, Object>> sequence(Object identifier, String metric, boolean asc,
 			Function<Long, Map<String, Object>> render) {
 		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 		long timestamp = System.currentTimeMillis();

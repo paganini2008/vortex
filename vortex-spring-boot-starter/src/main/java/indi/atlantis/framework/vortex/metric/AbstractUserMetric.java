@@ -38,4 +38,8 @@ public abstract class AbstractUserMetric<V> implements UserMetric<V> {
 		return value;
 	}
 
+	public ResettableUserMetric<V> resettable() {
+		return new ResettableUserMetric<V>(this);
+	}
+
 }

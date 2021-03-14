@@ -1,6 +1,7 @@
 package indi.atlantis.framework.vortex.metric;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * 
@@ -25,5 +26,7 @@ public interface MetricSequencer<I, T extends Metric<T>> extends Sequencer {
 	int size(I identifier);
 
 	void scan(ScanHandler<I, T> handler);
+
+	Map<String, T> sequence(I identifier, String metric);
 
 }
