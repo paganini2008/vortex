@@ -29,7 +29,8 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class FullSynchronizationExecutor implements ApplicationListener<ApplicationClusterLeaderEvent>, DisposableBean {
+public class FullSynchronizationExecutor
+		implements ApplicationListener<ApplicationClusterLeaderEvent>, SynchronizationExecutor, DisposableBean {
 
 	public static final int DEFAULT_SYNCHRONIZATION_PERIOD = 5;
 

@@ -12,7 +12,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  *
  * @version 1.0
  */
-public class NumericTypeHandler implements UserTypeHandler<String, Numeric> {
+public class NumericTypeHandler implements UserTypeHandler<Numeric> {
 
 	@Override
 	public String getDataTypeName() {
@@ -20,13 +20,13 @@ public class NumericTypeHandler implements UserTypeHandler<String, Numeric> {
 	}
 
 	@Override
-	public UserMetric<Numeric> convertAsMetric(String name, String metric, long timestamp, Tuple tuple) {
+	public UserMetric<Numeric> convertAsMetric(String identifier, String metric, long timestamp, Tuple tuple) {
 		BigDecimal value = tuple.getField("value", BigDecimal.class);
 		return new NumericMetric(value, timestamp);
 	}
 
 	@Override
-	public UserMetric<Numeric> convertAsMetric(String name, String metric, long timestamp, UserMetric<Numeric> metricUnit) {
+	public UserMetric<Numeric> convertAsMetric(String identifier, String metric, long timestamp, UserMetric<Numeric> metricUnit) {
 		Numeric numeric = metricUnit.get();
 		BigDecimal highestValue = numeric.getHighestValue();
 		BigDecimal lowestValue = numeric.getLowestValue();
@@ -36,7 +36,7 @@ public class NumericTypeHandler implements UserTypeHandler<String, Numeric> {
 	}
 
 	@Override
-	public Tuple convertAsTuple(String topic, String name, String metric, long timestamp, UserMetric<Numeric> metricUnit) {
+	public Tuple convertAsTuple(String topic, String identifier, String metric, long timestamp, UserMetric<Numeric> metricUnit) {
 		Numeric numeric = metricUnit.get();
 		BigDecimal highestValue = numeric.getHighestValue();
 		BigDecimal lowestValue = numeric.getLowestValue();
@@ -44,7 +44,7 @@ public class NumericTypeHandler implements UserTypeHandler<String, Numeric> {
 		long count = numeric.getCount();
 
 		Tuple tuple = Tuple.newOne(topic);
-		tuple.setField("name", name);
+		tuple.setField("name", identifier);
 		tuple.setField("metric", metric);
 		tuple.setField("highestValue", highestValue);
 		tuple.setField("lowestValue", lowestValue);

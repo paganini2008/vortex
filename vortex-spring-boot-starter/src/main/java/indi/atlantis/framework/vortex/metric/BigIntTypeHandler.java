@@ -10,7 +10,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  *
  * @version 1.0
  */
-public class BigIntTypeHandler implements UserTypeHandler<String, BigInt> {
+public class BigIntTypeHandler implements UserTypeHandler<BigInt> {
 
 	@Override
 	public String getDataTypeName() {
@@ -18,13 +18,13 @@ public class BigIntTypeHandler implements UserTypeHandler<String, BigInt> {
 	}
 
 	@Override
-	public UserMetric<BigInt> convertAsMetric(String name, String metric, long timestamp, Tuple tuple) {
+	public UserMetric<BigInt> convertAsMetric(String identifier, String metric, long timestamp, Tuple tuple) {
 		long value = tuple.getField("value", Long.class);
 		return new BigIntMetric(value, timestamp);
 	}
 
 	@Override
-	public UserMetric<BigInt> convertAsMetric(String name, String metric, long timestamp, UserMetric<BigInt> metricUnit) {
+	public UserMetric<BigInt> convertAsMetric(String identifier, String metric, long timestamp, UserMetric<BigInt> metricUnit) {
 		BigInt bigInt = metricUnit.get();
 		long highestValue = bigInt.getHighestValue();
 		long lowestValue = bigInt.getLowestValue();
@@ -34,14 +34,14 @@ public class BigIntTypeHandler implements UserTypeHandler<String, BigInt> {
 	}
 
 	@Override
-	public Tuple convertAsTuple(String topic, String name, String metric, long timestamp, UserMetric<BigInt> metricUnit) {
+	public Tuple convertAsTuple(String topic, String identifier, String metric, long timestamp, UserMetric<BigInt> metricUnit) {
 		BigInt bigInt = metricUnit.get();
 		long highestValue = bigInt.getHighestValue();
 		long lowestValue = bigInt.getLowestValue();
 		long totalValue = bigInt.getTotalValue();
 		long count = bigInt.getCount();
 		Tuple tuple = Tuple.newOne(topic);
-		tuple.setField("name", name);
+		tuple.setField("name", identifier);
 		tuple.setField("metric", metric);
 		tuple.setField("highestValue", highestValue);
 		tuple.setField("lowestValue", lowestValue);

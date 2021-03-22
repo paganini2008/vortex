@@ -2,9 +2,9 @@ package indi.atlantis.framework.vortex.metric;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 
 import org.springframework.beans.factory.DisposableBean;
@@ -27,7 +27,8 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  */
 @Slf4j
-public class IncrementalSynchronizationExecutor implements ApplicationListener<ApplicationClusterRefreshedEvent>, DisposableBean {
+public class IncrementalSynchronizationExecutor
+		implements ApplicationListener<ApplicationClusterRefreshedEvent>, SynchronizationExecutor, DisposableBean {
 
 	public static final int DEFAULT_SYNCHRONIZATION_PERIOD = 5;
 
@@ -40,7 +41,7 @@ public class IncrementalSynchronizationExecutor implements ApplicationListener<A
 	@Autowired
 	private NioClient nioClient;
 
-	private final List<Synchronizer> synchronizers = new ArrayList<Synchronizer>();
+	private final List<Synchronizer> synchronizers = new CopyOnWriteArrayList<Synchronizer>();
 
 	private volatile ScheduledFuture<?> future;
 

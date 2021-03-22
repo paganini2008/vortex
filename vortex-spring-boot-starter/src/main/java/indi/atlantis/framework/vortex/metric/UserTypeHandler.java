@@ -10,14 +10,14 @@ import indi.atlantis.framework.vortex.common.Tuple;
  *
  * @version 1.0
  */
-public interface UserTypeHandler<K, V> {
+public interface UserTypeHandler<V> {
 
 	String getDataTypeName();
 
-	UserMetric<V> convertAsMetric(K name, String metric, long timestamp, Tuple tuple);
+	UserMetric<V> convertAsMetric(String identifier, String metric, long timestamp, Tuple tuple);
 
-	UserMetric<V> convertAsMetric(K name, String metric, long timestamp, UserMetric<V> metricUnit);
+	UserMetric<V> convertAsMetric(String identifier, String metric, long timestamp, UserMetric<V> metricUnit);
 
-	Tuple convertAsTuple(String topic, K name, String metric, long timestamp, UserMetric<V> metricUnit);
+	Tuple convertAsTuple(String topic, String identifier, String metric, long timestamp, UserMetric<V> metricUnit);
 
 }

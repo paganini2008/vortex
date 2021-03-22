@@ -10,16 +10,16 @@ import indi.atlantis.framework.vortex.common.Tuple;
  *
  * @version 1.0
  */
-public interface UserMetricListener<K, V> {
+public interface UserMetricListener<V> {
 
-	void onMerge(K name, String metric, long timestamp, Tuple tuple);
+	void onMerge(String identifier, String metric, long timestamp, Tuple tuple);
 
-	void onReset(K name, String metric, long timestamp, UserMetric<V> metricUnit);
+	void onReset(String identifier, String metric, long timestamp, UserMetric<V> metricUnit);
 
-	void onSync(K name, String metric, long timestamp, Tuple tuple, boolean merged);
+	void onSync(String identifier, String metric, long timestamp, Tuple tuple, boolean merged);
 
-	UserTypeHandler<K, V> getTypeHandler();
+	UserTypeHandler<V> getTypeHandler();
 
-	MetricSequencer<K, UserMetric<V>> getMetricSequencer();
+	MetricSequencer<String, UserMetric<V>> getMetricSequencer();
 
 }

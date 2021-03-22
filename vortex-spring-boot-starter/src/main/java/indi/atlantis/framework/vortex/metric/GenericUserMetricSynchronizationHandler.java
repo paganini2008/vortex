@@ -14,10 +14,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class GenericUserMetricSynchronizationHandler<V> implements Handler {
 
 	private final String topic;
-	private final UserMetricListener<String, V> listener;
+	private final UserMetricListener<V> listener;
 	private final boolean merged;
 
-	public GenericUserMetricSynchronizationHandler(String topic, boolean merged, UserMetricListener<String, V> listener) {
+	public GenericUserMetricSynchronizationHandler(String topic, boolean merged, UserMetricListener<V> listener) {
 		this.topic = topic;
 		this.merged = merged;
 		this.listener = listener;

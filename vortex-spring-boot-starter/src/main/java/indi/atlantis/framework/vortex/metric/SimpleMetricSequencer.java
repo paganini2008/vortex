@@ -2,17 +2,11 @@ package indi.atlantis.framework.vortex.metric;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.MapUtils;
-import com.github.paganini2008.devtools.date.DateUtils;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -21,35 +15,18 @@ import lombok.extern.slf4j.Slf4j;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@Slf4j
 public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequencer<I, T> {
 
+	private final int span;
+	private final SpanUnit spanUnit;
+	private final int bufferSize;
+	private final MetricEvictionHandler<I, T> evictionHandler;
 	private final Map<I, SequentialMetricCollector<T>> collectors = new ConcurrentHashMap<I, SequentialMetricCollector<T>>();
-	private int span = 1;
-	private SpanUnit spanUnit = SpanUnit.MINUTE;
-	private int bufferSize = 60;
-	private MetricEvictionHandler<I, T> evictionHandler;
 
-	@Override
-	public MetricSequencer<I, T> setSpan(int span) {
+	public SimpleMetricSequencer(int span, SpanUnit spanUnit, int bufferSize, MetricEvictionHandler<I, T> evictionHandler) {
 		this.span = span;
-		return this;
-	}
-
-	@Override
-	public MetricSequencer<I, T> setSpanUnit(SpanUnit spanUnit) {
 		this.spanUnit = spanUnit;
-		return this;
-	}
-
-	@Override
-	public MetricSequencer<I, T> setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
-		return this;
-	}
-
-	@Override
-	public void setMetricEvictionHandler(MetricEvictionHandler<I, T> evictionHandler) {
 		this.evictionHandler = evictionHandler;
 	}
 
@@ -79,9 +56,6 @@ public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequ
 				if (evictionHandler != null) {
 					evictionHandler.onEldestMetricRemoval(identifier, eldestMetric, eldestMetricUnit);
 				}
-				if (log.isTraceEnabled()) {
-					log.trace("Discard metric data: {}/{}/{}", identifier, eldestMetric, eldestMetricUnit);
-				}
 			});
 		});
 		collector.set(metric, timestamp, metricUnit, merged);
@@ -92,34 +66,6 @@ public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequ
 	public Map<String, T> sequence(I identifier, String metric) {
 		SequentialMetricCollector<T> collector = collectors.get(identifier);
 		return collector != null ? collector.sequence(metric) : MapUtils.emptyMap();
-	}
-
-	@Override
-	public Map<String, Map<String, Object>> sequence(Object identifier, String metric, boolean asc,
-			Function<Long, Map<String, Object>> render) {
-		Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
-		long timestamp = System.currentTimeMillis();
-		SequentialMetricCollector<T> collector = collectors.get(identifier);
-		Map<String, T> sequence = collector != null ? collector.sequence(metric) : MapUtils.emptyMap();
-		for (Map.Entry<String, T> entry : sequence.entrySet()) {
-			data.put(entry.getKey(), entry.getValue().toEntries());
-			timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
-		}
-		Date startTime;
-		if (asc) {
-			Date date = new Date(timestamp);
-			int amount = span * bufferSize;
-			Date endTime = DateUtils.addField(date, spanUnit.getCalendarField(), amount);
-			if (endTime.compareTo(new Date()) <= 0) {
-				asc = false;
-				startTime = new Date();
-			} else {
-				startTime = date;
-			}
-		} else {
-			startTime = new Date();
-		}
-		return DataRenderer.render(data, startTime, asc, spanUnit, span, bufferSize, render);
 	}
 
 	@Override

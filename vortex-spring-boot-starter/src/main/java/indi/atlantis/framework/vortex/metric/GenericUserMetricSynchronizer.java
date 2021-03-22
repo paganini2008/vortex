@@ -17,10 +17,10 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class GenericUserMetricSynchronizer<V> implements Synchronizer {
 
 	private final String topic;
-	private final UserMetricListener<String, V> listener;
+	private final UserMetricListener<V> listener;
 	private final boolean incremental;
 
-	public GenericUserMetricSynchronizer(String topic, boolean incremental, UserMetricListener<String, V> listener) {
+	public GenericUserMetricSynchronizer(String topic, boolean incremental, UserMetricListener<V> listener) {
 		this.topic = topic;
 		this.incremental = incremental;
 		this.listener = listener;

@@ -39,31 +39,47 @@ public enum SpanUnit {
 		}
 
 		@Override
-		public <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
-			Map<String, T> map = new LinkedHashMap<String, T>();
+		public Map<String, Map<String, Object>> descendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+				Function<Long, Object> supplier) {
+			Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			c.set(Calendar.MINUTE, 0);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				Object object = supplier.apply(c.getTimeInMillis());
+				if (object != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					for (String metric : metrics) {
+						map.put(metric, object);
+					}
+					data.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), map);
+				}
 				c.add(Calendar.HOUR_OF_DAY, -1 * span);
 			}
-			return MapUtils.reverse(map);
+			return MapUtils.reverse(data);
 		}
 
 		@Override
-		public <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
-			Map<String, T> map = new LinkedHashMap<String, T>();
+		public Map<String, Map<String, Object>> ascendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+				Function<Long, Object> supplier) {
+			Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			c.set(Calendar.MINUTE, 0);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				Object object = supplier.apply(c.getTimeInMillis());
+				if (object != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					for (String metric : metrics) {
+						map.put(metric, object);
+					}
+					data.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), map);
+				}
 				c.add(Calendar.HOUR_OF_DAY, span);
 			}
-			return map;
+			return data;
 		}
 
 	},
@@ -84,29 +100,45 @@ public enum SpanUnit {
 		}
 
 		@Override
-		public <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
-			Map<String, T> map = new LinkedHashMap<String, T>();
+		public Map<String, Map<String, Object>> descendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+				Function<Long, Object> supplier) {
+			Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				Object object = supplier.apply(c.getTimeInMillis());
+				if (object != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					for (String metric : metrics) {
+						map.put(metric, object);
+					}
+					data.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), map);
+				}
 				c.add(Calendar.MINUTE, -1 * span);
 			}
-			return MapUtils.reverse(map);
+			return MapUtils.reverse(data);
 		}
 
 		@Override
-		public <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
-			Map<String, T> map = new LinkedHashMap<String, T>();
+		public Map<String, Map<String, Object>> ascendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+				Function<Long, Object> supplier) {
+			Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			c.set(Calendar.SECOND, 0);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				Object object = supplier.apply(c.getTimeInMillis());
+				if (object != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					for (String metric : metrics) {
+						map.put(metric, object);
+					}
+					data.put(DateUtils.format(c.getTime(), DEFAULT_DATETIME_PATTERN), map);
+				}
 				c.add(Calendar.MINUTE, span);
 			}
-			return map;
+			return data;
 		}
 	},
 	SECOND(Calendar.SECOND) {
@@ -126,27 +158,43 @@ public enum SpanUnit {
 		}
 
 		@Override
-		public <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
-			Map<String, T> map = new LinkedHashMap<String, T>();
+		public Map<String, Map<String, Object>> descendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+				Function<Long, Object> supplier) {
+			Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTimeInMillis(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				Object object = supplier.apply(c.getTimeInMillis());
+				if (object != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					for (String metric : metrics) {
+						map.put(metric, object);
+					}
+					data.put(DateUtils.format(c.getTimeInMillis(), DEFAULT_DATETIME_PATTERN), map);
+				}
 				c.add(Calendar.SECOND, -1 * span);
 			}
-			return MapUtils.reverse(map);
+			return MapUtils.reverse(data);
 		}
 
 		@Override
-		public <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f) {
-			Map<String, T> map = new LinkedHashMap<String, T>();
+		public Map<String, Map<String, Object>> ascendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+				Function<Long, Object> supplier) {
+			Map<String, Map<String, Object>> data = new LinkedHashMap<String, Map<String, Object>>();
 			Calendar c = Calendar.getInstance();
 			c.setTime(startTime);
 			for (int i = 0; i < bufferSize; i++) {
-				map.put(DateUtils.format(c.getTimeInMillis(), DEFAULT_DATETIME_PATTERN), f.apply(c.getTimeInMillis()));
+				Object object = supplier.apply(c.getTimeInMillis());
+				if (object != null) {
+					Map<String, Object> map = new HashMap<String, Object>();
+					for (String metric : metrics) {
+						map.put(metric, object);
+					}
+					data.put(DateUtils.format(c.getTimeInMillis(), DEFAULT_DATETIME_PATTERN), map);
+				}
 				c.add(Calendar.SECOND, span);
 			}
-			return map;
+			return data;
 		}
 
 	};
@@ -165,9 +213,11 @@ public enum SpanUnit {
 
 	public abstract long startsInMsWith(Calendar c, long timestamp, int span);
 
-	public abstract <T> Map<String, T> descendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f);
+	public abstract Map<String, Map<String, Object>> descendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+			Function<Long, Object> f);
 
-	public abstract <T> Map<String, T> ascendingMap(Date startTime, int span, int bufferSize, Function<Long, T> f);
+	public abstract Map<String, Map<String, Object>> ascendingMap(Date startTime, int span, int bufferSize, String[] metrics,
+			Function<Long, Object> f);
 
 	private static final Map<Integer, SpanUnit> cache = new HashMap<Integer, SpanUnit>();
 

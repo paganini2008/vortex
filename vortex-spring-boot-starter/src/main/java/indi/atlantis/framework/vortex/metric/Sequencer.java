@@ -1,7 +1,11 @@
 package indi.atlantis.framework.vortex.metric;
 
 import java.util.Map;
-import java.util.function.Function;
+import java.util.concurrent.ConcurrentHashMap;
+
+import com.github.paganini2008.devtools.collection.MapUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
@@ -11,24 +15,30 @@ import java.util.function.Function;
  *
  * @version 1.0
  */
-public interface Sequencer {
+@Slf4j
+@SuppressWarnings("all")
+public final class Sequencer {
 
-	Sequencer setSpan(int span);
+	private final Map<String, MetricSequencer<String, UserMetric<?>>> registerMap = new ConcurrentHashMap<String, MetricSequencer<String, UserMetric<?>>>();
 
-	int getSpan();
-
-	Sequencer setSpanUnit(SpanUnit spanUnit);
-
-	default Sequencer setSpanUnit(int calendarField) {
-		return setSpanUnit(SpanUnit.valueOf(calendarField));
+	public Map<String, Map<String, Object>> sequence(String dataType, String identifier, String metric, boolean asc) {
+		return sequence(dataType, identifier, new String[] { metric }, asc);
 	}
 
-	SpanUnit getSpanUnit();
+	public Map<String, Map<String, Object>> sequence(String dataType, String identifier, String[] metrics, boolean asc) {
+		return registerMap.containsKey(dataType) ? ((UserMetricSequencer) registerMap.get(dataType)).sequence(identifier, metrics, asc)
+				: MapUtils.emptyMap();
+	}
 
-	Sequencer setBufferSize(int bufferSize);
+	public void registerDataType(String dataType, MetricSequencer<String, UserMetric<?>> metricSequencer) {
+		registerMap.put(dataType, metricSequencer);
+		log.info("Add metric sequencer '{}' with type '{}'.", metricSequencer.getClass().getName(), dataType);
+	}
 
-	int getBufferSize();
+	public void removeDataType(String dataType) {
+		if (registerMap.remove(dataType) != null) {
+			log.info("Remove metric sequencer with type '{}'.", dataType);
+		}
 
-	Map<String, Map<String, Object>> sequence(Object identifier, String metric, boolean asc, Function<Long, Map<String, Object>> render);
-
+	}
 }

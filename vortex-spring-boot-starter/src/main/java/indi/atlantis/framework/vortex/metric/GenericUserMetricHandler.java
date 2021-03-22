@@ -14,9 +14,9 @@ import indi.atlantis.framework.vortex.common.Tuple;
 public class GenericUserMetricHandler<V> implements Handler {
 
 	private final String topic;
-	private final UserMetricListener<String, V> listener;
+	private final UserMetricListener<V> listener;
 
-	public GenericUserMetricHandler(String topic, UserMetricListener<String, V> listener) {
+	public GenericUserMetricHandler(String topic, UserMetricListener<V> listener) {
 		this.topic = topic;
 		this.listener = listener;
 	}

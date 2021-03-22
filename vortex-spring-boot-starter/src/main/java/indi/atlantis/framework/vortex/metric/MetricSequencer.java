@@ -11,9 +11,13 @@ import java.util.Map;
  *
  * @version 1.0
  */
-public interface MetricSequencer<I, T extends Metric<T>> extends Sequencer {
+public interface MetricSequencer<I, T extends Metric<T>> {
 
-	void setMetricEvictionHandler(MetricEvictionHandler<I, T> evictionHandler);
+	int getSpan();
+
+	SpanUnit getSpanUnit();
+
+	int getBufferSize();
 
 	Collection<I> identifiers();
 
