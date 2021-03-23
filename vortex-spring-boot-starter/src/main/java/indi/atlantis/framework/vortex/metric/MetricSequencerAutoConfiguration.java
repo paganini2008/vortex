@@ -21,6 +21,11 @@ public class MetricSequencerAutoConfiguration {
 	}
 
 	@Bean
+	public UserMetricRegistrarScanner userMetricRegistrarScanner() {
+		return new UserMetricRegistrarScanner();
+	}
+
+	@Bean
 	public UserMetricRegistrar<BigInt> bigIntMetricRegistrar() {
 		return new GenericUserMetricRegistration<BigInt>(new BigIntMetricSequencer(new LoggingMetricEvictionHandler<>()),
 				new BigIntTypeHandler());

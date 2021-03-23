@@ -41,10 +41,10 @@ public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSeque
 				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 		}
-		return renderData(metrics, renderer, timestamp, asc);
+		return render(metrics, renderer, timestamp, asc);
 	}
 
-	private Map<String, Map<String, Object>> renderData(String[] metrics, Map<String, Map<String, Object>> renderer, long timestamp,
+	protected final Map<String, Map<String, Object>> render(String[] metrics, Map<String, Map<String, Object>> renderer, long timestamp,
 			boolean asc) {
 		int span = getSpan();
 		int bufferSize = getBufferSize();

@@ -19,8 +19,16 @@ public class BigIntTypeHandler implements UserTypeHandler<BigInt> {
 
 	@Override
 	public UserMetric<BigInt> convertAsMetric(String identifier, String metric, long timestamp, Tuple tuple) {
-		long value = tuple.getField("value", Long.class);
-		return new BigIntMetric(value, timestamp);
+		if (tuple.hasField("value")) {
+			long value = tuple.getField("value", Long.class);
+			return new BigIntMetric(value, timestamp);
+		} else {
+			long highestValue = tuple.getField("highestValue", Long.class);
+			long lowestValue = tuple.getField("lowestValue", Long.class);
+			long totalValue = tuple.getField("totalValue", Long.class);
+			long count = tuple.getField("count", Long.class);
+			return new BigIntMetric(new BigInt(highestValue, lowestValue, totalValue, count), timestamp);
+		}
 	}
 
 	@Override

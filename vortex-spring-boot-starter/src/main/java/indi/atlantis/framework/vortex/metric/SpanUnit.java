@@ -214,10 +214,10 @@ public enum SpanUnit {
 	public abstract long startsInMsWith(Calendar c, long timestamp, int span);
 
 	public abstract Map<String, Map<String, Object>> descendingMap(Date startTime, int span, int bufferSize, String[] metrics,
-			Function<Long, Object> f);
+			Function<Long, Object> supplier);
 
 	public abstract Map<String, Map<String, Object>> ascendingMap(Date startTime, int span, int bufferSize, String[] metrics,
-			Function<Long, Object> f);
+			Function<Long, Object> supplier);
 
 	private static final Map<Integer, SpanUnit> cache = new HashMap<Integer, SpanUnit>();
 

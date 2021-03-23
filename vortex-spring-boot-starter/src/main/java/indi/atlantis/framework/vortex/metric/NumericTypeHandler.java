@@ -21,8 +21,16 @@ public class NumericTypeHandler implements UserTypeHandler<Numeric> {
 
 	@Override
 	public UserMetric<Numeric> convertAsMetric(String identifier, String metric, long timestamp, Tuple tuple) {
-		BigDecimal value = tuple.getField("value", BigDecimal.class);
-		return new NumericMetric(value, timestamp);
+		if (tuple.hasField("value")) {
+			BigDecimal value = tuple.getField("value", BigDecimal.class);
+			return new NumericMetric(value, timestamp);
+		} else {
+			BigDecimal highestValue = tuple.getField("highestValue", BigDecimal.class);
+			BigDecimal lowestValue = tuple.getField("lowestValue", BigDecimal.class);
+			BigDecimal totalValue = tuple.getField("totalValue", BigDecimal.class);
+			long count = tuple.getField("count", Long.class);
+			return new NumericMetric(new Numeric(highestValue, lowestValue, totalValue, count), timestamp);
+		}
 	}
 
 	@Override

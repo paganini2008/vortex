@@ -50,9 +50,9 @@ public class RedisConfig {
 	@Bean
 	public JedisPoolConfig jedisPoolConfig() {
 		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-		jedisPoolConfig.setMinIdle(2);
+		jedisPoolConfig.setMinIdle(1);
 		jedisPoolConfig.setMaxIdle(10);
-		jedisPoolConfig.setMaxTotal(50);
+		jedisPoolConfig.setMaxTotal(200);
 		jedisPoolConfig.setMaxWaitMillis(-1);
 		jedisPoolConfig.setTestWhileIdle(true);
 		return jedisPoolConfig;
