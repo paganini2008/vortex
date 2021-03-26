@@ -16,6 +16,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.github.paganini2008.devtools.multithreads.PooledThreadFactory;
 
+import indi.atlantis.framework.reditools.common.RedisCalulation;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.buffer.RedisBufferZone;
 import indi.atlantis.framework.vortex.common.ChannelEventListener;
@@ -110,8 +111,8 @@ public class NioTransportAutoConfiguration {
 	}
 
 	@Bean
-	public Accumulator accumulator() {
-		return new Accumulator();
+	public Accumulator accumulator(RedisConnectionFactory redisConnectionFactory) {
+		return new Accumulator(clusterName, new RedisCalulation(redisConnectionFactory));
 	}
 
 	@Bean

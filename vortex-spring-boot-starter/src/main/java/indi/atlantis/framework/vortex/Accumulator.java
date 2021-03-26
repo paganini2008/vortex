@@ -1,16 +1,17 @@
 package indi.atlantis.framework.vortex;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
-import com.github.paganini2008.devtools.date.DateUtils;
-import com.github.paganini2008.devtools.io.FileUtils;
+import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.multithreads.Executable;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
+import indi.atlantis.framework.reditools.common.RedisCalulation;
 import indi.atlantis.framework.tridenter.utils.BeanLifeCycle;
 import indi.atlantis.framework.vortex.common.Tuple;
 
@@ -22,15 +23,90 @@ import indi.atlantis.framework.vortex.common.Tuple;
  *
  * @version 1.0
  */
-public class Accumulator implements Executable, BeanLifeCycle {
+public class Accumulator extends Fragment implements Executable, BeanLifeCycle {
 
-	private final AtomicInteger tps = new AtomicInteger();
-	private final AtomicLong count = new AtomicLong();
-	private final AtomicLong length = new AtomicLong();
-	private volatile String content;
-	private volatile int tpsValue;
+	private final Map<String, Fragment> fragments = new ConcurrentHashMap<String, Fragment>();
+	private final Summary summary = new Summary();
+	private final String identifier;
+	private final RedisCalulation redisCalulation;
 	private Timer timer;
-	private long timestamp;
+
+	public Accumulator(String identifier, RedisCalulation redisCalulation) {
+		this.identifier = identifier;
+		this.redisCalulation = redisCalulation;
+	}
+
+	public void accumulate(List<Tuple> tuples) {
+		tuples.forEach(tuple -> accumulate(tuple));
+	}
+
+	public void accumulate(Tuple tuple) {
+		String topic = tuple.getTopic();
+		Fragment frag = MapUtils.get(fragments, topic, () -> new Fragment());
+		frag.incrementalCount.incrementAndGet();
+		frag.count.incrementAndGet();
+		frag.incrementalLength.incrementAndGet();
+		frag.length.addAndGet(tuple.getLength());
+		frag.timestamp = tuple.getTimestamp();
+
+		this.incrementalCount.incrementAndGet();
+		this.count.incrementAndGet();
+		this.incrementalLength.addAndGet(tuple.getLength());
+		this.length.addAndGet(tuple.getLength());
+		this.timestamp = tuple.getTimestamp();
+	}
+
+	public Map<String, Map<String, Object>> summaries() {
+		Map<String, Map<String, Object>> detail = new HashMap<String, Map<String, Object>>();
+		detail.put("self", summary.toEntries());
+		for (Map.Entry<String, Summary> entry : summary.getChildren().entrySet()) {
+			detail.put(entry.getKey(), entry.getValue().toEntries());
+		}
+		return detail;
+	}
+
+	public Map<String, Map<String, Object>> fragments() {
+		Map<String, Map<String, Object>> detail = new HashMap<String, Map<String, Object>>();
+		detail.put("self", toEntries());
+		for (Map.Entry<String, Fragment> entry : fragments.entrySet()) {
+			detail.put(entry.getKey(), entry.getValue().toEntries());
+		}
+		return detail;
+	}
+
+	@Override
+	public boolean execute() {
+		long incrementalCount = getIncrementalCount();
+		setTps(incrementalCount);
+
+		String key = identifier + ":count";
+		long currentCount = redisCalulation.getLong(key);
+		summary.setCount(redisCalulation.addAndGetLong(key, incrementalCount));
+		summary.setTps(summary.getCount() - currentCount);
+		key = identifier + ":length";
+		summary.setLength(redisCalulation.addAndGetLong(key, getIncrementalLength()));
+		summary.setTimestamp(timestamp);
+
+		String topic;
+		Fragment fragment;
+		Summary children;
+		for (Map.Entry<String, Fragment> entry : fragments.entrySet()) {
+			topic = entry.getKey();
+			fragment = entry.getValue();
+			children = MapUtils.get(summary.getChildren(), topic, () -> new Summary());
+			incrementalCount = fragment.getIncrementalCount();
+			fragment.setTps(incrementalCount);
+
+			key = identifier + ":" + topic + ":count";
+			currentCount = redisCalulation.getLong(key);
+			children.setCount(redisCalulation.addAndGetLong(key, incrementalCount));
+			children.setTps(children.getCount() - currentCount);
+			key = identifier + ":" + topic + ":length";
+			children.setLength(redisCalulation.addAndGetLong(key, fragment.getIncrementalLength()));
+			children.setTimestamp(fragment.getTimestamp());
+		}
+		return true;
+	}
 
 	@Override
 	public void configure() throws Exception {
@@ -42,67 +118,6 @@ public class Accumulator implements Executable, BeanLifeCycle {
 		if (timer != null) {
 			timer.cancel();
 		}
-	}
-
-	void calculateTps() {
-		final int current = tps.get();
-		this.tpsValue = current;
-		tps.getAndAdd(-1 * current);
-	}
-
-	public long getCount() {
-		return count.get();
-	}
-
-	public long getLength() {
-		return length.get();
-	}
-
-	public String getLengthString() {
-		return FileUtils.formatSize(length.get());
-	}
-
-	public int getTps() {
-		return tpsValue;
-	}
-
-	public String getContent() {
-		return content;
-	}
-
-	public void accumulate(List<Tuple> tuples) {
-		tuples.forEach(tuple -> accumulate(tuple));
-	}
-
-	public void accumulate(Tuple tuple) {
-		this.tps.incrementAndGet();
-		this.count.incrementAndGet();
-		this.length.addAndGet(tuple.getLength());
-		this.content = tuple.getContent();
-		this.timestamp = System.currentTimeMillis();
-	}
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-	public boolean isIdleTimeout(long period, TimeUnit timeUnit) {
-		return (System.currentTimeMillis() - timestamp) > DateUtils.convertToMillis(period, timeUnit);
-	}
-
-	@Override
-	public boolean execute() {
-		calculateTps();
-		return true;
-	}
-
-	public String toString() {
-		StringBuilder str = new StringBuilder();
-		str.append("[Accumulator] count: ").append(getCount());
-		str.append(", length: ").append(getLength());
-		str.append(", tps: ").append(getTps());
-		str.append(", active: ").append(!isIdleTimeout(1, TimeUnit.MINUTES));
-		return str.toString();
 	}
 
 }

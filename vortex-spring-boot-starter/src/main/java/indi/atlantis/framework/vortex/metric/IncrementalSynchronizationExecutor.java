@@ -60,7 +60,8 @@ public class IncrementalSynchronizationExecutor
 		synchronizePeriodically(event.getLeaderInfo());
 	}
 
-	private void synchronizePeriodically(ApplicationInfo leaderInfo) {
+	@Override
+	public void synchronizePeriodically(ApplicationInfo leaderInfo) {
 		if (future != null) {
 			future.cancel(false);
 		}

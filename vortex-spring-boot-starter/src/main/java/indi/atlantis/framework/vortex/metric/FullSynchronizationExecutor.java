@@ -63,16 +63,17 @@ public class FullSynchronizationExecutor
 	@Override
 	public void onApplicationEvent(ApplicationClusterLeaderEvent event) {
 		if (event.getLeaderState() == LeaderState.UP) {
-			synchronizePeriodically();
+			ApplicationInfo leaderInfo = instanceId.getApplicationInfo();
+			synchronizePeriodically(leaderInfo);
 		}
 	}
 
-	private void synchronizePeriodically() {
+	@Override
+	public void synchronizePeriodically(ApplicationInfo leaderInfo) {
 		if (future != null) {
 			throw new IllegalStateException("Full synchronization is running now.");
 		}
 		future = taskScheduler.scheduleWithFixedDelay(() -> {
-			ApplicationInfo leaderInfo = instanceId.getApplicationInfo();
 			ServerInfo[] serverInfos = transportContext.getServerInfos(info -> {
 				return !info.equals(leaderInfo);
 			});

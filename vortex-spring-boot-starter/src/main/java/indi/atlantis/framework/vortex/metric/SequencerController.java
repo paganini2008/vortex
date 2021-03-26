@@ -51,7 +51,7 @@ public class SequencerController {
 
 	@GetMapping("/sequence")
 	public Map<String, Object> sequence(@RequestParam("dataType") String dataType, @RequestParam("name") String name,
-			@RequestParam("metric") String metric, @RequestParam("value") double value, @RequestParam("timestamp") long timestamp) {
+			@RequestParam("metric") String metric, @RequestParam("value") BigDecimal value, @RequestParam("timestamp") long timestamp) {
 		Tuple tuple = Tuple.newOne(dataType);
 		tuple.setField("name", name);
 		tuple.setField("metric", metric);

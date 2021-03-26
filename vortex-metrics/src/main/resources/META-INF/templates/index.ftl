@@ -47,10 +47,10 @@
 				var categories = [], count=[], highestValues=[], middleValues=[], lowestValues=[];
 				for(var category in entries){
 					categories.push(category);
-					count.push(entries[category]['count']);
-					highestValues.push(entries[category]['highestValue']);
-					middleValues.push(entries[category]['middleValue']);
-					lowestValues.push(entries[category]['lowestValue']);
+					count.push(entries[category][metric]['count']);
+					highestValues.push(entries[category][metric]['highestValue']);
+					middleValues.push(entries[category][metric]['middleValue']);
+					lowestValues.push(entries[category][metric]['lowestValue']);
 				}
 				showChart('chartBox', '[Summary] dataType: ' + dataType + ', name: ' + name + ', metric: '+ metric, categories, count, highestValues, middleValues, lowestValues);
 			});

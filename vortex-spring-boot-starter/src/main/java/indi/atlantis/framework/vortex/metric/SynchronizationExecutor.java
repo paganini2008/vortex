@@ -1,5 +1,7 @@
 package indi.atlantis.framework.vortex.metric;
 
+import indi.atlantis.framework.tridenter.ApplicationInfo;
+
 /**
  * 
  * SynchronizationExecutor
@@ -9,6 +11,8 @@ package indi.atlantis.framework.vortex.metric;
  * @version 1.0
  */
 public interface SynchronizationExecutor {
+
+	void synchronizePeriodically(ApplicationInfo leaderInfo);
 
 	void addSynchronizers(Synchronizer... synchronizers);
 

@@ -1,5 +1,6 @@
 package indi.atlantis.framework.vortex;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +40,17 @@ public class NioTransportController {
 
 	@Autowired
 	private NioTransportContext context;
+
+	@Autowired
+	private Accumulator accumulator;
+
+	@GetMapping("/health")
+	public ResponseEntity<Map<String, Object>> health() {
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put("fragments", accumulator.fragments());
+		data.put("summaries", accumulator.summaries());
+		return ResponseEntity.ok(data);
+	}
 
 	@GetMapping("/emit")
 	public ResponseEntity<Map<String, String>> emit0(HttpServletRequest request) {
