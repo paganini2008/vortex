@@ -19,7 +19,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public final class Numeric implements Serializable {
+public final class Numeric implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -6456889194956954035L;
 
@@ -44,6 +44,14 @@ public final class Numeric implements Serializable {
 
 	public BigDecimal getMiddleValue() {
 		return count > 0 ? totalValue.divide(BigDecimal.valueOf(count), 4, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+	}
+	
+	public Numeric clone() {
+		try {
+			return (Numeric) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 }

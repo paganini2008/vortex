@@ -17,7 +17,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public final class BigInt implements Serializable {
+public final class BigInt implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 5844565831581821139L;
 
@@ -42,6 +42,14 @@ public final class BigInt implements Serializable {
 
 	public Long getMiddleValue() {
 		return count > 0 ? totalValue / count : 0;
+	}
+
+	public BigInt clone() {
+		try {
+			return (BigInt) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 }

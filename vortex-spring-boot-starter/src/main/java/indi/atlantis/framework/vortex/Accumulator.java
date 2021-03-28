@@ -45,7 +45,7 @@ public class Accumulator extends Fragment implements Executable, BeanLifeCycle {
 		Fragment frag = MapUtils.get(fragments, topic, () -> new Fragment());
 		frag.incrementalCount.incrementAndGet();
 		frag.count.incrementAndGet();
-		frag.incrementalLength.incrementAndGet();
+		frag.incrementalLength.addAndGet(tuple.getLength());
 		frag.length.addAndGet(tuple.getLength());
 		frag.timestamp = tuple.getTimestamp();
 

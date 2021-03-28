@@ -16,7 +16,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public final class Bool implements Serializable {
+public final class Bool implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = -3013190689650409680L;
 	private long yes;
@@ -33,6 +33,14 @@ public final class Bool implements Serializable {
 	public Bool(long yes, long no) {
 		this.yes = yes;
 		this.no = no;
+	}
+
+	public Bool clone() {
+		try {
+			return (Bool) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 }

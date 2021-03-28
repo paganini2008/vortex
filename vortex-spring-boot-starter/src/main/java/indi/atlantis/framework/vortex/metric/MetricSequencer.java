@@ -21,10 +21,6 @@ public interface MetricSequencer<I, T extends Metric<T>> {
 
 	Collection<I> identifiers();
 
-	default int update(I identifier, String metric, long timestamp, T metricUnit) {
-		return update(identifier, metric, timestamp, metricUnit, true);
-	}
-
 	int update(I identifier, String metric, long timestamp, T metricUnit, boolean merged);
 
 	int size(I identifier);
