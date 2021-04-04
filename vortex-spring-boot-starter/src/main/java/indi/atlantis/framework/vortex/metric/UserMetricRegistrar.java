@@ -14,7 +14,7 @@ public interface UserMetricRegistrar<V> {
 	
 	String getDataType();
 
-	MetricSequencer<String, UserMetric<V>> getMetricSequencer();
+	UserMetricSequencer<String, V> getUserMetricSequencer();
 
 	Handler getHandler();
 

@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Import;
  * @author Jimmy Hoff
  * @version 1.0
  */
-@Import({ SequencerController.class })
+@Import({ UserSequencerController.class })
 @Configuration
 public class MetricSequencerAutoConfiguration {
 
 	@Bean
-	public Sequencer sequencer() {
-		return new Sequencer();
+	public UserSequencer sequencer() {
+		return new UserSequencer();
 	}
 
 	@Bean

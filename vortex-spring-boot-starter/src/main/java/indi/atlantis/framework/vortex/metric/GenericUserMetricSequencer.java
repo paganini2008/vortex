@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
+import com.github.paganini2008.devtools.comparator.ComparatorHelper;
 import com.github.paganini2008.devtools.date.DateUtils;
 
 /**
@@ -22,6 +23,24 @@ public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSeque
 	public GenericUserMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
 			MetricEvictionHandler<I, UserMetric<V>> evictionHandler) {
 		super(span, spanUnit, bufferSize, evictionHandler);
+	}
+
+	@Override
+	public Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics) {
+		Map<String, Map<String, Object>> renderer = new LinkedHashMap<String, Map<String, Object>>();
+		for (String metric : metrics) {
+			Map<String, UserMetric<V>> sequence = super.sequence(identifier, metric);
+			sequence = MapUtils.sort(sequence, (left, right) -> {
+				long lt = left.getValue().getTimestamp();
+				long rt = right.getValue().getTimestamp();
+				return ComparatorHelper.valueOf(lt - rt);
+			});
+			Map.Entry<String, UserMetric<V>> lastEntry = MapUtils.getLastEntry(sequence);
+			if (lastEntry != null) {
+				renderer.put(metric, lastEntry.getValue().toEntries());
+			}
+		}
+		return renderer;
 	}
 
 	public Map<String, Map<String, Object>> sequence(I identifier, String[] metrics, boolean asc) {

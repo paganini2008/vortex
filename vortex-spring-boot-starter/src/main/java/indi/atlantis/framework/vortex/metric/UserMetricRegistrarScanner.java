@@ -28,7 +28,7 @@ public class UserMetricRegistrarScanner implements ApplicationListener<ContextRe
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Map<String, UserMetricRegistrar> beans = applicationContext.getBeansOfType(UserMetricRegistrar.class);
 		if (MapUtils.isNotEmpty(beans)) {
-			Sequencer sequencer = applicationContext.getBean(Sequencer.class);
+			UserSequencer sequencer = applicationContext.getBean(UserSequencer.class);
 			TupleLoopProcessor tupleLoopProcessor = applicationContext.getBean(TupleLoopProcessor.class);
 			SynchronizationExecutor incrementalSynchronizationExecutor = applicationContext.getBean("incrementalSynchronizationExecutor",
 					SynchronizationExecutor.class);
@@ -45,7 +45,7 @@ public class UserMetricRegistrarScanner implements ApplicationListener<ContextRe
 				incrementalSynchronizationExecutor.addSynchronizers(registrar.getIncrementalSynchronizer());
 				fullSynchronizationExecutor.addSynchronizers(registrar.getSynchronizer());
 				
-				sequencer.registerDataType(registrar.getDataType(), registrar.getMetricSequencer());
+				sequencer.registerDataType(registrar.getDataType(), registrar.getUserMetricSequencer());
 			}
 
 		}

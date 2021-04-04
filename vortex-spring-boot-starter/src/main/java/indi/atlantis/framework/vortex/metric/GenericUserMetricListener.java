@@ -14,8 +14,13 @@ public class GenericUserMetricListener<V> implements UserMetricListener<V> {
 
 	private final MetricSequencer<String, UserMetric<V>> sequencer;
 	private final UserTypeHandler<V> typeHandler;
-
+	
 	public GenericUserMetricListener(MetricSequencer<String, UserMetric<V>> sequencer, UserTypeHandler<V> typeHandler) {
+		this.sequencer = sequencer;
+		this.typeHandler = typeHandler;
+	}
+
+	public GenericUserMetricListener(UserMetricSequencer<String, V> sequencer, UserTypeHandler<V> typeHandler) {
 		this.sequencer = sequencer;
 		this.typeHandler = typeHandler;
 	}

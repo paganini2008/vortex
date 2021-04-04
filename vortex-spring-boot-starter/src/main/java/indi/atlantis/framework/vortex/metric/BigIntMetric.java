@@ -26,7 +26,7 @@ public class BigIntMetric extends AbstractUserMetric<BigInt> {
 		BigInt current = get();
 		BigInt update = newMetric.get();
 		long highestValue = Long.max(current.getHighestValue(), update.getHighestValue());
-		long lowestValue = Long.min(current.getHighestValue(), update.getHighestValue());
+		long lowestValue = Long.min(current.getLowestValue(), update.getLowestValue());
 		long totalValue = current.getTotalValue() - update.getTotalValue();
 		long count = current.getCount() - update.getCount();
 		long timestamp = newMetric.getTimestamp();
@@ -38,7 +38,7 @@ public class BigIntMetric extends AbstractUserMetric<BigInt> {
 		BigInt current = get();
 		BigInt update = newMetric.get();
 		long highestValue = Long.max(current.getHighestValue(), update.getHighestValue());
-		long lowestValue = Long.min(current.getHighestValue(), update.getHighestValue());
+		long lowestValue = Long.min(current.getLowestValue(), update.getLowestValue());
 		long totalValue = current.getTotalValue() + update.getTotalValue();
 		long count = current.getCount() + update.getCount();
 		long timestamp = newMetric.getTimestamp();

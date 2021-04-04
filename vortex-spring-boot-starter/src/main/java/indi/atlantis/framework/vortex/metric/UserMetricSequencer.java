@@ -16,6 +16,8 @@ public interface UserMetricSequencer<I, V> extends MetricSequencer<I, UserMetric
 		return sequence(identifier, new String[] { metric }, asc);
 	}
 
+	Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics);
+
 	Map<String, Map<String, Object>> sequence(I identifier, String[] metrics, boolean asc);
 
 }

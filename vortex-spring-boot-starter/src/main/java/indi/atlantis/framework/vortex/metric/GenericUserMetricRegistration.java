@@ -21,7 +21,7 @@ public class GenericUserMetricRegistration<V> implements UserMetricRegistrar<V> 
 
 	private final UserTypeHandler<V> typeHandler;
 	private final MetricSequencer<String, UserMetric<V>> primaryMetricSequencer;
-	private final MetricSequencer<String, UserMetric<V>> seconaryMetricSequencer;
+	private final UserMetricSequencer<String, V> seconaryMetricSequencer;
 
 	@Override
 	public String getDataType() {
@@ -29,7 +29,7 @@ public class GenericUserMetricRegistration<V> implements UserMetricRegistrar<V> 
 	}
 
 	@Override
-	public MetricSequencer<String, UserMetric<V>> getMetricSequencer() {
+	public UserMetricSequencer<String, V> getUserMetricSequencer() {
 		return seconaryMetricSequencer;
 	}
 

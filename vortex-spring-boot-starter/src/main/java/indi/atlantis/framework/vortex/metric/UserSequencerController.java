@@ -22,14 +22,14 @@ import indi.atlantis.framework.vortex.common.Tuple;
 
 /**
  * 
- * SequencerController
+ * UserSequencerController
  *
  * @author Jimmy Hoff
  * @version 1.0
  */
 @RestController
 @RequestMapping("/metrics")
-public class SequencerController {
+public class UserSequencerController {
 
 	@Autowired
 	private NioClient nioClient;
@@ -38,7 +38,7 @@ public class SequencerController {
 	private Partitioner partitioner;
 
 	@Autowired
-	private Sequencer sequencer;
+	private UserSequencer sequencer;
 
 	@GetMapping("/sequence/{dataType}/{name}/{metric}")
 	public Result sequence(@PathVariable("dataType") String dataType, @PathVariable("name") String name,
