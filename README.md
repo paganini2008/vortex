@@ -1,8 +1,16 @@
+### Vortex series
 
-### vortex-spring-boot-starter
-A NIO Transport Framework based springboot between mircoservices 
-integrate netty, mina, grizzly implementation of NIO framework
+Vortex is a real time data processing framework providing customized streaming calculation interface and  a set of completed time sequence  calculation tools. 
+
 ### Architecture
+
+
+
+### Feature
+
+1. High throughput
+2. High Availability
+3. Simple API
 
 ### Compatibility
 
