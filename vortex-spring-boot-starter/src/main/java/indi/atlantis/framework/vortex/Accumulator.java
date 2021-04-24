@@ -10,8 +10,8 @@ import java.util.concurrent.TimeUnit;
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.multithreads.Executable;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
+import com.github.paganini2008.springworld.reditools.common.RedisCalulation;
 
-import indi.atlantis.framework.reditools.common.RedisCalulation;
 import indi.atlantis.framework.tridenter.utils.BeanLifeCycle;
 import indi.atlantis.framework.vortex.common.Tuple;
 

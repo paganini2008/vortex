@@ -15,8 +15,8 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.github.paganini2008.devtools.multithreads.PooledThreadFactory;
+import com.github.paganini2008.springworld.reditools.common.RedisCalulation;
 
-import indi.atlantis.framework.reditools.common.RedisCalulation;
 import indi.atlantis.framework.vortex.buffer.BufferZone;
 import indi.atlantis.framework.vortex.buffer.RedisBufferZone;
 import indi.atlantis.framework.vortex.common.ChannelEventListener;

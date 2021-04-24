@@ -36,7 +36,8 @@ import lombok.extern.slf4j.Slf4j;
  * @since 1.0
  */
 @Slf4j
-public class TupleLoopProcessor implements Runnable, ApplicationListener<ContextRefreshedEvent>, BeanPostProcessor, DisposableBean {
+public class TupleLoopProcessor
+		implements Runnable, ApplicationListener<ContextRefreshedEvent>, BeanPostProcessor, DisposableBean {
 
 	@Autowired
 	private BufferZone bufferZone;

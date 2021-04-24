@@ -10,8 +10,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import com.github.paganini2008.devtools.collection.ListUtils;
+import com.github.paganini2008.springworld.reditools.serializer.FstRedisSerializer;
 
-import indi.atlantis.framework.reditools.serializer.FstRedisSerializer;
 import indi.atlantis.framework.vortex.common.Tuple;
 
 /**

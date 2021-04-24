@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.github.paganini2008.springworld.xmemcached.MemcachedTemplate;
+
 import indi.atlantis.framework.vortex.common.Tuple;
 import indi.atlantis.framework.vortex.common.TupleImpl;
-import indi.atlantis.framework.xmemcached.MemcachedTemplate;
 
 /**
  * 
