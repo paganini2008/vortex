@@ -24,7 +24,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * UserSequencerController
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @RestController

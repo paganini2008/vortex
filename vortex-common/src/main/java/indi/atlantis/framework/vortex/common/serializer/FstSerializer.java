@@ -8,7 +8,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * FstSerializer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * 
  * 
  * @version 1.0

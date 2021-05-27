@@ -10,7 +10,7 @@ import io.netty.handler.timeout.IdleStateEvent;
  * 
  * KeepAlivePolicy
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Sharable

@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * BigIntMetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

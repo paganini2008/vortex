@@ -15,7 +15,7 @@ import indi.atlantis.framework.vortex.common.TupleImpl;
  * 
  * JsonObjectSerializer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class JsonObjectSerializer implements Serializer {

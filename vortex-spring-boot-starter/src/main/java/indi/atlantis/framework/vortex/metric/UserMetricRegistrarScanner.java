@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * UserMetricRegistrarScanner
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

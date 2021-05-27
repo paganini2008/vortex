@@ -14,7 +14,7 @@ import indi.atlantis.framework.vortex.common.Partitioner;
  * 
  * MinaChannelContext
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * 
  * 
  * @version 1.0

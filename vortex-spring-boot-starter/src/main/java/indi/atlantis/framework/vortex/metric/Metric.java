@@ -6,7 +6,7 @@ import java.util.Map;
  * 
  * Metric
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface Metric<T extends Metric<T>> {

@@ -6,7 +6,7 @@ import java.util.List;
  * 
  * Partitioner
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface Partitioner {

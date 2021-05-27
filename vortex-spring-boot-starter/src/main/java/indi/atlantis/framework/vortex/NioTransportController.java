@@ -24,7 +24,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * NioTransportController
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @since 1.0
  */

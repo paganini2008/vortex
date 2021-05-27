@@ -10,7 +10,7 @@ import com.github.paganini2008.devtools.multithreads.ThreadUtils;
  * 
  * ConnectionWatcher
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public final class ConnectionWatcher {

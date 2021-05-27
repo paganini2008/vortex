@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * LoggingMetricEvictionHandler
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

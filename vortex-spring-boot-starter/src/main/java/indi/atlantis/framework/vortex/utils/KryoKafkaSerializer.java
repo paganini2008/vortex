@@ -15,7 +15,7 @@ import indi.atlantis.framework.vortex.common.serializer.KryoUtils;
  * 
  * KryoKafkaSerializer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @since 1.0
  */

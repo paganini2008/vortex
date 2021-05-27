@@ -11,7 +11,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * KafkaSerializer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @since 1.0
  */

@@ -6,7 +6,7 @@ import java.util.EventListener;
  * 
  * ChannelEventListener
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface ChannelEventListener<T> extends EventListener {

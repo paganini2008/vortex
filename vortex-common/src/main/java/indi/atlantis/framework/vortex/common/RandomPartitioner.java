@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * 
  * RandomPartitioner
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * 
  * 
  * @version 1.0

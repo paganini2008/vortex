@@ -8,7 +8,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * BulkHandler
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @since 1.0
  */

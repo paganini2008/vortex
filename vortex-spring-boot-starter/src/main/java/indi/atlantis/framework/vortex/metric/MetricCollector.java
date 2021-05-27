@@ -6,7 +6,7 @@ import java.util.Map;
  * 
  * MetricCollector
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface MetricCollector<T extends Metric<T>> {

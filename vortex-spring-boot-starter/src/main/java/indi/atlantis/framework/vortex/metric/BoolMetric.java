@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * BoolMetric
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class BoolMetric extends AbstractUserMetric<Bool> {

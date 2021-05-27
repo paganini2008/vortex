@@ -13,7 +13,7 @@ import org.springframework.boot.actuate.health.Status;
  * 
  * NioTransportHealthIndicator
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class NioTransportHealthIndicator extends AbstractHealthIndicator {

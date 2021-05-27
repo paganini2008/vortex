@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * NumericMetric
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

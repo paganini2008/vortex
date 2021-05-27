@@ -8,7 +8,7 @@ import indi.atlantis.framework.vortex.common.NioClient;
  * 
  * Synchronizer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface Synchronizer {

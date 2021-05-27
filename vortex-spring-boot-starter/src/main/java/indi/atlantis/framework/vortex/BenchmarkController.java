@@ -19,7 +19,7 @@ import io.netty.util.internal.ThreadLocalRandom;
  * 
  * BenchmarkController
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * 
  * @since 1.0
  */

@@ -6,7 +6,7 @@ import java.util.Map;
  * 
  * ResettableUserMetric
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

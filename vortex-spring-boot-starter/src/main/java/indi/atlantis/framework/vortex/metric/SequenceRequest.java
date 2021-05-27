@@ -8,7 +8,7 @@ import lombok.ToString;
  * 
  * SequenceRequest
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Getter

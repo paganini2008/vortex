@@ -6,7 +6,7 @@ import indi.atlantis.framework.vortex.metric.Metric;
  * 
  * HistoricalMetricsHandler
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface HistoricalMetricsHandler<T extends Metric<T>> {

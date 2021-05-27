@@ -9,7 +9,7 @@ import com.github.paganini2008.devtools.collection.MapUtils;
  * 
  * SequentialMetricCollector
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface SequentialMetricCollector<T extends Metric<T>> extends MetricCollector<T> {

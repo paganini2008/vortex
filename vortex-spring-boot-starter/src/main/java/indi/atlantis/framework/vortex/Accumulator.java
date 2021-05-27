@@ -19,7 +19,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * Accumulator
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

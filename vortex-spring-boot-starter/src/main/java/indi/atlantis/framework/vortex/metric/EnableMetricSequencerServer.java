@@ -15,7 +15,7 @@ import indi.atlantis.framework.vortex.EnableNioTransport;
  * 
  * EnableMetricSequencerServer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Retention(RetentionPolicy.RUNTIME)

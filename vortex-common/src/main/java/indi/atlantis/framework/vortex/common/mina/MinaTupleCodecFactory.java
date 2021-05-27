@@ -14,7 +14,7 @@ import indi.atlantis.framework.vortex.common.serializer.Serializer;
  * 
  * MinaSerializationCodecFactory
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class MinaTupleCodecFactory implements ProtocolCodecFactory {

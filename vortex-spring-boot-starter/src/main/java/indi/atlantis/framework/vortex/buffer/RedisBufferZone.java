@@ -18,7 +18,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * RedisBufferZone
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class RedisBufferZone implements BufferZone {

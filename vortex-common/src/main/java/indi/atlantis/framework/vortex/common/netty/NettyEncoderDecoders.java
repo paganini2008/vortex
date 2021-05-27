@@ -14,7 +14,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * 
  * NettyEncoderDecoders
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class NettyEncoderDecoders {

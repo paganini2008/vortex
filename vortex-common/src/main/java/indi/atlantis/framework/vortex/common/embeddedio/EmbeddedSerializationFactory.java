@@ -10,7 +10,7 @@ import indi.atlantis.framework.vortex.common.serializer.Serializer;
  * 
  * EmbeddedSerializationFactory
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @since 1.0
  */
 public class EmbeddedSerializationFactory implements SerializationFactory {

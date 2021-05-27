@@ -12,7 +12,7 @@ import lombok.ToString;
  * 
  * Numeric
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

@@ -6,7 +6,7 @@ import indi.atlantis.framework.vortex.Handler;
  * 
  * UserMetricRegistrar
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

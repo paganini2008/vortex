@@ -58,7 +58,7 @@ import io.netty.channel.Channel;
  * 
  * NioTransportAutoConfiguration
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Import({ NioTransportController.class, BenchmarkController.class })

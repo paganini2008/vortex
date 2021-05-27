@@ -9,7 +9,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * TupleCodecFactory
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface TupleCodecFactory {

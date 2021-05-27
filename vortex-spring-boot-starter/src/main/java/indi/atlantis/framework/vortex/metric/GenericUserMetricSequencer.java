@@ -13,7 +13,7 @@ import com.github.paganini2008.devtools.date.DateUtils;
  * 
  * GenericUserMetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

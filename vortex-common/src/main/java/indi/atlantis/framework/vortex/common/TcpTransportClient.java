@@ -18,7 +18,7 @@ import indi.atlantis.framework.vortex.common.netty.NettyClient;
  * 
  * TcpTransportClient
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class TcpTransportClient implements TransportClient, Executable {

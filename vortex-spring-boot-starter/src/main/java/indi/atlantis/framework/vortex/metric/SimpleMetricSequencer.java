@@ -12,7 +12,7 @@ import com.github.paganini2008.devtools.collection.MapUtils;
  * 
  * SimpleMetricSequencer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequencer<I, T> {

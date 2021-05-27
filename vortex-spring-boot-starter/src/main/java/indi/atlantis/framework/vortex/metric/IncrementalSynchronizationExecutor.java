@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * IncrementalSynchronizationExecutor
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Slf4j
@@ -73,7 +73,7 @@ public class IncrementalSynchronizationExecutor
 					synchronizer.synchronize(nioClient, remoteAddress);
 				}
 			} else {
-				log.warn("Leader nioserver is not available now.");
+				log.trace("Leader nioserver is not available now.");
 			}
 		}, Duration.ofSeconds(DEFAULT_SYNCHRONIZATION_PERIOD));
 		log.info("Start incremental synchronization to {} with {} seconds.", leaderInfo, DEFAULT_SYNCHRONIZATION_PERIOD);

@@ -19,7 +19,7 @@ import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
  * 
  * GrizzlyChannelContextAware
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class GrizzlyChannelContextAware extends BaseFilter implements ChannelContext<Connection<?>> {

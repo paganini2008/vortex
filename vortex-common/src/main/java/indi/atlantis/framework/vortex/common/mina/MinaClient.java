@@ -32,7 +32,7 @@ import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
  * 
  * MinaClient
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class MinaClient implements NioClient {

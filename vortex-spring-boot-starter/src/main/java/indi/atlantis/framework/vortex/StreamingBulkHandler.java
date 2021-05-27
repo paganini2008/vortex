@@ -12,7 +12,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * StreamingBulkHandler
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class StreamingBulkHandler<T> implements BulkHandler {

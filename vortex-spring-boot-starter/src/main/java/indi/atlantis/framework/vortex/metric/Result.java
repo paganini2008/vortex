@@ -9,7 +9,7 @@ import lombok.Setter;
  * 
  * Result
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

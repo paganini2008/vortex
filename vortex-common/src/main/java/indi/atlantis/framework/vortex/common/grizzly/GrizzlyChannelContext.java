@@ -14,7 +14,7 @@ import indi.atlantis.framework.vortex.common.Partitioner;
  * 
  * GrizzlyChannelContext
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class GrizzlyChannelContext extends GrizzlyChannelContextAware implements ChannelContext<Connection<?>> {

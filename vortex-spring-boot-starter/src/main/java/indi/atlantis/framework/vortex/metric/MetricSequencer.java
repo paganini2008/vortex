@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * MetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

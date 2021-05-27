@@ -18,7 +18,7 @@ import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
  * 
  * EmbeddedChannelContextAware
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @since 1.0
  */
 public abstract class EmbeddedChannelContextAware implements ChannelHandler, ChannelContext<Channel> {

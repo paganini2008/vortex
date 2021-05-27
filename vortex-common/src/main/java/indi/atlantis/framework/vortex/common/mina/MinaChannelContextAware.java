@@ -15,7 +15,7 @@ import indi.atlantis.framework.vortex.common.ChannelEvent.EventType;
  * 
  * MinaChannelContextAware
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class MinaChannelContextAware extends IoHandlerAdapter implements ChannelContext<IoSession> {

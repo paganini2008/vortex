@@ -11,7 +11,7 @@ import com.esotericsoftware.kryo.util.Pool;
  * 
  * KryoUtils
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public abstract class KryoUtils {

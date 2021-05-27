@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * NumericMetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

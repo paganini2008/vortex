@@ -11,7 +11,7 @@ import com.github.paganini2008.devtools.StringUtils;
  * 
  * NamedSelectionPartitioner
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class NamedSelectionPartitioner implements Partitioner {

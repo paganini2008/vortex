@@ -6,7 +6,7 @@ import java.util.Map;
  * 
  * ScanHandler
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface ScanHandler<I, T extends Metric<T>> {

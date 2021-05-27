@@ -6,7 +6,7 @@ import java.util.function.Function;
  * 
  * HttpTransportClient
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class HttpTransportClient implements TransportClient {

@@ -227,10 +227,11 @@
 </script>
 <body>
 	<div id="top">
+		<label id="title">Vortex Metrics</label>
 	</div>
 	<div id="container">
 		<div id="searchBox">
-			<label>Location: </label><input type="text" id="apiLocation"/>
+			<label>Location: </label><input type="text" id="apiLocation" />
 			<input type="button" value="Search" id="searchBtn"/>
 		</div>
 		<div id="chartBox">

@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * TupleLoopProcessor
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @since 1.0
  */

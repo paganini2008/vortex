@@ -10,7 +10,7 @@ import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
  * 
  * SimpleMetricCollector
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class SimpleMetricCollector<T extends Metric<T>> implements MetricCollector<T> {

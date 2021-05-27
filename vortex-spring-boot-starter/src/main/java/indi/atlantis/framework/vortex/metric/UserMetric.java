@@ -4,7 +4,7 @@ package indi.atlantis.framework.vortex.metric;
  * 
  * UserMetric
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public interface UserMetric<V> extends Metric<UserMetric<V>> {

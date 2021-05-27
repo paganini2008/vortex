@@ -8,7 +8,7 @@ import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
  * 
  * MetricCollectorBoundedMap
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class MetricCollectorBoundedMap<T extends Metric<T>> extends SimpleBoundedMap<String, T> {

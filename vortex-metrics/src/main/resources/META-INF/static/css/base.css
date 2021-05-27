@@ -33,6 +33,7 @@ body {
 	display: inline-block;
 	float: left;
 	margin-left: 10px;
+	color: #fff;
 }
 
 #nav {
@@ -113,6 +114,7 @@ body {
 	line-height: 28px;
 	width: 80px;
 	margin-top: 30px;
+	font-weight: bold;
 }
 
 #searchBox input {
@@ -125,6 +127,7 @@ body {
 	height: 22px;
 	line-height: 22px;
 	float: left;
+	padding-left: 5px;
 }
 
 #searchBox input[type="button"] {

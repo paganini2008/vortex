@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * BoolMetricSequencer
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class BoolMetricSequencer extends GenericUserMetricSequencer<String, Bool> {

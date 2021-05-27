@@ -26,7 +26,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * 
  * GrizzlyClient
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class GrizzlyClient implements NioClient {

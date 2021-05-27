@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * GrizzlyServerHandler
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Slf4j

@@ -28,7 +28,7 @@ import org.glassfish.grizzly.utils.NullaryFunction;
  * @see ActivityCheckFilter
  * 
  * @author Alexey Stashok
- * @author Jimmy Hoff
+ * @author Fred Feng
  */
 @SuppressWarnings("all")
 public class IdleTimeoutFilter extends BaseFilter {

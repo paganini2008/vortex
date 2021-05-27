@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
  * 
  * MetricSequencerAutoConfiguration
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Import({ UserSequencerController.class })

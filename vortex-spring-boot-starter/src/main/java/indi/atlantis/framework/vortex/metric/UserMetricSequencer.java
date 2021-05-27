@@ -6,7 +6,7 @@ import java.util.Map;
  * 
  * UserMetricSequencer
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

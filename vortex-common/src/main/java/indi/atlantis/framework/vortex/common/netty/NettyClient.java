@@ -29,7 +29,7 @@ import io.netty.util.concurrent.GenericFutureListener;
  * 
  * NettyClient
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class NettyClient implements NioClient {

@@ -6,7 +6,7 @@ import com.github.paganini2008.devtools.collection.AtomicReferenceMap;
  * 
  * MetricCollectorMap
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class MetricCollectorMap<T extends Metric<T>> extends AtomicReferenceMap<String, T> {

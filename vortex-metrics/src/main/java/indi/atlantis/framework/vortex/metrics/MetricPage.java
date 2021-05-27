@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * 
  * MetricPage
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */

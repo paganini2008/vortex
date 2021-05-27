@@ -8,7 +8,7 @@ import java.util.Map;
  * 
  * ServerInfo
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public final class ServerInfo {

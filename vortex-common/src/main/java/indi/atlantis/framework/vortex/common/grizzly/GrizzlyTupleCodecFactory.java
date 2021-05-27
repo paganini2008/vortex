@@ -9,7 +9,7 @@ import indi.atlantis.framework.vortex.common.serializer.Serializer;
  * 
  * GrizzlyTupleCodecFactory
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class GrizzlyTupleCodecFactory implements TupleCodecFactory {

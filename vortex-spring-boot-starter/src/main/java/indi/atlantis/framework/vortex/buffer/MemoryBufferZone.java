@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * MemoryBufferZone
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @Slf4j
@@ -80,7 +80,7 @@ public class MemoryBufferZone implements BufferZone {
 	 * 
 	 * ConcurrentLruMapSupplier
 	 *
-	 * @author Jimmy Hoff
+	 * @author Fred Feng
 	 * @version 1.0
 	 */
 	private static class ConcurrentLruMapSupplier implements LruMapSupplier<Integer, Tuple> {

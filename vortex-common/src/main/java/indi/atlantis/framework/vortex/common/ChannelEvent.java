@@ -6,7 +6,7 @@ import java.util.EventObject;
  * 
  * ChannelEvent
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class ChannelEvent<T> extends EventObject {

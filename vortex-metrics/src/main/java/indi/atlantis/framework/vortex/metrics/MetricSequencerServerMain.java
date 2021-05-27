@@ -14,7 +14,7 @@ import indi.atlantis.framework.vortex.metric.EnableMetricSequencerServer;
  * 
  * MetricSequencerServerMain
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 @EnableMetricSequencerServer

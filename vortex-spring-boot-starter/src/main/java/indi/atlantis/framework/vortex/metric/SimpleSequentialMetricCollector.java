@@ -16,7 +16,7 @@ import indi.atlantis.framework.vortex.utils.HistoricalMetricsHandler;
  * 
  * SimpleSequentialMetricCollector
  *
- * @author Jimmy Hoff
+ * @author Fred Feng
  * @version 1.0
  */
 public class SimpleSequentialMetricCollector<T extends Metric<T>> implements SequentialMetricCollector<T> {

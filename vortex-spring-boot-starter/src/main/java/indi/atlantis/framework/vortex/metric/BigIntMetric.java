@@ -7,7 +7,7 @@ import java.util.Map;
  * 
  * BigIntMetric
  * 
- * @author Jimmy Hoff
+ * @author Fred Feng
  *
  * @version 1.0
  */
