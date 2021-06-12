@@ -1,5 +1,6 @@
 package indi.atlantis.framework.vortex.metric;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -15,6 +16,12 @@ import org.springframework.context.annotation.Import;
 @Configuration
 public class MetricSequencerAutoConfiguration {
 
+	@ConditionalOnMissingBean
+	@Bean
+	public MetricSequencerFactory defaultMetricSequencerFactory() {
+		return new DefaultMetricSequencerFactory();
+	}
+
 	@Bean
 	public UserSequencer sequencer() {
 		return new UserSequencer();
@@ -26,21 +33,18 @@ public class MetricSequencerAutoConfiguration {
 	}
 
 	@Bean
-	public UserMetricRegistrar<BigInt> bigIntMetricRegistrar() {
-		return new GenericUserMetricRegistration<BigInt>(new BigIntMetricSequencer(new LoggingMetricEvictionHandler<>()),
-				new BigIntTypeHandler());
+	public UserMetricRegistrar<BigInt> bigIntMetricRegistrar(MetricSequencerFactory metricSequencerFactory) {
+		return new GenericUserMetricRegistration<BigInt>(metricSequencerFactory.getBigIntMetricSequencer(), new BigIntTypeHandler());
 	}
 
 	@Bean
-	public UserMetricRegistrar<Numeric> numericMetricRegistrar() {
-		return new GenericUserMetricRegistration<Numeric>(new NumericMetricSequencer(new LoggingMetricEvictionHandler<>()),
-				new NumericTypeHandler());
+	public UserMetricRegistrar<Numeric> numericMetricRegistrar(MetricSequencerFactory metricSequencerFactory) {
+		return new GenericUserMetricRegistration<Numeric>(metricSequencerFactory.getNumericMetricSequencer(), new NumericTypeHandler());
 	}
 
 	@Bean
-	public UserMetricRegistrar<Bool> boolMetricRegistrar() {
-		return new GenericUserMetricRegistration<Bool>(new BoolMetricSequencer(new LoggingMetricEvictionHandler<>()),
-				new BoolTypeHandler());
+	public UserMetricRegistrar<Bool> boolMetricRegistrar(MetricSequencerFactory metricSequencerFactory) {
+		return new GenericUserMetricRegistration<Bool>(metricSequencerFactory.getBoolMetricSequencer(), new BoolTypeHandler());
 	}
 
 	@Bean

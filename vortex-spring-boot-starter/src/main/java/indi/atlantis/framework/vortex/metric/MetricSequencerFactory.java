@@ -15,17 +15,20 @@
 */
 package indi.atlantis.framework.vortex.metric;
 
-import java.util.Map;
-
 /**
  * 
- * ScanHandler
- *
+ * MetricSequencerFactory
+ * 
  * @author Fred Feng
+ *
  * @version 1.0
  */
-public interface ScanHandler<I, T extends Metric<T>> {
+public interface MetricSequencerFactory {
 
-	void handleSequence(I identifier, String metric, Map<String, T> data);
+	GenericUserMetricSequencer<String, BigInt> getBigIntMetricSequencer();
+
+	GenericUserMetricSequencer<String, Numeric> getNumericMetricSequencer();
+
+	GenericUserMetricSequencer<String, Bool> getBoolMetricSequencer();
 
 }
