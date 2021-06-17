@@ -1,6 +1,6 @@
 ### Vortex series
 
-Vortex is a real time data processing framework providing customized streaming calculation interface and  a set of completed time sequence  calculation tools. 
+Vortex is a real time data processing framework providing customized streaming calculation APIs and  a set of completed time sequence  calculation tools. 
 
 ### Architecture
 
