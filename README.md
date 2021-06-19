@@ -41,8 +41,8 @@
 
 At present, there are two open source projects based on vortex framework: 
 1. [Jellyfish](https://github.com/paganini2008/jellyfish.git)
-   , the distributed microservice monitoring system jellyfish
-2. Vortex metrics, a distributed time series computing framework
+2. [Greenfinger](https://github.com/paganini2008/greenfinger.git)
+3. Vortex metrics
 
 ### How to use the vortex API in your application?
 The server side of vortex receives data, and the agent side of vortex sends data. Vortex provides HTTP and TCP protocols to receive and send data.
