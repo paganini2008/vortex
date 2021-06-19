@@ -4,7 +4,7 @@
 
 **Vortex** is a streaming framework based on memory computing, which is suitable for high availability, high concurrency and real-time computing business scenarios.
 
-**Vortex** is developed based on <code>SpringBoot</code> framework. It relies on Trident, a distributed collaboration framework for microservices, to realize cluster characteristics. Vortex microservice has an independent TCP server embedded in it (netty4 is used by default). Applications in vortex microservice cluster discover each other and establish long-term connections through the multicast function of Trident to realize high availability, decentralization and load balancing, So that the whole spring application cluster has the ability of real-time computing.
+**Vortex** is developed based on <code>SpringBoot</code> framework. It relies on [tridenter](https://github.com/paganini2008/tridenter-spring-boot-starter.git), a distributed collaboration framework for microservices, to realize cluster characteristics. Vortex microservice has an independent TCP server embedded in it (netty4 is used by default). Applications in vortex microservice cluster discover each other and establish long-term connections through the multicast function of tridenter to realize high availability, decentralization and load balancing, So that the whole spring application cluster has the ability of real-time computing.
 
 ### Architecture
 **The vortex series consists of three parts:**
@@ -40,7 +40,7 @@
 ```
 
 At present, there are two open source projects based on vortex framework: 
-1. [Jellyfish]: https://github.com/paganini2008/jellyfish.git
+1. [Jellyfish](https://github.com/paganini2008/jellyfish.git)
    , the distributed microservice monitoring system jellyfish
 2. Vortex metrics, a distributed time series computing framework
 
