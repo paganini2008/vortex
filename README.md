@@ -18,14 +18,14 @@
 ### Compatibility
 1. jdk8 (or later)
 2. <code>SpringBoot</code> Framework 2.2.x (or later)
-3. <code>Redis</code> 4.x (or later)
+3. <code>Redis</code> 3.x (or later)
 4. <code>Netty</code> 4.x (or later)
 
 ### Install
 **Server Side**
 ```xml
 <dependency>
-	<groupId>indi.atlantis.framework</groupId>
+	<groupId>com.github.paganini2008.atlantis</groupId>
 	<artifactId>vortex-spring-boot-starter</artifactId>
 	<version>1.0-RC1</version>
 </dependency>
@@ -33,7 +33,7 @@
 **Agent Side**
 ```xml
 <dependency>
-   <groupId>indi.atlantis.framework</groupId>
+   <groupId>com.github.paganini2008.atlantis</groupId>
    <artifactId>vortex-common</artifactId>
    <version>1.0-RC1</version>
 </dependency>
