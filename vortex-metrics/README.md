@@ -32,7 +32,27 @@ spring.application.name=vortex-metrics
 spring.application.cluster.name=vortex-metrics-cluster
 
 # Vortex Configuration
-atlantis.framework.vortex.bufferzone.collectionName=metric  # Buffer zone name
-atlantis.framework.vortex.bufferzone.pullSize=1000  # Pulling size of Buffer zone everytime
+atlantis.framework.vortex.bufferzone.collectionName=metric
+atlantis.framework.vortex.bufferzone.pullSize=1000
 atlantis.framework.vortex.processor.threads=200
 ```
+
+### Run
+
+1. http://localhost:6150/metrics/sequence/<code>{dataType}</code>
+
+**Eg:** 
+``` Shell
+curl -X POST -H "Content-Type: application/json" -d '{name: "car", "metric": "speed", "value": 120, "timestamp": 1613200609281}' 'http://localhost:6150/metrics/sequence/bigint'
+```
+2. http://localhost:6150/metrics/sequence/<code>{dataType}/{name}/{metric}</code>
+
+**Eg:**
+``` Shell
+curl -X GET 'http://localhost:6150/metrics/sequence/bigint/car/speed'
+```
+   Options of Parameter '<code>dataType</code>' may set <code>bigint</code>, numeric or bool
+
+
+
+
