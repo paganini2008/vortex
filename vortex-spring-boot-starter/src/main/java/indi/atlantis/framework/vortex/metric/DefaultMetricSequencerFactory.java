@@ -23,7 +23,7 @@ package indi.atlantis.framework.vortex.metric;
  * @version 1.0
  */
 public class DefaultMetricSequencerFactory implements MetricSequencerFactory {
-
+	
 	public GenericUserMetricSequencer<String, BigInt> getBigIntMetricSequencer() {
 		return new BigIntMetricSequencer(new LoggingMetricEvictionHandler<>());
 	}
@@ -35,4 +35,5 @@ public class DefaultMetricSequencerFactory implements MetricSequencerFactory {
 	public GenericUserMetricSequencer<String, Bool> getBoolMetricSequencer() {
 		return new BoolMetricSequencer(new LoggingMetricEvictionHandler<>());
 	}
+	
 }

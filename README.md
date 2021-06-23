@@ -11,21 +11,21 @@
 1. vortex-common
    **the agent side** jar package of vortex framework
 2. vortex-spring-boot-starter
-   the core jar package of the vortex framework is added to the springboot application to make it the **vortex server side**
+   the core jar package of the vortex framework is added to the <code>SpringBoot</code> application to make it the **server side**
 3. vortex-metrics
    a distributed timing computing framework based on vortex is an important independent subproject of vortex
 
 ### Compatibility
 1. jdk8 (or later)
 2. <code>SpringBoot</code> Framework 2.2.x (or later)
-3. <code>Redis</code> 4.x (or later)
+3. <code>Redis</code> 3.x (or later)
 4. <code>Netty</code> 4.x (or later)
 
 ### Install
 **Server Side**
 ```xml
 <dependency>
-	<groupId>indi.atlantis.framework</groupId>
+	<groupId>com.github.paganini2008.atlantis</groupId>
 	<artifactId>vortex-spring-boot-starter</artifactId>
 	<version>1.0-RC1</version>
 </dependency>
@@ -33,7 +33,7 @@
 **Agent Side**
 ```xml
 <dependency>
-   <groupId>indi.atlantis.framework</groupId>
+   <groupId>com.github.paganini2008.atlantis</groupId>
    <artifactId>vortex-common</artifactId>
    <version>1.0-RC1</version>
 </dependency>
