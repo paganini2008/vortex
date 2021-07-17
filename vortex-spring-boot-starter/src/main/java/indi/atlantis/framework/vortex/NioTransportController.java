@@ -15,8 +15,11 @@
 */
 package indi.atlantis.framework.vortex;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +31,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.github.paganini2008.devtools.ArrayUtils;
 import com.github.paganini2008.devtools.collection.MapUtils;
 
 import indi.atlantis.framework.vortex.common.NioClient;
@@ -85,10 +87,8 @@ public class NioTransportController {
 	@GetMapping("/tcp/services")
 	public ResponseEntity<String[]> tcpServices() {
 		ServerInfo[] serverInfos = context.getServerInfos();
-		String[] services = ArrayUtils.map(serverInfos, String.class, info -> {
-			return info.toString();
-		});
-		return ResponseEntity.ok(services);
+		List<String> list = Arrays.stream(serverInfos).map(info -> info.toString()).collect(Collectors.toList());
+		return ResponseEntity.ok(list.toArray(new String[0]));
 	}
 
 }
