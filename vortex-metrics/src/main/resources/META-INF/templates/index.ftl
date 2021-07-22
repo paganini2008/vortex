@@ -13,11 +13,11 @@
 <script type="text/javascript" src="${contextPath}/static/js/lib/json2.js"></script>
 <script type="text/javascript" src="${contextPath}/static/js/lib/map.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com.cn/highcharts/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
 <script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com.cn/highcharts/modules/solid-gauge.js"></script>
-<script src="https://img.hcharts.cn/highcharts-plugins/highcharts-zh_CN.js"></script>
-<script src="https://code.highcharts.com/themes/dark-unica.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 </head>
 <script>
 	var map = new Map();
@@ -107,8 +107,10 @@
 						zoomType: 'xy'
 				},
 				title: {
-						text: title
+						text: title,
+						align: 'left'
 				},
+				exporting: false,
 				xAxis: [{
 						categories: categories,
 						crosshair: true
@@ -182,7 +184,8 @@
 						verticalAlign: 'top',
 						y: 0,
 						floating: true,
-						backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || '#FFFFFF'
+						backgroundColor: 
+							Highcharts.defaultOptions.legend.backgroundColor || 'rgba(255,255,255,0.25)'
 				},
 				series: [{
 						name: 'Count',
@@ -238,7 +241,7 @@
 		</div>
 	</div>
 	<div id="foot">
-		Atlantis Framework 1.0
+		Copyright @2018-2021 Fred Feng. All Rights Reserved.
 	</div>
 </body>
 </html>

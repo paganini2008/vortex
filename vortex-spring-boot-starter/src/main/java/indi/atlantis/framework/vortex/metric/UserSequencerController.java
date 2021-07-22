@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.github.paganini2008.devtools.RandomUtils;
+import com.github.paganini2008.devtools.date.DateUtils;
+import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
 import indi.atlantis.framework.vortex.common.NioClient;
 import indi.atlantis.framework.vortex.common.Partitioner;
@@ -88,34 +91,46 @@ public class UserSequencerController {
 	}
 
 	@GetMapping("/test/bigint/{name}/{metric}")
-	public Map<String, Object> testBigInt(@PathVariable("name") String name, @PathVariable("metric") String metric) {
+	public Map<String, Object> testBigInt(@PathVariable("name") String name, @PathVariable("metric") String metric,
+			@RequestParam(name = "delay", required = false) Long delay) {
 		Tuple tuple = Tuple.newOne("bigint");
 		tuple.setField("name", name);
 		tuple.setField("metric", metric);
 		tuple.setField("value", RandomUtils.randomLong(100, 10000));
 		tuple.setField("timestamp", System.currentTimeMillis());
+		if (delay != null && delay.longValue() > 0) {
+			ThreadUtils.randomSleep(100, DateUtils.convertToMillis(delay, TimeUnit.SECONDS));
+		}
 		nioClient.send(tuple, partitioner);
 		return Collections.singletonMap("ok", 1);
 	}
 
 	@GetMapping("/test/numeric/{name}/{metric}")
-	public Map<String, Object> testNumeric(@PathVariable("name") String name, @PathVariable("metric") String metric) {
+	public Map<String, Object> testNumeric(@PathVariable("name") String name, @PathVariable("metric") String metric,
+			@RequestParam(name = "delay", required = false) Long delay) {
 		Tuple tuple = Tuple.newOne("numeric");
 		tuple.setField("name", name);
 		tuple.setField("metric", metric);
 		tuple.setField("value", BigDecimal.valueOf(RandomUtils.randomDouble(100, 10000)).setScale(4, RoundingMode.HALF_UP));
 		tuple.setField("timestamp", System.currentTimeMillis());
+		if (delay != null && delay.longValue() > 0) {
+			ThreadUtils.randomSleep(100, DateUtils.convertToMillis(delay, TimeUnit.SECONDS));
+		}
 		nioClient.send(tuple, partitioner);
 		return Collections.singletonMap("ok", 1);
 	}
 
 	@GetMapping("/test/bool/{name}/{metric}")
-	public Map<String, Object> testBool(@PathVariable("name") String name, @PathVariable("metric") String metric) {
+	public Map<String, Object> testBool(@PathVariable("name") String name, @PathVariable("metric") String metric,
+			@RequestParam(name = "delay", required = false) Long delay) {
 		Tuple tuple = Tuple.newOne("bool");
 		tuple.setField("name", name);
 		tuple.setField("metric", metric);
 		tuple.setField("value", RandomUtils.randomBoolean());
 		tuple.setField("timestamp", System.currentTimeMillis());
+		if (delay != null && delay.longValue() > 0) {
+			ThreadUtils.randomSleep(100, DateUtils.convertToMillis(delay, TimeUnit.SECONDS));
+		}
 		nioClient.send(tuple, partitioner);
 		return Collections.singletonMap("ok", 1);
 	}
