@@ -61,7 +61,7 @@ public class TestHandler implements Handler{
 ```
 2. Agent side sends data through <code>TransportClient</code> object
 The following takes the log collection module in jellyfish as an example, with reference to the source code:
-** Jelly Server Side:**
+**Jelly Server Side:**
 ``` java
 public class Slf4jHandler implements Handler {
 
