@@ -52,7 +52,7 @@
 					middleValues.push(entries[category][metric]['middleValue']);
 					lowestValues.push(entries[category][metric]['lowestValue']);
 				}
-				showChart('chartBox', '[Summary] dataType: ' + dataType + ', name: ' + name + ', metric: '+ metric, categories, count, highestValues, middleValues, lowestValues);
+				showChart('chartBox', '[Realtime Statistics] DataType: ' + dataType + ', Name: ' + name + ', Metric: '+ metric, categories, count, highestValues, middleValues, lowestValues);
 			});
 	}
 	
@@ -107,7 +107,7 @@
 						zoomType: 'xy'
 				},
 				title: {
-						text: title,
+						text: '<b>' + title + '</b>',
 						align: 'left'
 				},
 				exporting: false,
