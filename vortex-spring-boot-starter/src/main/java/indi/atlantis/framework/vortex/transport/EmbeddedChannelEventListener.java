@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  * EmbeddedChannelEventListener
  *
  * @author Fred Feng
- * @since 1.0
+ * @since 2.0.1
  */
 @Slf4j
 public class EmbeddedChannelEventListener implements ChannelEventListener<Channel> {

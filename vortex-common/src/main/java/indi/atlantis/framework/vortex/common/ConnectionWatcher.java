@@ -26,7 +26,7 @@ import com.github.paganini2008.devtools.multithreads.ThreadUtils;
  * ConnectionWatcher
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public final class ConnectionWatcher {
 

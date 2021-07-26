@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * NioClient
  * 
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public interface NioClient extends LifeCycle, NioConnection, Client {
 

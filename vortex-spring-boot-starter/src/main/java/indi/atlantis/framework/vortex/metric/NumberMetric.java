@@ -20,7 +20,7 @@ package indi.atlantis.framework.vortex.metric;
  * NumberMetric
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public interface NumberMetric<T extends Number> extends Metric<NumberMetric<T>> {
 

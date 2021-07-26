@@ -44,7 +44,7 @@ import indi.atlantis.framework.vortex.common.Tuple;
  * EmbeddedClient
  *
  * @author Fred Feng
- * @since 1.0
+ * @since 2.0.1
  */
 public class EmbeddedClient implements NioClient {
 
@@ -197,7 +197,7 @@ public class EmbeddedClient implements NioClient {
 	 * PingIdleTimeoutListener
 	 *
 	 * @author Fred Feng
-	 * @since 1.0
+	 * @since 2.0.1
 	 */
 	private static class PingIdleTimeoutListener implements IdleTimeoutListener {
 

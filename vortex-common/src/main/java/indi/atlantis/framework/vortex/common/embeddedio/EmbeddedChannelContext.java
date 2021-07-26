@@ -30,7 +30,7 @@ import indi.atlantis.framework.vortex.common.Partitioner;
  * EmbeddedChannelContext
  *
  * @author Fred Feng
- * @since 1.0
+ * @since 2.0.1
  */
 public class EmbeddedChannelContext extends EmbeddedChannelContextAware implements ChannelContext<Channel> {
 

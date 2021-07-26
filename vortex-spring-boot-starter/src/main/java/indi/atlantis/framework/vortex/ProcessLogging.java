@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * 
  * @author Fred Feng
  *
- * @since 1.0
+ * @since 2.0.1
  */
 @Slf4j
 public class ProcessLogging implements Executable, ApplicationListener<ContextRefreshedEvent>, DisposableBean {

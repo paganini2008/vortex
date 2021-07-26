@@ -20,7 +20,7 @@ package indi.atlantis.framework.vortex.metric;
  * MetricEvictionHandler
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public interface MetricEvictionHandler<I, T extends Metric<T>> {
 

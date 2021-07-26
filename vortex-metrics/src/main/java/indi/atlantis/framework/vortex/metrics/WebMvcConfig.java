@@ -38,7 +38,7 @@ import com.github.paganini2008.devtools.net.Urls;
  * WebMvcConfig
  * @author Fred Feng
  *
- * @version 1.0
+ * @since 2.0.1
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
@@ -82,7 +82,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	 * 
 	 * @author Fred Feng
 	 *
-	 * @since 1.0
+	 * @since 2.0.1
 	 */
 	public static class BasicHandlerInterceptor implements HandlerInterceptor {
 

@@ -25,7 +25,7 @@ import com.github.paganini2008.devtools.multithreads.AtomicLongSequence;
  * 
  * @author Fred Feng
  *
- * @since 1.0
+ * @since 2.0.1
  */
 public class RoundRobinPartitioner implements Partitioner {
 

@@ -21,7 +21,7 @@ package indi.atlantis.framework.vortex.common;
  * 
  * @author Fred Feng
  *
- * @since 1.0
+ * @since 2.0.1
  */
 public abstract class Constants {
 

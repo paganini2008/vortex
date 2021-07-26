@@ -22,7 +22,7 @@ import java.util.EventObject;
  * ChannelEvent
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public class ChannelEvent<T> extends EventObject {
 

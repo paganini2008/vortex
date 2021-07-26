@@ -27,7 +27,7 @@ import indi.atlantis.framework.vortex.common.serializer.Serializer;
  * TupleFilter
  *
  * @author Fred Feng
- * @version 1.0
+ * @since 2.0.1
  */
 public class TupleFilter extends AbstractCodecFilter<Buffer, Tuple> {
 

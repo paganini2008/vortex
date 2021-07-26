@@ -32,7 +32,7 @@ import indi.atlantis.framework.vortex.common.Partitioner;
  * @author Fred Feng
  * 
  * 
- * @version 1.0
+ * @since 2.0.1
  */
 public class MinaChannelContext extends MinaChannelContextAware implements ChannelContext<IoSession> {
 
