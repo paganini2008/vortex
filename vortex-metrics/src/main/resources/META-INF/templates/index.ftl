@@ -234,7 +234,7 @@
 	</div>
 	<div id="container">
 		<div id="searchBox">
-			<label>Location: </label><input type="text" id="apiLocation" />
+			<label>Input Location: </label><input type="text" id="apiLocation" />
 			<input type="button" value="Search" id="searchBtn"/>
 		</div>
 		<div id="chartBox">

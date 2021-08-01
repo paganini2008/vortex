@@ -92,11 +92,13 @@ public class UserSequencerController {
 
 	@GetMapping("/test/bigint/{name}/{metric}")
 	public Map<String, Object> testBigInt(@PathVariable("name") String name, @PathVariable("metric") String metric,
+			@RequestParam(name = "startValue", required = false, defaultValue = "1") Integer startValue,
+			@RequestParam(name = "endValue", required = false, defaultValue = "65535") Integer endValue,
 			@RequestParam(name = "delay", required = false) Long delay) {
 		Tuple tuple = Tuple.newOne("bigint");
 		tuple.setField("name", name);
 		tuple.setField("metric", metric);
-		tuple.setField("value", RandomUtils.randomLong(100, 10000));
+		tuple.setField("value", RandomUtils.randomLong(startValue, endValue));
 		tuple.setField("timestamp", System.currentTimeMillis());
 		if (delay != null && delay.longValue() > 0) {
 			ThreadUtils.randomSleep(100, DateUtils.convertToMillis(delay, TimeUnit.SECONDS));
@@ -107,11 +109,13 @@ public class UserSequencerController {
 
 	@GetMapping("/test/numeric/{name}/{metric}")
 	public Map<String, Object> testNumeric(@PathVariable("name") String name, @PathVariable("metric") String metric,
+			@RequestParam(name = "startValue", required = false, defaultValue = "1") Integer startValue,
+			@RequestParam(name = "endValue", required = false, defaultValue = "65535") Integer endValue,
 			@RequestParam(name = "delay", required = false) Long delay) {
 		Tuple tuple = Tuple.newOne("numeric");
 		tuple.setField("name", name);
 		tuple.setField("metric", metric);
-		tuple.setField("value", BigDecimal.valueOf(RandomUtils.randomDouble(100, 10000)).setScale(4, RoundingMode.HALF_UP));
+		tuple.setField("value", BigDecimal.valueOf(RandomUtils.randomDouble(startValue, endValue)).setScale(4, RoundingMode.HALF_UP));
 		tuple.setField("timestamp", System.currentTimeMillis());
 		if (delay != null && delay.longValue() > 0) {
 			ThreadUtils.randomSleep(100, DateUtils.convertToMillis(delay, TimeUnit.SECONDS));
