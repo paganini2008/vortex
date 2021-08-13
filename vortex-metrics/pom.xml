@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.paganini2008.atlantis</groupId>
-		<version>1.0-RC2</version>
+		<version>1.0-RC3</version>
 		<artifactId>vortex</artifactId>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -43,7 +43,7 @@
 		<dependency>
 			<groupId>com.github.paganini2008.atlantis</groupId>
 			<artifactId>vortex-spring-boot-starter</artifactId>
-			<version>1.0-RC2</version>
+			<version>1.0-RC3</version>
 		</dependency>
 
 	</dependencies>
