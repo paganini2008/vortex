@@ -21,6 +21,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.glassfish.grizzly.Connection;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -130,6 +132,7 @@ public class NioTransportAutoConfiguration {
 		return new Accumulator(clusterName, new RedisCalulation(redisConnectionFactory));
 	}
 
+	@ConditionalOnClass(HealthIndicator.class)
 	@Bean
 	public NioTransportHealthIndicator nioTransportHealthIndicator() {
 		return new NioTransportHealthIndicator();

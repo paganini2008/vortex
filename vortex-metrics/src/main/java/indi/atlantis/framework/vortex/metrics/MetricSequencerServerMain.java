@@ -22,7 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.github.paganini2008.devtools.Env;
 import com.github.paganini2008.devtools.io.FileUtils;
-import com.github.paganini2008.springdessert.reditools.common.EnableRedisClient;
 
 import indi.atlantis.framework.vortex.metric.EnableMetricSequencerServer;
 
@@ -33,7 +32,6 @@ import indi.atlantis.framework.vortex.metric.EnableMetricSequencerServer;
  * @author Fred Feng
  * @since 2.0.1
  */
-@EnableRedisClient
 @EnableMetricSequencerServer
 @SpringBootApplication
 public class MetricSequencerServerMain {
