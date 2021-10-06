@@ -5,7 +5,7 @@
 
 	<parent>
 		<groupId>com.github.paganini2008.atlantis</groupId>
-		<version>1.0-RC3</version>
+		<version>1.0.1</version>
 		<artifactId>vortex</artifactId>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -91,13 +91,13 @@
 		<dependency>
 			<groupId>com.github.paganini2008.atlantis</groupId>
 			<artifactId>tridenter-spring-boot-starter</artifactId>
-			<version>1.0-RC3</version>
+			<version>1.0.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.github.paganini2008.atlantis</groupId>
 			<artifactId>vortex-common</artifactId>
-			<version>1.0-RC3</version>
+			<version>1.0.1</version>
 		</dependency>
 
 		<dependency>
