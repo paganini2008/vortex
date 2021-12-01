@@ -30,7 +30,7 @@ public interface HttpClient extends LifeCycle, Client {
 	void addHeader(String name, String value);
 
 	default void setHeader(String name, String value) {
-		addHeader(name, value);
+		addHeader(name, value); 
 	}
 
 	default void send(SocketAddress address, Object data) {
