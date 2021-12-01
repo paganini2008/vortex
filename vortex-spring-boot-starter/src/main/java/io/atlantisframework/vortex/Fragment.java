@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.github.paganini2008.devtools.date.DateUtils;
 import com.github.paganini2008.devtools.io.FileUtils;
+import com.github.paganini2008.devtools.time.DateUtils;
 
 /**
  * 

@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
-import com.github.paganini2008.devtools.date.DateUtils;
+import com.github.paganini2008.devtools.time.DateUtils;
 
 /**
  * 

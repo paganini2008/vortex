@@ -15,7 +15,7 @@
 */
 package io.atlantisframework.vortex.metric;
 
-import com.github.paganini2008.devtools.collection.SimpleBoundedMap;
+import com.github.paganini2008.devtools.collection.ConcurrentBoundedMap;
 
 import io.atlantisframework.vortex.utils.HistoricalMetricsHandler;
 
@@ -26,7 +26,7 @@ import io.atlantisframework.vortex.utils.HistoricalMetricsHandler;
  * @author Fred Feng
  * @since 2.0.1
  */
-public class MetricCollectorBoundedMap<T extends Metric<T>> extends SimpleBoundedMap<String, T> {
+public class MetricCollectorBoundedMap<T extends Metric<T>> extends ConcurrentBoundedMap<String, T> {
 
 	private static final long serialVersionUID = -3875714100550051178L;
 

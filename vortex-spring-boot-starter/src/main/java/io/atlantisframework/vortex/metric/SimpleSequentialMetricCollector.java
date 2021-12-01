@@ -22,8 +22,8 @@ import java.util.function.Supplier;
 
 import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.MapUtils;
-import com.github.paganini2008.devtools.date.DateUtils;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
+import com.github.paganini2008.devtools.time.DateUtils;
 
 import io.atlantisframework.vortex.utils.HistoricalMetricsHandler;
 

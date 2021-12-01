@@ -18,7 +18,7 @@ package io.atlantisframework.vortex.common;
 import java.time.Instant;
 import java.util.List;
 
-import com.github.paganini2008.devtools.date.TimeSlot;
+import com.github.paganini2008.devtools.time.TimeSlot;
 
 /**
  * 
