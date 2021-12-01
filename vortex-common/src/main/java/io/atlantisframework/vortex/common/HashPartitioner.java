@@ -16,12 +16,11 @@
 package io.atlantisframework.vortex.common;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.github.paganini2008.devtools.ArrayUtils;
+import com.github.paganini2008.devtools.collection.SetUtils;
 
 /**
  * 
@@ -32,7 +31,7 @@ import com.github.paganini2008.devtools.ArrayUtils;
  */
 public class HashPartitioner implements Partitioner {
 
-	private final Set<String> fieldNames = Collections.synchronizedSet(new HashSet<String>());
+	private final Set<String> fieldNames = SetUtils.synchronizedSet();
 
 	public HashPartitioner(String... fieldNames) {
 		addFieldNames(fieldNames);
@@ -52,7 +51,7 @@ public class HashPartitioner implements Partitioner {
 			data[i++] = getFieldValue(tuple, fieldName);
 		}
 		try {
-			return channels.get(indexFor(data, channels.size()));
+			return channels.get(indexFor(tuple, data, channels.size()));
 		} catch (RuntimeException e) {
 			return null;
 		}
@@ -62,7 +61,7 @@ public class HashPartitioner implements Partitioner {
 		return tuple.getField(fieldName);
 	}
 
-	private static int indexFor(Object[] data, int length) {
+	protected int indexFor(Tuple tuple, Object[] data, int length) {
 		int hash = Arrays.deepHashCode(data);
 		return (hash & 0x7FFFFFFF) % length;
 	}
