@@ -63,7 +63,7 @@ public class HashPartitioner implements Partitioner {
 
 	protected int indexFor(Tuple tuple, Object[] data, int length) {
 		int hash = Arrays.deepHashCode(data);
-		return (hash & 0x7FFFFFFF) % length;
+		return (hash & 0x7FFFFFFF) % length;  
 	}
 
 }
