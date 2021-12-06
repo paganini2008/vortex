@@ -31,7 +31,6 @@ public interface Tuple {
 	static final String DEFAULT_TOPIC = "default";
 	static final String KW_CONTENT = "content";
 	static final String KW_TOPIC = "topic";
-	static final String KW_LENGTH = "length";
 	static final String PARTITIONER_NAME = Partitioner.class.getName();
 
 	static final Tuple PING = Tuple.byString("PING");
@@ -44,7 +43,7 @@ public interface Tuple {
 	Object getField(String fieldName);
 
 	default void setLength(int length) {
-		setField(KW_LENGTH, length);
+		setField("length", length);
 	}
 
 	default Object getField(String fieldName, Object defaultValue) {
@@ -100,7 +99,11 @@ public interface Tuple {
 	}
 
 	default int getLength() {
-		return getField(KW_LENGTH, Integer.class, 0);
+		return getField("length", Integer.class, 0);
+	}
+
+	default String getMetric() {
+		return getField("metric", String.class);
 	}
 
 	default boolean isPing() {
