@@ -12,6 +12,7 @@ import io.atlantisframework.vortex.common.Tuple;
  * @author Fred Feng
  * @since 2.0.4
  */
+
 public class StreamingHandler<T> implements Handler {
 
 	private final String name;

@@ -42,7 +42,7 @@ public class TimeWindowCollector<V> implements TimeWindow<V> {
 		final List<V> values = MapUtils.get(timeSlotTable, time, () -> new CopyOnWriteArrayList<V>());
 		values.add(payload);
 		ThreadUtils.test(values, () -> values.size() > batchSize, () -> {
-			List<V> copy = new ArrayList<>(values);
+			List<V> copy = new ArrayList<V>(values);
 			timeWindowMap.onEviction(timeSlotTable.mutate(time), copy);
 			values.removeAll(copy);
 		});
