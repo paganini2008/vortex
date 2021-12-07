@@ -42,8 +42,8 @@ public class DataStream<T> extends Observable {
 		return this;
 	}
 
-	public static DataStream of(String name) {
-
+	public static <T> DataStream<T> of(String name) {
+		return null;
 	}
 
 }
