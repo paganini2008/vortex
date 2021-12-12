@@ -15,21 +15,19 @@
 */
 package io.atlantisframework.vortex;
 
-import io.atlantisframework.vortex.common.Tuple;
+import io.atlantisframework.vortex.common.Partitioner;
 
 /**
  * 
- * Handler
- * 
+ * PartitionerAware
+ *
  * @author Fred Feng
- * @since 2.0.1
+ * @since 2.0.4
  */
-public interface Handler extends PartitionerAware {
+public interface PartitionerAware {
 
-	void onData(Tuple tuple);
-
-	default String getTopic() {
-		return Tuple.DEFAULT_TOPIC;
+	default Partitioner getPartitioner() {
+		return null;
 	}
-
+	
 }

@@ -1,10 +1,12 @@
 package io.atlantisframework.vortex.streaming;
 
-import java.util.function.Function;
-
-import com.github.paganini2008.devtools.Observable;
 import com.github.paganini2008.devtools.time.TimeSlot;
+import com.github.paganini2008.devtools.time.TimeWindowListener;
+import com.github.paganini2008.devtools.time.TimeWindowMap;
 
+import io.atlantisframework.vortex.Handler;
+import io.atlantisframework.vortex.common.Partitioner;
+import io.atlantisframework.vortex.common.TimeSlotPartitioner;
 import io.atlantisframework.vortex.common.Tuple;
 
 /**
@@ -12,38 +14,42 @@ import io.atlantisframework.vortex.common.Tuple;
  * DataStream
  *
  * @author Fred Feng
- *
  * @since 2.0.4
  */
-public class DataStream<T> extends Observable {
+public class DataStream<T> implements Handler {
+
+	public DataStream(String name, Class<T> outputType) {
+		this.name = name;
+		this.outputType = outputType;
+	}
 
 	private final String name;
-	private final Class<T> beanClass;
+	private final Class<T> outputType;
+	private TimeWindowMap<T> timeWindowMap = new TimeWindowMap<>(1, TimeSlot.MINUTE, 100, new SnapshotTimeWindowListener<>());
+	private TimeSlotPartitioner partitioner = new TimeSlotPartitioner(1, TimeSlot.MINUTE);
 
-	public DataStream(String name, Class<T> beanClass) {
-		super(true);
-		this.name = name;
-		this.beanClass = beanClass;
+	public void timeWindow(int span, TimeSlot timeSlot, int batchSize, TimeWindowListener<T> timeWindowListener) {
+		this.timeWindowMap = new TimeWindowMap<>(span, timeSlot, batchSize, timeWindowListener);
+		this.partitioner = new TimeSlotPartitioner(span, timeSlot);
 	}
 
-	private TimeWindow<T> timeWindow;
-
-	public DataStream<T> timeWindow(int span, TimeSlot timeSlot, TimeWindowListener<T> timeWindowListener) {
-		this.timeWindow = new TimeWindowCollector<T>(span, timeSlot, timeWindowListener);
-		return this;
+	public void groupingBy(String... groupingFields) {
+		partitioner.groupingBy(groupingFields);
 	}
 
-	public DataStream<T> flatMap(Function<T, Object>... functions) {
-		this.addObserver((ob, arg) -> {
-			Tuple tuple = (Tuple) arg;
-			T bean = tuple.toBean(beanClass);
-			timeWindow.offer(tuple.getTimestamp(), bean);
-		});
-		return this;
+	@Override
+	public void onData(Tuple tuple) {
+		timeWindowMap.offer(tuple.getTimestamp(), tuple.toBean(outputType));
 	}
 
-	public static <T> DataStream<T> of(String name) {
-		return null;
+	@Override
+	public String getTopic() {
+		return name;
+	}
+
+	@Override
+	public Partitioner getPartitioner() {
+		return partitioner;
 	}
 
 }

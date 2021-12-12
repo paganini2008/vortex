@@ -20,14 +20,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -39,6 +36,8 @@ import com.github.paganini2008.devtools.multithreads.ExecutorUtils;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
 import io.atlantisframework.vortex.buffer.BufferZone;
+import io.atlantisframework.vortex.common.MultiSelectionPartitioner;
+import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.Tuple;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,8 +50,7 @@ import lombok.extern.slf4j.Slf4j;
  * @since 2.0.1
  */
 @Slf4j
-public class TupleLoopProcessor
-		implements Runnable, ApplicationListener<ContextRefreshedEvent>, BeanPostProcessor, DisposableBean {
+public class TupleLoopProcessor implements Runnable, ApplicationListener<ContextRefreshedEvent>, DisposableBean {
 
 	@Autowired
 	private BufferZone bufferZone;
@@ -61,28 +59,31 @@ public class TupleLoopProcessor
 	@Autowired(required = false)
 	private ThreadPoolTaskExecutor threadPool;
 
+	@Autowired
+	private Partitioner partitioner;
+
 	@Value("${atlantis.framework.vortex.bufferzone.collectionName}")
 	private String collectionName;
 
 	@Value("${atlantis.framework.vortex.bufferzone.pullSize:1}")
 	private int pullSize;
 
-	private final List<BulkHandler> bulkHandlers = new CopyOnWriteArrayList<BulkHandler>();
 	private final Map<String, List<Handler>> topicHandlers = new ConcurrentHashMap<String, List<Handler>>();
 	private final AtomicBoolean running = new AtomicBoolean(false);
 	private Thread runner;
 
 	public void addHandler(Handler handler) {
-		Assert.isNull(handler, "Nullable handler");
-		List<Handler> handlers = MapUtils.get(topicHandlers, handler.getTopic(), () -> {
-			return new CopyOnWriteArrayList<Handler>();
-		});
+		Assert.isNull(handler, "NonNull handler");
+		List<Handler> handlers = MapUtils.get(topicHandlers, handler.getTopic(), () -> new CopyOnWriteArrayList<Handler>());
 		handlers.add(handler);
+		if (handler.getPartitioner() != null && partitioner instanceof MultiSelectionPartitioner) {
+			((MultiSelectionPartitioner) partitioner).addPartitioner(handler.getTopic(), handler.getPartitioner());
+		}
 		log.info("Add handler: {}/{}", handler.getTopic(), handler);
 	}
 
 	public void removeHandler(Handler handler) {
-		Assert.isNull(handler, "Nullable handler");
+		Assert.isNull(handler, "NonNull handler");
 		List<Handler> handlers = topicHandlers.get(handler.getTopic());
 		if (handlers != null) {
 			while (handlers.contains(handler)) {
@@ -90,16 +91,6 @@ public class TupleLoopProcessor
 			}
 			log.info("Remove handler: {}/{}", handler.getTopic(), handler);
 		}
-	}
-
-	public void addHandler(BulkHandler handler) {
-		Assert.isNull(handler, "Nullable handler");
-		bulkHandlers.add(handler);
-	}
-
-	public void removeHandler(BulkHandler handler) {
-		Assert.isNull(handler, "Nullable handler");
-		bulkHandlers.remove(handler);
 	}
 
 	public int countOfHandlers() {
@@ -136,6 +127,9 @@ public class TupleLoopProcessor
 
 	@Override
 	public void onApplicationEvent(ContextRefreshedEvent event) {
+		event.getApplicationContext().getBeansOfType(Handler.class).entrySet().forEach(e -> {
+			addHandler(e.getValue());
+		});
 		startDaemon();
 	}
 
@@ -156,21 +150,6 @@ public class TupleLoopProcessor
 				}
 			}
 			if (CollectionUtils.isNotEmpty(tuples)) {
-				if (bulkHandlers.size() > 0) {
-					Map<String, List<Tuple>> data = tuples.stream()
-							.collect(Collectors.groupingBy(tuple -> tuple.getTopic(), Collectors.toList()));
-					for (Map.Entry<String, List<Tuple>> entry : data.entrySet()) {
-						String topic = entry.getKey();
-						List<Tuple> bulk = entry.getValue();
-						if (CollectionUtils.isNotEmpty(bulk)) {
-							for (BulkHandler handler : bulkHandlers) {
-								ExecutorUtils.runInBackground(threadPool, () -> {
-									handler.onBatch(topic, bulk.stream().collect(Collectors.mapping(Tuple::copy, Collectors.toList())));
-								});
-							}
-						}
-					}
-				}
 				if (topicHandlers.size() > 0) {
 					for (Tuple tuple : tuples) {
 						List<Handler> handlers = topicHandlers.get(tuple.getTopic());
@@ -190,16 +169,6 @@ public class TupleLoopProcessor
 			}
 		}
 		log.info("Ending Loop!");
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof Handler) {
-			addHandler((Handler) bean);
-		} else if (bean instanceof BulkHandler) {
-			addHandler((BulkHandler) bean);
-		}
-		return bean;
 	}
 
 }

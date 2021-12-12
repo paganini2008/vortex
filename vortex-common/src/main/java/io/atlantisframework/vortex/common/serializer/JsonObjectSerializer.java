@@ -35,6 +35,7 @@ import io.atlantisframework.vortex.common.TupleImpl;
  */
 public class JsonObjectSerializer implements Serializer {
 
+	private static final String KEYWORD = "content";
 	private static final String PING = "PING";
 	private static final String PONG = "PONG";
 	private final ObjectMapper objectMapper = new ObjectMapper();
@@ -55,7 +56,7 @@ public class JsonObjectSerializer implements Serializer {
 	@Override
 	public byte[] serialize(Tuple tuple) {
 		try {
-			String content = (String) tuple.getField(Tuple.KW_CONTENT);
+			String content = tuple.getField(KEYWORD, String.class);
 			return content.getBytes(charset);
 		} catch (Exception e) {
 			throw new SerializationException(e);

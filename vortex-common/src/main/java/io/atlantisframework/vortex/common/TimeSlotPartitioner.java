@@ -16,8 +16,13 @@
 package io.atlantisframework.vortex.common;
 
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import com.github.paganini2008.devtools.ArrayUtils;
+import com.github.paganini2008.devtools.collection.CollectionUtils;
 import com.github.paganini2008.devtools.time.TimeSlot;
 
 /**
@@ -37,11 +42,24 @@ public class TimeSlotPartitioner implements Partitioner {
 		this.timeSlot = timeSlot;
 	}
 
+	private final Set<String> groupingFields = new HashSet<>();
+
+	public void groupingBy(String... groupingFields) {
+		if (ArrayUtils.isNotEmpty(groupingFields)) {
+			this.groupingFields.addAll(Arrays.asList(groupingFields));
+		}
+	}
+
 	@Override
 	public <T> T selectChannel(Object data, List<T> channels) {
 		Tuple tuple = (Tuple) data;
 		long timestamp = tuple.getTimestamp();
-		int hash = timeSlot.locate(Instant.ofEpochMilli(timestamp), span).hashCode();
+		int prime = 31;
+		int hash = 1;
+		hash = hash * prime + timeSlot.locate(Instant.ofEpochMilli(timestamp), span).hashCode();
+		if (CollectionUtils.isNotEmpty(groupingFields)) {
+			hash = hash * prime + Arrays.deepHashCode(groupingFields.stream().map(fieldName -> tuple.getField(fieldName)).toArray());
+		}
 		int index = (hash & 0x7FFFFFFF) % channels.size();
 		return channels.get(index);
 	}

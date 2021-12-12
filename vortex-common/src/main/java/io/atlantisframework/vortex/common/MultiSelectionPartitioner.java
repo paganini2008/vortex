@@ -20,20 +20,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.paganini2008.devtools.Assert;
-import com.github.paganini2008.devtools.StringUtils;
 
 /**
  * 
- * NamedSelectionPartitioner
+ * MultiSelectionPartitioner
  *
  * @author Fred Feng
  * @since 2.0.1
  */
-public class NamedSelectionPartitioner implements Partitioner {
+public class MultiSelectionPartitioner implements Partitioner {
 
 	private final Map<String, Partitioner> selector = new ConcurrentHashMap<String, Partitioner>();
 
-	public NamedSelectionPartitioner() {
+	public MultiSelectionPartitioner() {
 		selector.put("roundrobin", new RoundRobinPartitioner());
 		selector.put("random", new RandomPartitioner());
 	}
@@ -57,15 +56,15 @@ public class NamedSelectionPartitioner implements Partitioner {
 
 	@Override
 	public <T> T selectChannel(Object data, List<T> channels) {
-		if (data instanceof Tuple) {
-			Tuple tuple = (Tuple) data;
-			String partitionerName = tuple.getPartitionerName();
-			Partitioner partitioner;
-			if (StringUtils.isNotBlank(partitionerName) && null != (partitioner = selector.get(partitionerName))) {
-				return partitioner.selectChannel(data, channels);
-			}
+		Tuple tuple = (Tuple) data;
+		Partitioner partitioner = selector.get(tuple.getTopic());
+		if (partitioner == null) {
+			partitioner = selector.get(tuple.getPartitionerName());
 		}
-		return defaultPartitioner.selectChannel(data, channels);
+		if (partitioner == null) {
+			partitioner = defaultPartitioner;
+		}
+		return partitioner.selectChannel(data, channels);
 	}
 
 }

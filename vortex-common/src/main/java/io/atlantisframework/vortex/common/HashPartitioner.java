@@ -31,23 +31,23 @@ import com.github.paganini2008.devtools.collection.SetUtils;
  */
 public class HashPartitioner implements Partitioner {
 
-	private final Set<String> fieldNames = SetUtils.synchronizedSet();
+	private final Set<String> groupingFields = SetUtils.synchronizedSet();
 
-	public HashPartitioner(String... fieldNames) {
-		addFieldNames(fieldNames);
+	public HashPartitioner(String... groupingFields) {
+		groupingBy(groupingFields);
 	}
 
-	public void addFieldNames(String... fieldNames) {
-		if (ArrayUtils.isNotEmpty(fieldNames)) {
-			this.fieldNames.addAll(Arrays.asList(fieldNames));
+	public void groupingBy(String... groupingFields) {
+		if (ArrayUtils.isNotEmpty(groupingFields)) {
+			this.groupingFields.addAll(Arrays.asList(groupingFields));
 		}
 	}
 
 	public <T> T selectChannel(Object obj, List<T> channels) {
 		Tuple tuple = (Tuple) obj;
-		Object[] data = new Object[fieldNames.size()];
+		Object[] data = new Object[groupingFields.size()];
 		int i = 0;
-		for (String fieldName : fieldNames) {
+		for (String fieldName : groupingFields) {
 			data[i++] = getFieldValue(tuple, fieldName);
 		}
 		try {
@@ -63,7 +63,7 @@ public class HashPartitioner implements Partitioner {
 
 	protected int indexFor(Tuple tuple, Object[] data, int length) {
 		int hash = Arrays.deepHashCode(data);
-		return (hash & 0x7FFFFFFF) % length;  
+		return (hash & 0x7FFFFFFF) % length;
 	}
 
 }

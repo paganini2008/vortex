@@ -29,9 +29,6 @@ import com.github.paganini2008.devtools.beans.BeanUtils;
 public interface Tuple {
 
 	static final String DEFAULT_TOPIC = "default";
-	static final String KW_CONTENT = "content";
-	static final String KW_TOPIC = "topic";
-	static final String PARTITIONER_NAME = Partitioner.class.getName();
 
 	static final Tuple PING = Tuple.byString("PING");
 	static final Tuple PONG = Tuple.byString("PONG");
@@ -80,14 +77,14 @@ public interface Tuple {
 
 	default String getTopic() {
 		try {
-			return (String) getField(KW_TOPIC, DEFAULT_TOPIC);
+			return (String) getField("topic", DEFAULT_TOPIC);
 		} catch (RuntimeException e) {
 			throw new TransportClientException("Don't use topic as key to put into Tuple because it is a keyword.", e);
 		}
 	}
 
 	default String getContent() {
-		return getField(KW_CONTENT, String.class);
+		return getField("content", String.class);
 	}
 
 	default long getTimestamp() {
@@ -95,15 +92,11 @@ public interface Tuple {
 	}
 
 	default String getPartitionerName() {
-		return getField(PARTITIONER_NAME, String.class);
+		return getField(Partitioner.class.getName(), String.class);
 	}
 
 	default int getLength() {
 		return getField("length", Integer.class, 0);
-	}
-
-	default String getMetric() {
-		return getField("metric", String.class);
 	}
 
 	default boolean isPing() {
@@ -120,13 +113,13 @@ public interface Tuple {
 
 	public static Tuple newOne(String topic) {
 		Tuple tuple = new TupleImpl();
-		tuple.setField(KW_TOPIC, topic);
+		tuple.setField("topic", topic);
 		return tuple;
 	}
 
 	public static Tuple byString(String content) {
 		Tuple tuple = newOne();
-		tuple.setField(KW_CONTENT, content);
+		tuple.setField("content", content);
 		return tuple;
 	}
 

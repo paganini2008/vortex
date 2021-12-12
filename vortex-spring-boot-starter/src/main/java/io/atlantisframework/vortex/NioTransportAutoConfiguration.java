@@ -37,7 +37,7 @@ import com.github.paganini2008.springdessert.reditools.common.RedisCalulation;
 import io.atlantisframework.vortex.buffer.BufferZone;
 import io.atlantisframework.vortex.buffer.RedisBufferZone;
 import io.atlantisframework.vortex.common.ChannelEventListener;
-import io.atlantisframework.vortex.common.NamedSelectionPartitioner;
+import io.atlantisframework.vortex.common.MultiSelectionPartitioner;
 import io.atlantisframework.vortex.common.NioClient;
 import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.embeddedio.EmbeddedClient;
@@ -54,6 +54,7 @@ import io.atlantisframework.vortex.common.netty.NettyClient;
 import io.atlantisframework.vortex.common.netty.NettyTupleCodecFactory;
 import io.atlantisframework.vortex.common.serializer.FstSerializer;
 import io.atlantisframework.vortex.common.serializer.Serializer;
+import io.atlantisframework.vortex.streaming.TimeWindowHandler;
 import io.atlantisframework.vortex.transport.EmbeddedChannelEventListener;
 import io.atlantisframework.vortex.transport.EmbeddedServer;
 import io.atlantisframework.vortex.transport.EmbeddedServerHandler;
@@ -119,12 +120,17 @@ public class NioTransportAutoConfiguration {
 
 	@Bean
 	public Partitioner partitioner() {
-		return new NamedSelectionPartitioner();
+		return new MultiSelectionPartitioner();
 	}
 
 	@Bean
 	public ProcessLogging processLogging() {
 		return new ProcessLogging();
+	}
+	
+	@Bean
+	public TimeWindowHandler timeWindowHandler() {
+		return new TimeWindowHandler();
 	}
 
 	@Bean
