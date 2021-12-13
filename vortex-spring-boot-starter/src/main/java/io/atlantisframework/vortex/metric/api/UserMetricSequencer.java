@@ -33,6 +33,6 @@ public interface UserMetricSequencer<I, V> extends MetricSequencer<I, UserMetric
 
 	Map<String, Map<String, Object>> sequence(I identifier, String[] metrics, boolean asc, String datePattern);
 
-	Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics);
+	Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics, String datePattern);
 
 }

@@ -25,7 +25,6 @@ import java.util.Map;
 
 import com.github.paganini2008.devtools.StringUtils;
 import com.github.paganini2008.devtools.collection.MapUtils;
-import com.github.paganini2008.devtools.comparator.ComparatorHelper;
 import com.github.paganini2008.devtools.time.DateUtils;
 
 /**
@@ -45,18 +44,21 @@ public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSeque
 	}
 
 	@Override
-	public Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics) {
+	public Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics, String datePattern) {
+		DateTimeFormatter df = StringUtils.isNotBlank(datePattern) ? DateTimeFormatter.ofPattern(datePattern)
+				: DateTimeFormatter.ofPattern("HH:mm:ss");
 		Map<String, Map<String, Object>> renderer = new LinkedHashMap<String, Map<String, Object>>();
 		for (String metric : metrics) {
 			Map<Instant, UserMetric<V>> sequence = super.sequence(identifier, metric);
-			sequence = MapUtils.sort(sequence, (left, right) -> {
-				long lt = left.getValue().getTimestamp();
-				long rt = right.getValue().getTimestamp();
-				return ComparatorHelper.valueOf(lt - rt);
-			});
 			Map.Entry<Instant, UserMetric<V>> lastEntry = MapUtils.getLastEntry(sequence);
 			if (lastEntry != null) {
-				renderer.put(metric, lastEntry.getValue().toEntries());
+				String time = lastEntry.getKey().atZone(ZoneId.systemDefault()).toLocalDateTime().format(df);
+				Map<String, Object> data = MapUtils.get(renderer, time, () -> {
+					Map<String, Object> map = new HashMap<String, Object>();
+					map.put(metric, renderNull(lastEntry.getValue().getTimestamp()));
+					return map;
+				});
+				data.put(metric, render(metric, time, lastEntry.getValue()));
 			}
 		}
 		return renderer;

@@ -46,6 +46,15 @@ public final class UserSequencer {
 				: MapUtils.emptyMap();
 	}
 
+	public Map<String, Map<String, Object>> sequenceLatest(String dataType, String identifier, String metric, String datePattern) {
+		return sequenceLatest(dataType, identifier, new String[] { metric }, datePattern);
+	}
+
+	public Map<String, Map<String, Object>> sequenceLatest(String dataType, String identifier, String[] metrics, String datePattern) {
+		return registerMap.containsKey(dataType) ? registerMap.get(dataType).sequenceLatest(identifier, metrics, datePattern)
+				: MapUtils.emptyMap();
+	}
+
 	public void registerDataType(String dataType, UserMetricSequencer<String, ?> metricSequencer) {
 		registerMap.put(dataType, metricSequencer);
 		log.info("Add metric sequencer '{}' with type '{}'.", metricSequencer.getClass().getName(), dataType);
