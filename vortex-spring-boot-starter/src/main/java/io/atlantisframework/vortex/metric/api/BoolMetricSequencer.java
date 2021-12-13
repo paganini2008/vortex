@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,12 +28,12 @@ import java.util.Map;
 public class BoolMetricSequencer extends GenericUserMetricSequencer<String, Bool> {
 
 	public BoolMetricSequencer(MetricEvictionHandler<String, UserMetric<Bool>> evictionHandler) {
-		this(1, SpanUnit.MINUTE, 60, evictionHandler);
+		this(1, TimeWindowUnit.MINUTE, 60, evictionHandler);
 	}
 
-	public BoolMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
+	public BoolMetricSequencer(int span, TimeWindowUnit timeWindowUnit, int bufferSize,
 			MetricEvictionHandler<String, UserMetric<Bool>> evictionHandler) {
-		super(span, spanUnit, bufferSize, evictionHandler);
+		super(span, timeWindowUnit, bufferSize, evictionHandler);
 	}
 
 	@Override

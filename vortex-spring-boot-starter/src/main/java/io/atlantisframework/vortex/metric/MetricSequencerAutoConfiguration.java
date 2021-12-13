@@ -5,6 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.Bool;
+import io.atlantisframework.vortex.metric.api.Numeric;
+
 /**
  * 
  * MetricSequencerAutoConfiguration

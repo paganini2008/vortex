@@ -16,10 +16,12 @@
 package io.atlantisframework.vortex.metric;
 
 import java.net.SocketAddress;
+import java.time.Instant;
 import java.util.Map;
 
 import io.atlantisframework.vortex.common.NioClient;
 import io.atlantisframework.vortex.common.Tuple;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 
@@ -45,7 +47,7 @@ public class GenericUserMetricSynchronizer<V> implements Synchronizer {
 		listener.getMetricSequencer().scan((name, metric, data) -> {
 			UserMetric<V> metricUnit;
 			long timestamp;
-			for (Map.Entry<String, UserMetric<V>> entry : data.entrySet()) {
+			for (Map.Entry<Instant, UserMetric<V>> entry : data.entrySet()) {
 				metricUnit = entry.getValue();
 				timestamp = metricUnit.getTimestamp();
 				Tuple tuple = listener.getTypeHandler().convertAsTuple(topic, name, metric, timestamp, metricUnit);

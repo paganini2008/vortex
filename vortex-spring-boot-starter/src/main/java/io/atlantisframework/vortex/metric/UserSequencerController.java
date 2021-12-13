@@ -60,9 +60,10 @@ public class UserSequencerController {
 
 	@GetMapping("/sequence/{dataType}/{name}/{metric}")
 	public Result sequence(@PathVariable("dataType") String dataType, @PathVariable("name") String name,
-			@PathVariable("metric") String metric, @RequestParam(name = "asc", required = false, defaultValue = "true") boolean asc) {
+			@PathVariable("metric") String metric, @RequestParam(name = "asc", required = false, defaultValue = "true") boolean asc,
+			@RequestParam(name = "dateFormat", required = false) String dateFormat) {
 		Result result = new Result(dataType, name, metric);
-		Map<String, Map<String, Object>> data = sequencer.sequence(dataType, name, metric, asc);
+		Map<String, Map<String, Object>> data = sequencer.sequence(dataType, name, metric, asc, dateFormat);
 		result.setData(data);
 		return result;
 	}

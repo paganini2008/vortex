@@ -15,6 +15,14 @@
 */
 package io.atlantisframework.vortex.metric;
 
+import io.atlantisframework.vortex.metric.api.BigInt;
+import io.atlantisframework.vortex.metric.api.BigIntMetricSequencer;
+import io.atlantisframework.vortex.metric.api.Bool;
+import io.atlantisframework.vortex.metric.api.BoolMetricSequencer;
+import io.atlantisframework.vortex.metric.api.GenericUserMetricSequencer;
+import io.atlantisframework.vortex.metric.api.Numeric;
+import io.atlantisframework.vortex.metric.api.NumericMetricSequencer;
+
 /**
  * DefaultMetricSequencerFactory
  * 

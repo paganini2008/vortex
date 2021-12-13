@@ -18,6 +18,9 @@ package io.atlantisframework.vortex.metric;
 import java.math.BigDecimal;
 
 import io.atlantisframework.vortex.common.Tuple;
+import io.atlantisframework.vortex.metric.api.Numeric;
+import io.atlantisframework.vortex.metric.api.NumericMetric;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 

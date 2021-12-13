@@ -13,7 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
+
+import java.time.Instant;
 
 /**
  * 
@@ -24,6 +26,6 @@ package io.atlantisframework.vortex.metric;
  */
 public interface MetricEvictionHandler<I, T extends Metric<T>> {
 
-	void onEldestMetricRemoval(I identifier, String metric, T metricUnit);
+	void onEldestMetricRemoval(I identifier, String metric, Instant instant, T metricUnit);
 
 }

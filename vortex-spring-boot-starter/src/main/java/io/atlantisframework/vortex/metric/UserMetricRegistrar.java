@@ -16,6 +16,7 @@
 package io.atlantisframework.vortex.metric;
 
 import io.atlantisframework.vortex.Handler;
+import io.atlantisframework.vortex.metric.api.UserMetricSequencer;
 
 /**
  * 

@@ -13,54 +13,48 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
-import java.util.Map;
+import lombok.ToString;
 
 /**
  * 
- * ResettableUserMetric
+ * AbstractUserMetric
  * 
  * @author Fred Feng
  *
  * @since 2.0.1
  */
-public class ResettableUserMetric<V> implements UserMetric<V> {
+@ToString
+public abstract class AbstractUserMetric<V> implements UserMetric<V> {
 
-	private final UserMetric<V> real;
+	private final V value;
+	private final long timestamp;
+	private final boolean reset;
 
-	ResettableUserMetric(UserMetric<V> real) {
-		this.real = real;
+	protected AbstractUserMetric(V value, long timestamp, boolean reset) {
+		this.value = value;
+		this.timestamp = timestamp;
+		this.reset = reset;
 	}
 
 	@Override
 	public long getTimestamp() {
-		return real.getTimestamp();
+		return timestamp;
 	}
 
 	@Override
 	public boolean reset() {
-		return Boolean.TRUE;
-	}
-
-	@Override
-	public UserMetric<V> reset(UserMetric<V> currentMetric) {
-		return real.reset(currentMetric);
-	}
-
-	@Override
-	public UserMetric<V> merge(UserMetric<V> anotherMetric) {
-		return real.merge(anotherMetric);
+		return reset;
 	}
 
 	@Override
 	public V get() {
-		return real.get();
+		return value;
 	}
 
-	@Override
-	public Map<String, Object> toEntries() {
-		return real.toEntries();
+	public ResettableUserMetric<V> resettable() {
+		return new ResettableUserMetric<V>(this);
 	}
 
 }

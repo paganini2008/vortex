@@ -13,25 +13,17 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
 /**
  * 
- * NumberMetric
+ * UserMetric
  *
  * @author Fred Feng
  * @since 2.0.1
  */
-public interface NumberMetric<T extends Number> extends Metric<NumberMetric<T>> {
+public interface UserMetric<V> extends Metric<UserMetric<V>> {
 
-	T getHighestValue();
-
-	T getLowestValue();
-
-	T getTotalValue();
-
-	long getCount();
-
-	T getMiddleValue();
+	V get();
 
 }

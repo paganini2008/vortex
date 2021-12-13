@@ -16,6 +16,10 @@
 package io.atlantisframework.vortex.metric;
 
 import io.atlantisframework.vortex.common.Tuple;
+import io.atlantisframework.vortex.metric.api.MetricSequencer;
+import io.atlantisframework.vortex.metric.api.ResettableUserMetric;
+import io.atlantisframework.vortex.metric.api.UserMetric;
+import io.atlantisframework.vortex.metric.api.UserMetricSequencer;
 
 /**
  * 
@@ -29,7 +33,7 @@ public class GenericUserMetricListener<V> implements UserMetricListener<V> {
 
 	private final MetricSequencer<String, UserMetric<V>> sequencer;
 	private final UserTypeHandler<V> typeHandler;
-	
+
 	public GenericUserMetricListener(MetricSequencer<String, UserMetric<V>> sequencer, UserTypeHandler<V> typeHandler) {
 		this.sequencer = sequencer;
 		this.typeHandler = typeHandler;
@@ -44,7 +48,7 @@ public class GenericUserMetricListener<V> implements UserMetricListener<V> {
 	public void onMerge(String identifier, String metric, long timestamp, Tuple tuple) {
 		UserMetric<V> userMetric = typeHandler.convertAsMetric(identifier, metric, timestamp, tuple);
 		if (userMetric != null) {
-			sequencer.update(identifier, metric, timestamp, userMetric, true);
+			sequencer.trace(identifier, metric, timestamp, userMetric, true);
 		}
 	}
 
@@ -52,7 +56,7 @@ public class GenericUserMetricListener<V> implements UserMetricListener<V> {
 	public void onReset(String identifier, String metric, long timestamp, UserMetric<V> metricUnit) {
 		UserMetric<V> userMetric = typeHandler.convertAsMetric(identifier, metric, timestamp, metricUnit);
 		if (userMetric != null) {
-			sequencer.update(identifier, metric, timestamp, new ResettableUserMetric<V>(userMetric), true);
+			sequencer.trace(identifier, metric, timestamp, new ResettableUserMetric<V>(userMetric), true);
 		}
 	}
 
@@ -60,7 +64,7 @@ public class GenericUserMetricListener<V> implements UserMetricListener<V> {
 	public void onSync(String identifier, String metric, long timestamp, Tuple tuple, boolean merged) {
 		UserMetric<V> userMetric = typeHandler.convertAsMetric(identifier, metric, timestamp, tuple);
 		if (userMetric != null) {
-			sequencer.update(identifier, metric, timestamp, userMetric, merged);
+			sequencer.trace(identifier, metric, timestamp, userMetric, merged);
 		}
 	}
 

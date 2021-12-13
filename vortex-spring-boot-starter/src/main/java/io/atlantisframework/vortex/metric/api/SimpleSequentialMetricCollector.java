@@ -1,3 +1,18 @@
+/**
+* Copyright 2017-2021 Fred Feng (paganini.fy@gmail.com)
+
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package io.atlantisframework.vortex.metric.api;
 
 import java.time.Instant;
@@ -13,8 +28,6 @@ import com.github.paganini2008.devtools.Assert;
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.time.TimeSlot;
 
-import io.atlantisframework.vortex.metric.Metric;
-
 /**
  * 
  * SimpleSequentialMetricCollector
@@ -24,10 +37,11 @@ import io.atlantisframework.vortex.metric.Metric;
  */
 public class SimpleSequentialMetricCollector<M, T extends Metric<T>> implements SequentialMetricCollector<M, T> {
 
-	public SimpleSequentialMetricCollector(int bufferSize, int span, TimeSlot timeSlot,
+	public SimpleSequentialMetricCollector(int span, TimeSlot timeSlot, int bufferSize,
 			HistoricalMetricsHandler<Instant, T> historicalMetricsHandler) {
+		Assert.lt(span, 1, "MetricCollector's span must greater than zero.");
+		Assert.isNull(timeSlot, "MetricCollector's timeSlot must not be null.");
 		Assert.lt(bufferSize, 1, "MetricCollector's bufferSize must greater than zero.");
-		Assert.lt(span, 1, "MetricCollector's timeSlot span must greater than zero.");
 		this.store = new ConcurrentHashMap<M, MetricCollector<Instant, T>>();
 		this.supplier = () -> new SimpleMetricCollector<Instant, T>(bufferSize, historicalMetricsHandler);
 		this.span = span;
@@ -40,11 +54,11 @@ public class SimpleSequentialMetricCollector<M, T extends Metric<T>> implements 
 	private final TimeSlot timeSlot;
 
 	@Override
-	public T set(M metric, Instant timestamp, T metricUnit, boolean merged) {
+	public T set(M metric, Instant instant, T metricUnit, boolean merged) {
 		Assert.isNull(metric, "NonNull metric");
 		Assert.isNull(metricUnit, "NonNull metricUnit");
 		MetricCollector<Instant, T> collector = MapUtils.get(store, metric, supplier);
-		LocalDateTime ldt = timeSlot.locate(timestamp, span);
+		LocalDateTime ldt = timeSlot.locate(instant, span);
 		return collector.set(ldt.atZone(ZoneId.systemDefault()).toInstant(), metricUnit, merged);
 	}
 

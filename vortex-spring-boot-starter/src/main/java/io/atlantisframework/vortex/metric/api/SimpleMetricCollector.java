@@ -1,11 +1,24 @@
+/**
+* Copyright 2017-2021 Fred Feng (paganini.fy@gmail.com)
+
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*    http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 package io.atlantisframework.vortex.metric.api;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import io.atlantisframework.vortex.metric.Metric;
 
 /**
  * 
@@ -16,11 +29,15 @@ import io.atlantisframework.vortex.metric.Metric;
  */
 public class SimpleMetricCollector<M, T extends Metric<T>> implements MetricCollector<M, T> {
 
-	private final MetricMap<M, T> store;
+	public SimpleMetricCollector() {
+		this(-1, null);
+	}
 
 	public SimpleMetricCollector(int bufferSize, HistoricalMetricsHandler<M, T> historicalMetricsHandler) {
-		this.store = bufferSize > 0 ? new BoundedMetricMap<>(bufferSize, historicalMetricsHandler) : new SimpleMetricMap<>();
+		this.store = bufferSize > 0 ? new SortedBoundedMetricMap<>(bufferSize, historicalMetricsHandler) : new SortedMetricMap<>();
 	}
+
+	private final MetricMap<M, T> store;
 
 	@Override
 	public T set(M metric, T metricUnit, boolean merged) {

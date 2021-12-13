@@ -15,6 +15,10 @@
 */
 package io.atlantisframework.vortex.metric;
 
+import java.time.Instant;
+
+import io.atlantisframework.vortex.metric.api.MetricEvictionHandler;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -29,9 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 public class LoggingMetricEvictionHandler<I, V> implements MetricEvictionHandler<I, UserMetric<V>> {
 
 	@Override
-	public void onEldestMetricRemoval(I identifier, String eldestMetric, UserMetric<V> eldestMetricUnit) {
+	public void onEldestMetricRemoval(I identifier, String metric, Instant instant, UserMetric<V> eldestMetricUnit) {
 		if (log.isTraceEnabled()) {
-			log.trace("Discard metric data: {}/{}/{}", identifier, eldestMetric, eldestMetricUnit);
+			log.trace("Discard metric data on [{}]: {}/{}/{}", instant, identifier, metric, eldestMetricUnit.get());
 		}
 	}
 

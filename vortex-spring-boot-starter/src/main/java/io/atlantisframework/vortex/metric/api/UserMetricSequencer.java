@@ -13,48 +13,26 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
-import lombok.ToString;
+import java.util.Map;
 
 /**
  * 
- * AbstractUserMetric
+ * UserMetricSequencer
  * 
  * @author Fred Feng
  *
  * @since 2.0.1
  */
-@ToString
-public abstract class AbstractUserMetric<V> implements UserMetric<V> {
+public interface UserMetricSequencer<I, V> extends MetricSequencer<I, UserMetric<V>> {
 
-	private final V value;
-	private final long timestamp;
-	private final boolean reset;
-
-	protected AbstractUserMetric(V value, long timestamp, boolean reset) {
-		this.value = value;
-		this.timestamp = timestamp;
-		this.reset = reset;
+	default Map<String, Map<String, Object>> sequence(I identifier, String metric, boolean asc, String datePattern) {
+		return sequence(identifier, new String[] { metric }, asc, datePattern);
 	}
 
-	@Override
-	public long getTimestamp() {
-		return timestamp;
-	}
+	Map<String, Map<String, Object>> sequence(I identifier, String[] metrics, boolean asc, String datePattern);
 
-	@Override
-	public boolean reset() {
-		return reset;
-	}
-
-	@Override
-	public V get() {
-		return value;
-	}
-
-	public ResettableUserMetric<V> resettable() {
-		return new ResettableUserMetric<V>(this);
-	}
+	Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics);
 
 }

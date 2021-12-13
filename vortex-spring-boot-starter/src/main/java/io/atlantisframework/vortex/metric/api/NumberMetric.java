@@ -13,35 +13,25 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
-
-import java.util.Collection;
-import java.util.Map;
+package io.atlantisframework.vortex.metric.api;
 
 /**
  * 
- * MetricSequencer
- * 
- * @author Fred Feng
+ * NumberMetric
  *
+ * @author Fred Feng
  * @since 2.0.1
  */
-public interface MetricSequencer<I, T extends Metric<T>> {
+public interface NumberMetric<T extends Number> extends Metric<NumberMetric<T>> {
 
-	int getSpan();
+	T getHighestValue();
 
-	SpanUnit getSpanUnit();
+	T getLowestValue();
 
-	int getBufferSize();
+	T getTotalValue();
 
-	Collection<I> identifiers();
+	long getCount();
 
-	int update(I identifier, String metric, long timestamp, T metricUnit, boolean merged);
-
-	int size(I identifier);
-
-	void scan(ScanHandler<I, T> handler);
-
-	Map<String, T> sequence(I identifier, String metric);
+	T getMiddleValue();
 
 }

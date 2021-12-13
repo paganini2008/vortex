@@ -13,26 +13,36 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
+import java.time.Instant;
+import java.util.Collection;
 import java.util.Map;
 
 /**
  * 
- * Metric
- *
+ * MetricSequencer
+ * 
  * @author Fred Feng
+ *
  * @since 2.0.1
  */
-public interface Metric<T extends Metric<T>> {
+public interface MetricSequencer<I, T extends Metric<T>> {
 
-	long getTimestamp();
+	int getSpan();
 
-	boolean reset();
+	TimeWindowUnit getTimeWindowUnit();
 
-	T reset(T newMetric);
+	int getBufferSize();
 
-	T merge(T newMetric);
+	Collection<I> identifiers();
 
-	Map<String, Object> toEntries();
+	int trace(I identifier, String metric, long timestamp, T metricUnit, boolean merged);
+
+	int size(I identifier);
+
+	void scan(ScanHandler<I, T> handler);
+
+	Map<Instant, T> sequence(I identifier, String metric);
+
 }

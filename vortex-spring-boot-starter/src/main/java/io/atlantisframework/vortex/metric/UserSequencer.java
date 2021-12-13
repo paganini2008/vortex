@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.github.paganini2008.devtools.collection.MapUtils;
 
+import io.atlantisframework.vortex.metric.api.UserMetricSequencer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,12 +36,14 @@ public final class UserSequencer {
 
 	private final Map<String, UserMetricSequencer<String, ?>> registerMap = new ConcurrentHashMap<String, UserMetricSequencer<String, ?>>();
 
-	public Map<String, Map<String, Object>> sequence(String dataType, String identifier, String metric, boolean asc) {
-		return sequence(dataType, identifier, new String[] { metric }, asc);
+	public Map<String, Map<String, Object>> sequence(String dataType, String identifier, String metric, boolean asc, String datePattern) {
+		return sequence(dataType, identifier, new String[] { metric }, asc, datePattern);
 	}
 
-	public Map<String, Map<String, Object>> sequence(String dataType, String identifier, String[] metrics, boolean asc) {
-		return registerMap.containsKey(dataType) ? registerMap.get(dataType).sequence(identifier, metrics, asc) : MapUtils.emptyMap();
+	public Map<String, Map<String, Object>> sequence(String dataType, String identifier, String[] metrics, boolean asc,
+			String datePattern) {
+		return registerMap.containsKey(dataType) ? registerMap.get(dataType).sequence(identifier, metrics, asc, datePattern)
+				: MapUtils.emptyMap();
 	}
 
 	public void registerDataType(String dataType, UserMetricSequencer<String, ?> metricSequencer) {

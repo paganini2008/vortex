@@ -15,15 +15,33 @@
 */
 package io.atlantisframework.vortex.metric.api;
 
+import java.util.concurrent.ConcurrentSkipListMap;
+
+import com.github.paganini2008.devtools.collection.AtomicMutableMap;
+
 /**
  * 
- * HistoricalMetricsHandler
+ * SortedMetricMap
  *
  * @author Fred Feng
  * @since 2.0.4
  */
-public interface HistoricalMetricsHandler<M, T extends Metric<T>> {
+public class SortedMetricMap<M, T extends Metric<T>> extends AtomicMutableMap<M, T> implements MetricMap<M, T> {
 
-	void handleHistoricalMetrics(M metric, T metricUnit);
+	private static final long serialVersionUID = 1753463886093156823L;
+
+	public SortedMetricMap() {
+		super(new ConcurrentSkipListMap<>());
+	}
+
+	@Override
+	public T merge(M key, T value) {
+		return super.merge(key, value, (current, update) -> {
+			if (current != null) {
+				return update.reset() ? current.reset(update) : current.merge(update);
+			}
+			return update;
+		});
+	}
 
 }

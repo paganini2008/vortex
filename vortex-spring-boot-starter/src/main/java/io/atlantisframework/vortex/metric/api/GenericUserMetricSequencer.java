@@ -13,13 +13,17 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.github.paganini2008.devtools.StringUtils;
 import com.github.paganini2008.devtools.collection.MapUtils;
 import com.github.paganini2008.devtools.comparator.ComparatorHelper;
 import com.github.paganini2008.devtools.time.DateUtils;
@@ -35,22 +39,22 @@ import com.github.paganini2008.devtools.time.DateUtils;
 public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSequencer<I, UserMetric<V>>
 		implements UserMetricSequencer<I, V> {
 
-	public GenericUserMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
+	public GenericUserMetricSequencer(int span, TimeWindowUnit timeWindowUnit, int bufferSize,
 			MetricEvictionHandler<I, UserMetric<V>> evictionHandler) {
-		super(span, spanUnit, bufferSize, evictionHandler);
+		super(span, timeWindowUnit, bufferSize, evictionHandler);
 	}
 
 	@Override
 	public Map<String, Map<String, Object>> sequenceLatest(I identifier, String[] metrics) {
 		Map<String, Map<String, Object>> renderer = new LinkedHashMap<String, Map<String, Object>>();
 		for (String metric : metrics) {
-			Map<String, UserMetric<V>> sequence = super.sequence(identifier, metric);
+			Map<Instant, UserMetric<V>> sequence = super.sequence(identifier, metric);
 			sequence = MapUtils.sort(sequence, (left, right) -> {
 				long lt = left.getValue().getTimestamp();
 				long rt = right.getValue().getTimestamp();
 				return ComparatorHelper.valueOf(lt - rt);
 			});
-			Map.Entry<String, UserMetric<V>> lastEntry = MapUtils.getLastEntry(sequence);
+			Map.Entry<Instant, UserMetric<V>> lastEntry = MapUtils.getLastEntry(sequence);
 			if (lastEntry != null) {
 				renderer.put(metric, lastEntry.getValue().toEntries());
 			}
@@ -58,14 +62,16 @@ public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSeque
 		return renderer;
 	}
 
-	public Map<String, Map<String, Object>> sequence(I identifier, String[] metrics, boolean asc) {
+	public Map<String, Map<String, Object>> sequence(I identifier, String[] metrics, boolean asc, String datePattern) {
+		DateTimeFormatter df = StringUtils.isNotBlank(datePattern) ? DateTimeFormatter.ofPattern(datePattern)
+				: DateTimeFormatter.ofPattern("HH:mm:ss");
 		long timestamp = System.currentTimeMillis();
 		Map<String, Map<String, Object>> renderer = new LinkedHashMap<String, Map<String, Object>>();
 		String time;
 		for (String metric : metrics) {
-			Map<String, UserMetric<V>> sequence = super.sequence(identifier, metric);
-			for (Map.Entry<String, UserMetric<V>> entry : sequence.entrySet()) {
-				time = entry.getKey();
+			Map<Instant, UserMetric<V>> sequence = super.sequence(identifier, metric);
+			for (Map.Entry<Instant, UserMetric<V>> entry : sequence.entrySet()) {
+				time = entry.getKey().atZone(ZoneId.systemDefault()).toLocalDateTime().format(df);
 				Map<String, Object> data = MapUtils.get(renderer, time, () -> {
 					Map<String, Object> map = new HashMap<String, Object>();
 					map.put(metric, renderNull(entry.getValue().getTimestamp()));
@@ -75,19 +81,19 @@ public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSeque
 				timestamp = timestamp > 0 ? Math.min(entry.getValue().getTimestamp(), timestamp) : entry.getValue().getTimestamp();
 			}
 		}
-		return render(metrics, renderer, timestamp, asc);
+		return render(metrics, renderer, timestamp, asc, df);
 	}
 
 	protected final Map<String, Map<String, Object>> render(String[] metrics, Map<String, Map<String, Object>> renderer, long timestamp,
-			boolean asc) {
+			boolean asc, DateTimeFormatter df) {
 		int span = getSpan();
 		int bufferSize = getBufferSize();
-		SpanUnit spanUnit = getSpanUnit();
+		TimeWindowUnit timeWindow = getTimeWindowUnit();
 		Date startTime;
 		if (asc) {
 			Date date = new Date(timestamp);
 			int amount = span * bufferSize;
-			Date endTime = DateUtils.addField(date, spanUnit.getCalendarField(), amount);
+			Date endTime = DateUtils.addField(date, timeWindow.getCalendarField(), amount);
 			if (endTime.compareTo(new Date()) <= 0) {
 				asc = false;
 				startTime = new Date();
@@ -97,11 +103,13 @@ public abstract class GenericUserMetricSequencer<I, V> extends SimpleMetricSeque
 		} else {
 			startTime = new Date();
 		}
-		Map<String, Map<String, Object>> sequentialMap = asc ? spanUnit.ascendingMap(startTime, span, bufferSize, metrics, timeInMs -> {
-			return renderNull(timeInMs);
-		}) : spanUnit.descendingMap(startTime, span, bufferSize, metrics, timeInMs -> {
-			return renderNull(timeInMs);
-		});
+		Map<String, Map<String, Object>> sequentialMap = asc
+				? timeWindow.ascendingMap(startTime, span, bufferSize, metrics, df, timeInMs -> {
+					return renderNull(timeInMs);
+				})
+				: timeWindow.descendingMap(startTime, span, bufferSize, metrics, df, timeInMs -> {
+					return renderNull(timeInMs);
+				});
 		String datetime;
 		for (Map.Entry<String, Map<String, Object>> entry : renderer.entrySet()) {
 			datetime = entry.getKey();

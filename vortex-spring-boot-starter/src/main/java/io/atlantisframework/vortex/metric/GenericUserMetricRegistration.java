@@ -16,6 +16,10 @@
 package io.atlantisframework.vortex.metric;
 
 import io.atlantisframework.vortex.Handler;
+import io.atlantisframework.vortex.metric.api.MetricSequencer;
+import io.atlantisframework.vortex.metric.api.SimpleMetricSequencer;
+import io.atlantisframework.vortex.metric.api.UserMetric;
+import io.atlantisframework.vortex.metric.api.UserMetricSequencer;
 
 /**
  * 
@@ -29,7 +33,7 @@ public class GenericUserMetricRegistration<V> implements UserMetricRegistrar<V> 
 
 	public GenericUserMetricRegistration(UserMetricSequencer<String, V> metricSequencer, UserTypeHandler<V> typeHandler) {
 		this.seconaryMetricSequencer = metricSequencer;
-		this.primaryMetricSequencer = new SimpleMetricSequencer<>(metricSequencer.getSpan(), metricSequencer.getSpanUnit(),
+		this.primaryMetricSequencer = new SimpleMetricSequencer<>(metricSequencer.getSpan(), metricSequencer.getTimeWindowUnit(),
 				metricSequencer.getBufferSize(), null);
 		this.typeHandler = typeHandler;
 	}

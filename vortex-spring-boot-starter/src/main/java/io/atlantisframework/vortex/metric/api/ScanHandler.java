@@ -13,8 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
+import java.time.Instant;
 import java.util.Map;
 
 /**
@@ -26,6 +27,6 @@ import java.util.Map;
  */
 public interface ScanHandler<I, T extends Metric<T>> {
 
-	void handleSequence(I identifier, String metric, Map<String, T> data);
+	void handleSequence(I identifier, String metric, Map<Instant, T> data);
 
 }

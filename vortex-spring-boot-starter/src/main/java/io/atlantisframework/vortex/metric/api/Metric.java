@@ -13,31 +13,26 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
-import com.github.paganini2008.devtools.collection.AtomicReferenceMap;
+import java.util.Map;
 
 /**
  * 
- * MetricCollectorMap
+ * Metric
  *
  * @author Fred Feng
  * @since 2.0.1
  */
-public class MetricCollectorMap<T extends Metric<T>> extends AtomicReferenceMap<String, T> {
+public interface Metric<T extends Metric<T>> {
 
-	private static final long serialVersionUID = 6743810257952172449L;
+	long getTimestamp();
 
-	public MetricCollectorMap(boolean ordered) {
-		super(ordered);
-	}
+	boolean reset();
 
-	@Override
-	protected T merge(String key, T current, T update) {
-		if (current != null) {
-			return update.reset() ? current.reset(update) : current.merge(update);
-		}
-		return update;
-	}
+	T reset(T newMetric);
 
+	T merge(T newMetric);
+
+	Map<String, Object> toEntries();
 }

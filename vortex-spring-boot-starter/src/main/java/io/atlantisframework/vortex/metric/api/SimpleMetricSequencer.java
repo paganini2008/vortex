@@ -13,8 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -33,26 +34,29 @@ import com.github.paganini2008.devtools.collection.MapUtils;
 public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequencer<I, T> {
 
 	private final int span;
-	private final SpanUnit spanUnit;
+	private final TimeWindowUnit timeWindowUnit;
 	private final int bufferSize;
 	private final MetricEvictionHandler<I, T> evictionHandler;
-	private final Map<I, SequentialMetricCollector<T>> collectors = new ConcurrentHashMap<I, SequentialMetricCollector<T>>();
+	private final Map<I, SequentialMetricCollector<String, T>> collectors = new ConcurrentHashMap<I, SequentialMetricCollector<String, T>>();
 
-	public SimpleMetricSequencer(int span, SpanUnit spanUnit, int bufferSize, MetricEvictionHandler<I, T> evictionHandler) {
+	public SimpleMetricSequencer(int span, TimeWindowUnit timeWindowUnit, int bufferSize, MetricEvictionHandler<I, T> evictionHandler) {
 		this.span = span;
-		this.spanUnit = spanUnit;
+		this.timeWindowUnit = timeWindowUnit;
 		this.bufferSize = bufferSize;
 		this.evictionHandler = evictionHandler;
 	}
 
+	@Override
 	public int getSpan() {
 		return span;
 	}
 
-	public SpanUnit getSpanUnit() {
-		return spanUnit;
+	@Override
+	public TimeWindowUnit getTimeWindowUnit() {
+		return timeWindowUnit;
 	}
 
+	@Override
 	public int getBufferSize() {
 		return bufferSize;
 	}
@@ -63,41 +67,42 @@ public class SimpleMetricSequencer<I, T extends Metric<T>> implements MetricSequ
 	}
 
 	@Override
-	public int update(I identifier, String metric, long timestamp, T metricUnit, boolean merged) {
+	public int trace(I identifier, String metric, long timestamp, T metricUnit, boolean merged) {
 		Assert.isNull(identifier, "Undefined collector identifier");
 		Assert.hasNoText(metric, "Undefined collector metric name");
-		SequentialMetricCollector<T> collector = MapUtils.get(collectors, identifier, () -> {
-			return new SimpleSequentialMetricCollector<T>(bufferSize, span, spanUnit, (eldestMetric, eldestMetricUnit) -> {
-				if (evictionHandler != null) {
-					evictionHandler.onEldestMetricRemoval(identifier, eldestMetric, eldestMetricUnit);
-				}
-			});
+		SequentialMetricCollector<String, T> collector = MapUtils.get(collectors, identifier, () -> {
+			return new SimpleSequentialMetricCollector<String, T>(span, timeWindowUnit.getTimeSlot(), bufferSize,
+					(instant, eldestMetricUnit) -> {
+						if (evictionHandler != null) {
+							evictionHandler.onEldestMetricRemoval(identifier, metric, instant, eldestMetricUnit);
+						}
+					});
 		});
-		collector.set(metric, timestamp, metricUnit, merged);
+		collector.set(metric, Instant.ofEpochMilli(timestamp), metricUnit, merged);
 		return collector.size();
 	}
 
 	@Override
-	public Map<String, T> sequence(I identifier, String metric) {
-		SequentialMetricCollector<T> collector = collectors.get(identifier);
+	public Map<Instant, T> sequence(I identifier, String metric) {
+		SequentialMetricCollector<String, T> collector = collectors.get(identifier);
 		return collector != null ? collector.sequence(metric) : MapUtils.emptyMap();
 	}
 
 	@Override
 	public int size(I identifier) {
-		SequentialMetricCollector<T> collector = collectors.get(identifier);
+		SequentialMetricCollector<String, T> collector = collectors.get(identifier);
 		return collector != null ? collector.size() : 0;
 	}
 
 	@Override
 	public void scan(ScanHandler<I, T> handler) {
 		I identifier;
-		SequentialMetricCollector<T> collector;
-		for (Map.Entry<I, SequentialMetricCollector<T>> entry : collectors.entrySet()) {
+		SequentialMetricCollector<String, T> collector;
+		for (Map.Entry<I, SequentialMetricCollector<String, T>> entry : collectors.entrySet()) {
 			identifier = entry.getKey();
 			collector = entry.getValue();
 			for (String metric : collector.metrics()) {
-				Map<String, T> data = collector.sequence(metric);
+				Map<Instant, T> data = collector.sequence(metric);
 				handler.handleSequence(identifier, metric, data);
 			}
 		}

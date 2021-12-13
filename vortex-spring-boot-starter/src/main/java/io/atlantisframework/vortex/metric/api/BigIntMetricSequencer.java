@@ -13,38 +13,37 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 
- * NumericMetricSequencer
+ * BigIntMetricSequencer
  * 
  * @author Fred Feng
  *
  * @since 2.0.1
  */
-public class NumericMetricSequencer extends GenericUserMetricSequencer<String, Numeric> {
+public class BigIntMetricSequencer extends GenericUserMetricSequencer<String, BigInt> {
 
-	public NumericMetricSequencer(MetricEvictionHandler<String, UserMetric<Numeric>> evictionHandler) {
-		this(1, SpanUnit.MINUTE, 60, evictionHandler);
+	public BigIntMetricSequencer(MetricEvictionHandler<String, UserMetric<BigInt>> evictionHandler) {
+		this(1, TimeWindowUnit.MINUTE, 60, evictionHandler);
 	}
 
-	public NumericMetricSequencer(int span, SpanUnit spanUnit, int bufferSize,
-			MetricEvictionHandler<String, UserMetric<Numeric>> evictionHandler) {
-		super(span, spanUnit, bufferSize, evictionHandler);
+	public BigIntMetricSequencer(int span, TimeWindowUnit timeWindowUnit, int bufferSize,
+			MetricEvictionHandler<String, UserMetric<BigInt>> evictionHandler) {
+		super(span, timeWindowUnit, bufferSize, evictionHandler);
 	}
 
 	@Override
 	protected Map<String, Object> renderNull(long timeInMs) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("highestValue", BigDecimal.ZERO);
-		map.put("middleValue", BigDecimal.ZERO);
-		map.put("lowestValue", BigDecimal.ZERO);
-		map.put("count", 0L);
+		map.put("highestValue", 0L);
+		map.put("middleValue", 0L);
+		map.put("lowestValue", 0L);
+		map.put("count", 0);
 		map.put("timestamp", timeInMs);
 		return map;
 	}

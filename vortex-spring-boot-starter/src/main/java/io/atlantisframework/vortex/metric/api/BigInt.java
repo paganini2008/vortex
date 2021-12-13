@@ -13,11 +13,9 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 */
-package io.atlantisframework.vortex.metric;
+package io.atlantisframework.vortex.metric.api;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +23,7 @@ import lombok.ToString;
 
 /**
  * 
- * Numeric
+ * BigInt
  * 
  * @author Fred Feng
  *
@@ -34,36 +32,36 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public final class Numeric implements Serializable, Cloneable {
+public final class BigInt implements Serializable, Cloneable {
 
-	private static final long serialVersionUID = -6456889194956954035L;
+	private static final long serialVersionUID = 5844565831581821139L;
 
-	private BigDecimal highestValue;
-	private BigDecimal lowestValue;
-	private BigDecimal totalValue;
+	private long highestValue;
+	private long lowestValue;
+	private long totalValue;
 	private long count;
 
-	public Numeric(BigDecimal value) {
+	public BigInt(long value) {
 		this.highestValue = value;
 		this.lowestValue = value;
 		this.totalValue = value;
 		this.count = 1;
 	}
 
-	public Numeric(BigDecimal highestValue, BigDecimal lowestValue, BigDecimal totalValue, long count) {
+	public BigInt(long highestValue, long lowestValue, long totalValue, long count) {
 		this.highestValue = highestValue;
 		this.lowestValue = lowestValue;
 		this.totalValue = totalValue;
 		this.count = count;
 	}
 
-	public BigDecimal getMiddleValue() {
-		return count > 0 ? totalValue.divide(BigDecimal.valueOf(count), 4, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+	public Long getMiddleValue() {
+		return count > 0 ? totalValue / count : 0;
 	}
-	
-	public Numeric clone() {
+
+	public BigInt clone() {
 		try {
-			return (Numeric) super.clone();
+			return (BigInt) super.clone();
 		} catch (CloneNotSupportedException e) {
 			throw new IllegalStateException(e);
 		}

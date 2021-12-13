@@ -15,7 +15,7 @@
 */
 package io.atlantisframework.vortex.utils;
 
-import io.atlantisframework.vortex.metric.Metric;
+import io.atlantisframework.vortex.metric.api.Metric;
 
 /**
  * 

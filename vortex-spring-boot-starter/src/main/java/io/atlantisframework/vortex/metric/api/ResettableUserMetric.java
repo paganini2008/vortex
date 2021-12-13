@@ -15,28 +15,52 @@
 */
 package io.atlantisframework.vortex.metric.api;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
  * 
- * MetricCollector
- *
+ * ResettableUserMetric
+ * 
  * @author Fred Feng
- * @since 2.0.4
+ *
+ * @since 2.0.1
  */
-public interface MetricCollector<M, T extends Metric<T>> {
+public class ResettableUserMetric<V> implements UserMetric<V> {
 
-	T set(M metric, T metricUnit, boolean merged);
+	private final UserMetric<V> real;
 
-	T get(M metric);
+	public ResettableUserMetric(UserMetric<V> real) {
+		this.real = real;
+	}
 
-	Collection<M> metrics();
+	@Override
+	public long getTimestamp() {
+		return real.getTimestamp();
+	}
 
-	Map<M, T> all();
+	@Override
+	public boolean reset() {
+		return Boolean.TRUE;
+	}
 
-	int size();
+	@Override
+	public UserMetric<V> reset(UserMetric<V> currentMetric) {
+		return real.reset(currentMetric);
+	}
 
-	void clear();
+	@Override
+	public UserMetric<V> merge(UserMetric<V> anotherMetric) {
+		return real.merge(anotherMetric);
+	}
+
+	@Override
+	public V get() {
+		return real.get();
+	}
+
+	@Override
+	public Map<String, Object> toEntries() {
+		return real.toEntries();
+	}
 
 }

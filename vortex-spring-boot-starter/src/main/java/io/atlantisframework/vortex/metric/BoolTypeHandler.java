@@ -16,6 +16,9 @@
 package io.atlantisframework.vortex.metric;
 
 import io.atlantisframework.vortex.common.Tuple;
+import io.atlantisframework.vortex.metric.api.Bool;
+import io.atlantisframework.vortex.metric.api.BoolMetric;
+import io.atlantisframework.vortex.metric.api.UserMetric;
 
 /**
  * 
