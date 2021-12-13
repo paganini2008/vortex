@@ -38,7 +38,7 @@ public class SimpleMetricCollector<M, T extends Metric<T>> implements MetricColl
 	}
 
 	private final MetricMap<M, T> store;
-
+	
 	@Override
 	public T set(M metric, T metricUnit, boolean merged) {
 		return merged ? store.merge(metric, metricUnit) : store.put(metric, metricUnit);
