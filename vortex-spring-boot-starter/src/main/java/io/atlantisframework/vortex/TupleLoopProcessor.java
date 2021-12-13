@@ -36,7 +36,7 @@ import com.github.paganini2008.devtools.multithreads.ExecutorUtils;
 import com.github.paganini2008.devtools.multithreads.ThreadUtils;
 
 import io.atlantisframework.vortex.buffer.BufferZone;
-import io.atlantisframework.vortex.common.MultiSelectionPartitioner;
+import io.atlantisframework.vortex.common.MultipleChoicePartitioner;
 import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.Tuple;
 import lombok.extern.slf4j.Slf4j;
@@ -76,8 +76,8 @@ public class TupleLoopProcessor implements Runnable, ApplicationListener<Context
 		Assert.isNull(handler, "NonNull handler");
 		List<Handler> handlers = MapUtils.get(topicHandlers, handler.getTopic(), () -> new CopyOnWriteArrayList<Handler>());
 		handlers.add(handler);
-		if (handler.getPartitioner() != null && partitioner instanceof MultiSelectionPartitioner) {
-			((MultiSelectionPartitioner) partitioner).addPartitioner(handler.getTopic(), handler.getPartitioner());
+		if (handler.getPartitioner() != null && partitioner instanceof MultipleChoicePartitioner) {
+			((MultipleChoicePartitioner) partitioner).addPartitioner(handler.getTopic(), handler.getPartitioner());
 		}
 		log.info("Add handler: {}/{}", handler.getTopic(), handler);
 	}

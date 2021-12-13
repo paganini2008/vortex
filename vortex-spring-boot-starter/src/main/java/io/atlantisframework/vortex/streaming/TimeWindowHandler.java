@@ -18,7 +18,7 @@ package io.atlantisframework.vortex.streaming;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.atlantisframework.vortex.Handler;
-import io.atlantisframework.vortex.common.MultiSelectionPartitioner;
+import io.atlantisframework.vortex.common.MultipleChoicePartitioner;
 import io.atlantisframework.vortex.common.NioClient;
 import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.Tuple;
@@ -42,7 +42,7 @@ public class TimeWindowHandler implements Handler {
 
 	@Override
 	public void onData(Tuple tuple) {
-		if (partitioner instanceof MultiSelectionPartitioner) {
+		if (partitioner instanceof MultipleChoicePartitioner) {
 			String dataStreamName = tuple.getField(KEYWORD, String.class);
 			tuple.setField("topic", dataStreamName);
 			nioClient.send(tuple, partitioner);

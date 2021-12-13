@@ -37,7 +37,7 @@ import com.github.paganini2008.springdessert.reditools.common.RedisCalulation;
 import io.atlantisframework.vortex.buffer.BufferZone;
 import io.atlantisframework.vortex.buffer.RedisBufferZone;
 import io.atlantisframework.vortex.common.ChannelEventListener;
-import io.atlantisframework.vortex.common.MultiSelectionPartitioner;
+import io.atlantisframework.vortex.common.MultipleChoicePartitioner;
 import io.atlantisframework.vortex.common.NioClient;
 import io.atlantisframework.vortex.common.Partitioner;
 import io.atlantisframework.vortex.common.embeddedio.EmbeddedClient;
@@ -120,7 +120,7 @@ public class NioTransportAutoConfiguration {
 
 	@Bean
 	public Partitioner partitioner() {
-		return new MultiSelectionPartitioner();
+		return new MultipleChoicePartitioner();
 	}
 
 	@Bean

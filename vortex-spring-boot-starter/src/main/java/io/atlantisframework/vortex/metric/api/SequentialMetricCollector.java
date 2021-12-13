@@ -1,0 +1,49 @@
+package io.atlantisframework.vortex.metric.api;
+
+import java.time.Instant;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import com.github.paganini2008.devtools.collection.MapUtils;
+
+import io.atlantisframework.vortex.metric.Metric;
+
+/**
+ * 
+ * SequentialMetricCollector
+ *
+ * @author Fred Feng
+ * @since 2.0.4
+ */
+public interface SequentialMetricCollector<M, T extends Metric<T>>  {
+
+	default T set(M metric, T metricUnit, boolean merged) {
+		return set(metric, Instant.ofEpochMilli(Long.min(System.currentTimeMillis(), metricUnit.getTimestamp())), metricUnit, merged);
+	}
+
+	T set(M metric, Instant timestamp, T metricUnit, boolean merged);
+
+	default T get(M metric) {
+		Map<Instant, T> data = sequence(metric);
+		Map.Entry<Instant, T> lastEntry = MapUtils.getLastEntry(data);
+		return lastEntry != null ? lastEntry.getValue() : null;
+	}
+
+	default Map<M, T> all() {
+		Map<M, T> data = new LinkedHashMap<M, T>();
+		for (M metric : metrics()) {
+			data.put(metric, get(metric));
+		}
+		return data;
+	}
+	
+	Collection<M> metrics();
+
+	int size();
+
+	void clear();
+
+	Map<Instant, T> sequence(M metric);
+
+}

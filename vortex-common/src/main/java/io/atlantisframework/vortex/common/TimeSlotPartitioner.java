@@ -52,16 +52,20 @@ public class TimeSlotPartitioner implements Partitioner {
 
 	@Override
 	public <T> T selectChannel(Object data, List<T> channels) {
+		final int prime = 31;
 		Tuple tuple = (Tuple) data;
 		long timestamp = tuple.getTimestamp();
-		int prime = 31;
 		int hash = 1;
 		hash = hash * prime + timeSlot.locate(Instant.ofEpochMilli(timestamp), span).hashCode();
 		if (CollectionUtils.isNotEmpty(groupingFields)) {
-			hash = hash * prime + Arrays.deepHashCode(groupingFields.stream().map(fieldName -> tuple.getField(fieldName)).toArray());
+			hash = hash * prime + Arrays.deepHashCode(groupingFields.stream().map(fieldName -> getFieldValue(tuple, fieldName)).toArray());
 		}
 		int index = (hash & 0x7FFFFFFF) % channels.size();
 		return channels.get(index);
+	}
+
+	protected Object getFieldValue(Tuple tuple, String fieldName) {
+		return tuple.getField(fieldName);
 	}
 
 }
