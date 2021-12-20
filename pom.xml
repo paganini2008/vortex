@@ -8,6 +8,7 @@
 	
     <modules>
 		<module>vortex-common</module>
+                <module>vortex-metric-api</module>
 		<module>vortex-spring-boot-starter</module>
 		<module>vortex-metrics</module>
     </modules>

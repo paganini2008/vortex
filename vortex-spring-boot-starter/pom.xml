@@ -101,6 +101,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.github.paganini2008.atlantis</groupId>
+			<artifactId>vortex-metric-api</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
 			<scope>provided</scope>
@@ -118,13 +124,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.github.paganini2008</groupId>
-			<artifactId>devtools-beans-streaming</artifactId>
-			<version>2.0.4</version>
-			<scope>provided</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>com.github.paganini2008</groupId>
 			<artifactId>embedded-io</artifactId>
