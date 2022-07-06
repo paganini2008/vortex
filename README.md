@@ -1,27 +1,34 @@
 # Vortex Series
-### Description
-**Vortex** is a lightweight distributed streaming computing framework. Vortex, the word means that the datas stream continuously flows into the vortex and then are output smoothly.
 
-**Vortex** is a streaming framework based on memory computing, which is suitable for high availability, high concurrency and real-time computing business scenarios.
+**Vortex** is a lightweight distributed streaming computing framework. It is based on memory computing, which is suitable for high availability, high concurrency and real-time computing business scenarios.
 
-**Vortex** is developed based on <code>SpringBoot</code> framework. It relies on [tridenter](https://github.com/paganini2008/tridenter-spring-boot-starter.git), a distributed collaboration framework for microservices, to realize cluster characteristics. Vortex microservice has an independent TCP server embedded in it (netty4 is used by default). Applications in vortex microservice cluster discover each other and establish long-term connections through the multicast function of tridenter to realize high availability, decentralization and load balancing, So that the whole spring application cluster has the ability of real-time computing.
+**Vortex** is developed based on <code>SpringBoot</code> framework. It relies on [tridenter](https://github.com/paganini2008/tridenter-spring-boot-starter.git) component to build cluster. Vortex application expose extra independent TCP server port to accept external connections. Vortex application cluster member discover for each other and establish long-term connections through the net  multicast to achieve  high availability, decentralization and load balancing.
 
-### Architecture
+## Components
+
 **The vortex series consists of three parts:**
-1. vortex-common
-   **the agent side** jar package of vortex framework
-2. vortex-spring-boot-starter
-   the core jar package of the vortex framework is added to the <code>SpringBoot</code> application to make it the **server side**
-3. vortex-metrics
-   a distributed timing computing framework based on vortex is an important independent subproject of vortex
+
+* vortex-common
+  vortex common classes, it makes a  Java application as vortex client.
+  
+* vortex-spring-boot-starter
+  the core class of the vortex framework. it makes spring application  as vortex  cluster member.
+  
+* vortex-metrics-api
+  a time series computing  tool library, it is used to do relevant  programming on  time series computing based on memory
+
+* vortex-metrics
+  a web application based on time series computing tool. It is easy to be scalable and have high performance in realtime situation
 
 ### Compatibility
-1. jdk8 (or later)
+
+1. Jdk8 (or later)
 2. <code>SpringBoot</code> Framework 2.2.x (or later)
 3. <code>Redis</code> 3.x (or later)
 4. <code>Netty</code> 4.x (or later)
 
-### Install
+## Install
+
 **Server Side**
 ```xml
 <dependency>
