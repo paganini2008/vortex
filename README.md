@@ -9,10 +9,10 @@
 **The vortex series consists of three parts:**
 
 * vortex-common
-  vortex common classes, it makes a  Java application as vortex client.
+  client side, vortex common classes, it makes a  Java application as vortex client.
   
 * vortex-spring-boot-starter
-  the core class of the vortex framework. it makes spring application  as vortex  cluster member.
+  server side, the core class of the vortex framework. it makes spring application  as vortex  cluster member.
   
 * vortex-metrics-api
   a time series computing  tool library, it is used to do relevant  programming on  time series computing based on memory
@@ -20,7 +20,7 @@
 * vortex-metrics
   a web application based on time series computing tool. It is easy to be scalable and have high performance in realtime situation
 
-### Compatibility
+## Compatibility
 
 1. Jdk8 (or later)
 2. <code>SpringBoot</code> Framework 2.2.x (or later)
@@ -37,7 +37,7 @@
 	<version>1.0-RC1</version>
 </dependency>
 ```
-**Agent Side**
+**Client Side**
 ```xml
 <dependency>
    <groupId>com.github.paganini2008.atlantis</groupId>
@@ -46,15 +46,20 @@
 </dependency>
 ```
 
-At present, there are two open source projects based on vortex framework: 
+At present, following open source projects based on vortex framework: 
 1. [Jellyfish](https://github.com/paganini2008/jellyfish.git)
 2. [Greenfinger](https://github.com/paganini2008/greenfinger.git)
 3. Vortex metrics
 
-### How to use the vortex API in your application?
-The server side of vortex receives data, and the agent side of vortex sends data. Vortex provides HTTP and TCP protocols to receive and send data.
-1. The server side of vortex needs to realize the <code>Handler</code> interface, for example:
+## Quick Start
+
+#### How to use the vortex API in your application?
+
+Server Side: 
+Implement <code>Handler</code> interface
+
 ``` java
+
 @Slf4j
 public class TestHandler implements Handler{
 
@@ -66,80 +71,19 @@ public class TestHandler implements Handler{
 }
 
 ```
-2. Agent side sends data through <code>TransportClient</code> object
-The following takes the log collection module in jellyfish as an example, with reference to the source code:
-**Jelly Server Side:**
+
+Client Side:
 ``` java
-public class Slf4jHandler implements Handler {
+String brokerUrl = "http://localhost:10010"; // Expose the location of Server Side
+TransportClient transportClient = new HttpTransportClient(brokerUrl);
+Tuple tuple = Tuple.newOne();
+tuple.setField("clusterName", clusterName);
+tuple.setField("applicationName", applicationName);
+tuple.setField("host", host);
+tuple.setField("message", "Hello World!");
+transportClient.write(tuple);
 
-    private static final String TOPIC_NAME = "slf4j";
-
-    @Autowired
-    private IdGenerator idGenerator;
-
-    @Autowired
-    private LogEntryService logEntryService;
-
-    @Value("${atlantis.framework.jellyfish.handler.interferedCharacter:}")
-    private String interferedCharacterRegex;
-
-    @Override
-    public void onData(Tuple tuple) {
-        LogEntry logEntry = new LogEntry();
-        logEntry.setId(idGenerator.generateId());
-        logEntry.setClusterName(tuple.getField("clusterName", String.class));
-        logEntry.setApplicationName(tuple.getField("applicationName", String.class));
-        logEntry.setHost(tuple.getField("host", String.class));
-        logEntry.setIdentifier(tuple.getField("identifier", String.class));
-        logEntry.setLoggerName(tuple.getField("loggerName", String.class));
-        logEntry.setMessage(tuple.getField("message", String.class));
-        logEntry.setLevel(tuple.getField("level", String.class));
-        logEntry.setReason(tuple.getField("reason", String.class));
-        logEntry.setMarker(tuple.getField("marker", String.class));
-        logEntry.setCreateTime(tuple.getField("timestamp", Long.class));
-        if (StringUtils.isNotBlank(interferedCharacterRegex)) {
-            logEntry.setMessage(logEntry.getMessage().replaceAll(interferedCharacterRegex, ""));
-            logEntry.setReason(logEntry.getReason().replaceAll(interferedCharacterRegex, ""));
-        }
-        logEntryService.bulkSaveLogEntries(logEntry);
-    }
-
-    @Override
-    public String getTopic() {
-        return TOPIC_NAME;
-    }
-
-}
 ```
 
-For the **vortex agent side**, you need to implement an agent side by yourself to continuously send datas to the **vortex server side**. Please refer to the <code>TransportClientAppenderBase.java</code> source code comes from <code>jellyfish-slf4j</code>
-
-``` java
-@Override
-    protected void append(ILoggingEvent eventObject) {
-        if (transportClient == null) {
-            return;
-        }
-        Tuple tuple = Tuple.newOne(GLOBAL_TOPIC_NAME);
-        tuple.setField("clusterName", clusterName);
-        tuple.setField("applicationName", applicationName);
-        tuple.setField("host", host);
-        tuple.setField("identifier", identifier);
-        tuple.setField("loggerName", eventObject.getLoggerName());
-        String msg = eventObject.getFormattedMessage();
-        tuple.setField("message", msg);
-        tuple.setField("level", eventObject.getLevel().toString());
-        String reason = ThrowableProxyUtil.asString(eventObject.getThrowableProxy());
-        tuple.setField("reason", reason);
-        tuple.setField("marker", eventObject.getMarker() != null ? eventObject.getMarker().getName() : "");
-        tuple.setField("timestamp", eventObject.getTimeStamp());
-        Map<String, String> mdc = eventObject.getMDCPropertyMap();
-        if (MapUtils.isNotEmpty(mdc)) {
-            tuple.append(mdc);
-        }
-        transportClient.write(tuple);
-    }
-```
-To illustrate, the interactive data between **the server side** and **the agent side** of vortex can be Map</code>, <code>Tuple</code> object or JSON string, but they are eventually wrapped as tuple object.
 
 
