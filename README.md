@@ -56,6 +56,7 @@ At present, following open source projects based on vortex framework:
 #### How to use the vortex API in your application?
 
 Server Side: 
+
 Implement <code>Handler</code> interface
 
 ``` java
