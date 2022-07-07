@@ -86,5 +86,15 @@ transportClient.write(tuple);
 
 ```
 
+####   How to retain historical metrics data ?
+
+Default setting shows statistical time window is 1 minute and rollingly retain recent 60 records, discarding historical records once exceeding the size. If you want to save historical metrics data, You need to:
+
+* Implementing interface <code>io.atlantisframework.vortex.metric.api.MetricEvictionHandler</code>  to customize your persistence policy
+* Implementing interface <code>io.atlantisframework.jellyfish.http.MetricSequencerFactory</code> or expanding class <code>io.atlantisframework.jellyfish.http.DefaultMetricSequencerFactory</code> and redefine a <code>GenericUserMetricSequencer</code>
+
+
+
+
 
 
