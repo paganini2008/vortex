@@ -1,0 +1,16 @@
+#maven
+/target/
+
+# Eclipse
+.classpath
+.project
+/.metadata/
+/.settings/
+#other
+/tmp/
+/logs/
+/*.iml
+*.iml
+/bin/
+.dbeaver
+.factorypath
