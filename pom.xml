@@ -8,7 +8,7 @@
 	
     <modules>
 		<module>vortex-common</module>
-                <module>vortex-metric-api</module>
+        <module>vortex-metric-api</module>
 		<module>vortex-spring-boot-starter</module>
 		<module>vortex-metrics</module>
     </modules>
@@ -51,7 +51,7 @@
 		<dependency>
 			<groupId>com.github.paganini2008</groupId>
 			<artifactId>devtools-lang</artifactId>
-			<version>2.0.4</version>
+			<version>2.0.5</version>
 		</dependency>
 		
 		<dependency>
