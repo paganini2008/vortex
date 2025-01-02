@@ -1,0 +1,11 @@
+server:
+  port: 30080
+spring:
+  application:
+    name: vortex-tsd-service
+  profiles:
+    active: local
+    
+
+
+    

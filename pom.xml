@@ -2,15 +2,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 	
-	<groupId>com.github.paganini2008.atlantis</groupId>
-	<version>1.0.1</version>
+	<groupId>com.github.vortex</groupId>
     <artifactId>vortex</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 	
     <modules>
-		<module>vortex-common</module>
-        <module>vortex-metric-api</module>
 		<module>vortex-spring-boot-starter</module>
-		<module>vortex-metrics</module>
+		<module>vortex-web</module>
     </modules>
 	
     <packaging>pom</packaging>
@@ -41,9 +39,7 @@
 	<properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
-		<springboot.version>2.2.5.RELEASE</springboot.version>
-		<springcloud.version>Hoxton.SR3</springcloud.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencies>
@@ -74,6 +70,7 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
+					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -96,21 +93,13 @@
     
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-dependencies</artifactId>
-				<version>${springboot.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${springcloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
+            <dependency>
+                <groupId>com.github.doodler</groupId>
+			    <artifactId>doodler-framework-dependencies</artifactId>
+			    <version>1.0.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 		</dependencies>
 	</dependencyManagement>
 	

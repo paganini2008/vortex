@@ -1,59 +1,56 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.github.vortex</groupId>
-        <artifactId>vortex</artifactId>
+		<artifactId>vortex</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>vortex-spring-boot-starter</artifactId>
-	<packaging>jar</packaging>
-	<name>vortex-spring-boot-starter</name>
+	<artifactId>vortex-metrics</artifactId>
+	<name>vortex-metrics</name>
 	<url>https://github.com/paganini2008/vortex</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<dependencies>
-	
-	    <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        
+
+		<dependency>
+			<groupId>com.github.doodler</groupId>
+			<artifactId>doodler-common-webmvc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-freemarker</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.github.vortex</groupId>
+			<artifactId>vortex-spring-boot-starter</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <scope>provided</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-
-		<dependency>
-			<groupId>com.github.doodler</groupId>
-			<artifactId>doodler-common-cloud</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.doodler</groupId>
-			<artifactId>doodler-common-transmitter</artifactId>
-		</dependency>
 
 	</dependencies>
 
 	<build>
-		<extensions>
-			<extension>
-				<groupId>kr.motd.maven</groupId>
-				<artifactId>os-maven-plugin</artifactId>
-				<version>1.7.1</version>
-			</extension>
-		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<mainClass>com.github.vortex.web.TssApplicationMain</mainClass>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -61,7 +58,6 @@
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
-					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
