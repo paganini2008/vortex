@@ -9,14 +9,14 @@ import com.github.vortex.tsd.EnableTsdStoreServer;
 
 /**
  * 
- * @Description: TssApplicationMain
+ * @Description: TsdStoreApplicationMain
  * @Author: Fred Feng
  * @Date: 02/01/2025
  * @Version 1.0.0
  */
 @EnableTsdStoreServer
 @SpringBootApplication
-public class TssApplicationMain {
+public class TsdStoreApplicationMain {
 
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
@@ -27,6 +27,6 @@ public class TssApplicationMain {
                 NetUtils.getRandomPort(Constants.SERVER_PORT_FROM, Constants.SERVER_PORT_TO);
         System.setProperty("server.port", String.valueOf(serverPort));
         System.out.println("serverPort: " + serverPort);
-        SpringApplication.run(TssApplicationMain.class, args);
+        SpringApplication.run(TsdStoreApplicationMain.class, args);
     }
 }

@@ -26,15 +26,15 @@ import com.github.doodler.common.utils.TimeWindowUnit;
 @Component
 public class TsdStoreService {
 
-    @Qualifier("decimalTypeTssOverflowDataManager")
+    @Qualifier("decimalTypeOverflowDataManager")
     @Autowired
     private OverflowDataManager decimalTypeOverflowDataManager;
 
-    @Qualifier("longTypeTssOverflowDataManager")
+    @Qualifier("longTypeOverflowDataManager")
     @Autowired
     private OverflowDataManager longTypeOverflowDataManager;
 
-    @Qualifier("doubleTypeTssOverflowDataManager")
+    @Qualifier("doubleTypeOverflowDataManager")
     @Autowired
     private OverflowDataManager doubleTypeOverflowDataManager;
 

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 public class TsdMetricPage {
 
-    @GetMapping("")
+    @GetMapping("/tsd/metric")
     public String index(Model ui) {
         return "index";
     }

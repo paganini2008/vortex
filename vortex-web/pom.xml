@@ -7,8 +7,8 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>vortex-metrics</artifactId>
-	<name>vortex-metrics</name>
+	<artifactId>vortex-web</artifactId>
+	<name>vortex-web</name>
 	<url>https://github.com/paganini2008/vortex</url>
 
 	<dependencies>
