@@ -39,6 +39,11 @@
 			<groupId>com.github.doodler</groupId>
 			<artifactId>doodler-common-transmitter</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.github.doodler</groupId>
+			<artifactId>doodler-common-redis</artifactId>
+		</dependency>
 
 	</dependencies>
 

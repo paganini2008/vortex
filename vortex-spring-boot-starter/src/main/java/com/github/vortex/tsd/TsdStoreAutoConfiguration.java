@@ -1,25 +1,14 @@
 package com.github.vortex.tsd;
 
-import static com.github.doodler.common.Constants.ISO8601_DATE_TIME_PATTERN;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.doodler.common.timeseries.NumberMetric;
-import com.github.doodler.common.utils.JacksonUtils;
 import com.github.doodler.common.utils.TimeWindowUnit;
 import com.github.vortex.tss.TssOverflowDataHandler;
 import com.github.vortex.tss.TssRedisOverflowDataManager;
@@ -41,9 +30,8 @@ public class TsdStoreAutoConfiguration {
 
     @Bean("decimalTypeOverflowDataManager")
     public TssOverflowDataHandler<NumberMetric<BigDecimal>> decimalTypeTssRedisOverflowDataManager(
-            RedisConnectionFactory connectionFactory) {
-        return new TssRedisOverflowDataManager<>("tss:decimal",
-                new Jackson2JsonRedisTemplate(connectionFactory));
+            RedisTemplate<String, Object> redisTemplate) {
+        return new TssRedisOverflowDataManager<>("tss:decimal", redisTemplate);
     }
 
     @Bean
@@ -55,9 +43,8 @@ public class TsdStoreAutoConfiguration {
 
     @Bean("longTypeOverflowDataManager")
     public TssOverflowDataHandler<NumberMetric<Long>> longTypeTssRedisOverflowDataManager(
-            RedisConnectionFactory connectionFactory) {
-        return new TssRedisOverflowDataManager<>("tss:long",
-                new Jackson2JsonRedisTemplate(connectionFactory));
+            RedisTemplate<String, Object> redisTemplate) {
+        return new TssRedisOverflowDataManager<>("tss:long", redisTemplate);
     }
 
     @Bean
@@ -69,9 +56,8 @@ public class TsdStoreAutoConfiguration {
 
     @Bean("doubleTypeOverflowDataManager")
     public TssOverflowDataHandler<NumberMetric<Double>> doubleTypeTssRedisOverflowDataManager(
-            RedisConnectionFactory connectionFactory) {
-        return new TssRedisOverflowDataManager<>("tss:double",
-                new Jackson2JsonRedisTemplate(connectionFactory));
+            RedisTemplate<String, Object> redisTemplate) {
+        return new TssRedisOverflowDataManager<>("tss:double", redisTemplate);
     }
 
     @Bean
@@ -81,36 +67,5 @@ public class TsdStoreAutoConfiguration {
                 tssProperties.getOverflowSize(), dataManager);
     }
 
-    public static class Jackson2JsonRedisTemplate extends RedisTemplate<String, Object> {
-
-        public Jackson2JsonRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-            this(redisConnectionFactory, getJacksonRedisSerializer());
-        }
-
-        public Jackson2JsonRedisTemplate(RedisConnectionFactory redisConnectionFactory,
-                Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer) {
-            super();
-            setConnectionFactory(redisConnectionFactory);
-            setKeySerializer(RedisSerializer.string());
-            setValueSerializer(jackson2JsonRedisSerializer);
-            setHashKeySerializer(RedisSerializer.string());
-            setHashValueSerializer(jackson2JsonRedisSerializer);
-            afterPropertiesSet();
-        }
-    }
-
-    public static Jackson2JsonRedisSerializer<Object> getJacksonRedisSerializer() {
-        ObjectMapper om = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
-                ObjectMapper.DefaultTyping.NON_FINAL);
-        om.setDateFormat(new SimpleDateFormat(ISO8601_DATE_TIME_PATTERN));
-        SimpleModule javaTimeModule = JacksonUtils.getJavaTimeModuleForWebMvc();
-        om.registerModule(javaTimeModule);
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer =
-                new Jackson2JsonRedisSerializer<Object>(Object.class);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
-        return jackson2JsonRedisSerializer;
-    }
 
 }

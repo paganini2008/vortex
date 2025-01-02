@@ -1,6 +1,7 @@
 package com.github.vortex.tss;
 
 import com.github.doodler.common.timeseries.OverflowDataHandler;
+import com.github.doodler.common.timeseries.OverflowDataManager;
 import com.github.doodler.common.timeseries.UserMetric;
 
 /**
@@ -11,6 +12,6 @@ import com.github.doodler.common.timeseries.UserMetric;
  * @Version 1.0.0
  */
 public interface TssOverflowDataHandler<T extends UserMetric<T>>
-        extends OverflowDataHandler<String, String, T> {
+        extends OverflowDataHandler<String, String, T>, OverflowDataManager {
 
 }

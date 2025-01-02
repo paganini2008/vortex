@@ -1,6 +1,7 @@
 package com.github.vortex.tsd;
 
 import static com.github.doodler.common.timeseries.TimeSeriesConstants.DEFAULT_DATE_TIME_FORMATTER;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -13,8 +14,9 @@ import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import com.github.doodler.common.timeseries.OverflowDataManager;
+import com.github.doodler.common.timeseries.NumberMetric;
 import com.github.doodler.common.utils.TimeWindowUnit;
+import com.github.vortex.tss.TssOverflowDataHandler;
 
 /**
  * 
@@ -28,15 +30,15 @@ public class TsdStoreService {
 
     @Qualifier("decimalTypeOverflowDataManager")
     @Autowired
-    private OverflowDataManager decimalTypeOverflowDataManager;
+    private TssOverflowDataHandler<NumberMetric<BigDecimal>> decimalTypeOverflowDataManager;
 
     @Qualifier("longTypeOverflowDataManager")
     @Autowired
-    private OverflowDataManager longTypeOverflowDataManager;
+    private TssOverflowDataHandler<NumberMetric<Long>> longTypeOverflowDataManager;
 
     @Qualifier("doubleTypeOverflowDataManager")
     @Autowired
-    private OverflowDataManager doubleTypeOverflowDataManager;
+    private TssOverflowDataHandler<NumberMetric<Double>> doubleTypeOverflowDataManager;
 
     @Autowired
     private DecimalTypeTsdStore decimalTypeTsdStore;
