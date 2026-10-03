@@ -1,0 +1,87 @@
+# Every setting comes from a VORTEX_* variable, documented in .env.example beside this module's
+# pom.xml. Precedence: the environment, then .env, then the defaults written here.
+spring:
+  config:
+    # .env in the working directory (backend/tsdb-service, or beside the jar), or VORTEX_ENV_FILE
+    import: "optional:file:${VORTEX_ENV_FILE:./.env}[.properties]"
+  application:
+    name: vortex-tsd-service
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  data:
+    redis:
+      # Only used when VORTEX_REDIS_HOST is set (see vortex.redis.host)
+      host: ${VORTEX_REDIS_HOST:localhost}
+      port: ${VORTEX_REDIS_PORT:6379}
+      password: ${VORTEX_REDIS_PASSWORD:}
+      database: ${VORTEX_REDIS_DATABASE:0}
+  spreader:
+    # The only isolation between environments
+    name: ${VORTEX_CLUSTER_NAME:vortex-tsd-cluster}
+    # Where nodes look for each other. 127.0.0.1 lets instances on one machine form a cluster
+    ip-addresses: ${VORTEX_CLUSTER_PEERS:127.0.0.1}
+    port: ${VORTEX_CLUSTER_PORT:22000}
+    # The address other nodes reach this one at; blank to detect it. Set it in containers
+    advertise-host: ${VORTEX_ADVERTISE_HOST:}
+    multiprocessing:
+      cache:
+        enabled: true
+        # Replicate only among this application's instances
+        application-name: ${spring.application.name}
+        # Written at shutdown (and every VORTEX_SNAPSHOT_INTERVAL), loaded by the leader at
+        # start. Several instances on one machine share the file; one of them writes it
+        persistent: true
+        persistent-file: ${VORTEX_DATA_DIR:${user.home}/.vortex-tsdb}/cache
+        # Keys held in each node's memory. The least recently used move to Redis when
+        # VORTEX_REDIS_HOST is set, and are DELETED when it is not
+        max-keys: ${VORTEX_CACHE_MAX_KEYS:10000}
+        external:
+          # openspreader's own store bean stays off: Vortex declares it, keyed on the Redis
+          # address (ExternalCacheStoreConfig)
+          enabled: false
+          key-prefix: ${VORTEX_REDIS_KEY_PREFIX:vortex:cache:}
+      # @MultiProcessingScheduled is built on the mutex
+      mutex:
+        enabled: true
+      scheduling:
+        enabled: true
+
+server:
+  # 0: a free port in VORTEX_PORT_RANGE, so any number of instances can run on one machine; the
+  # port taken is logged at start-up and published to the cluster. The Docker image sets 30080
+  port: ${VORTEX_SERVER_PORT:0}
+  # Requests already in progress finish before the node stops
+  shutdown: graceful
+
+vortex:
+  server:
+    port-range: ${VORTEX_PORT_RANGE:50000-60000}
+  redis:
+    # Blank: no external store. Set: keys beyond VORTEX_CACHE_MAX_KEYS move to this Redis
+    host: ${VORTEX_REDIS_HOST:}
+  tsd:
+    span: ${VORTEX_SPAN_MINUTES:1}
+    display-size: ${VORTEX_DISPLAY_SIZE:60}
+    retention: ${VORTEX_RETENTION:24h}
+    default-time-zone: ${VORTEX_TIME_ZONE:UTC}
+    snapshot-interval: ${VORTEX_SNAPSHOT_INTERVAL:5m}
+    catalog-touch-interval: ${VORTEX_CATALOG_TOUCH_INTERVAL:30s}
+    cors-allowed-origins: ${VORTEX_CORS_ORIGINS:http://localhost:3000}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  paths-to-match: /tsd/**
+
+management:
+  health:
+    # Redis being down must not take nodes out of the gateway: memory still serves every
+    # query. Spill failures show on the health page instead
+    redis:
+      enabled: false
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,spreader,spreader-report
