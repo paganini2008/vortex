@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+/*
+ * A wall display: dark by default, whatever the OS says. data-theme="light" on <html> switches
+ * to the light steps (the toggle in the header sets it). Every color is a role; the light
+ * column is chosen for the light surface, not inverted from the dark one.
+ */
+:root {
+  color-scheme: dark;
+  --canvas: #08090f;
+  --panel: #11121d;
+  --panel-2: #181a29;
+  --edge: rgba(139, 129, 244, 0.16);
+  --ink: #eef0fa;
+  --ink-2: #b4b6cc;
+  --muted: #7f8199;
+  --rule: #23253a;
+  --grid: #1d1f31;
+  --primary: #8b81f4;
+  --primary-ink: #0b0b14;
+  --primary-soft: #221f43;
+  --glow: rgba(139, 129, 244, 0.45);
+  --track: #232340;
+  --series-band: rgba(139, 129, 244, 0.22);
+  --night: #050509;
+  --night-ink: #f3f2fb;
+  --night-muted: #9a98b4;
+  --good: #22c55e;
+  --critical: #f06363;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --canvas: #eceef3;
+  --panel: #ffffff;
+  --panel-2: #f5f5fa;
+  --edge: rgba(91, 77, 224, 0.12);
+  --ink: #16161f;
+  --ink-2: #565668;
+  --muted: #8d8d9f;
+  --rule: #e7e7ef;
+  --grid: #efeff5;
+  --primary: #5b4de0;
+  --primary-ink: #ffffff;
+  --primary-soft: #ecebfd;
+  --glow: transparent;
+  --track: #e6e4f8;
+  --series-band: rgba(91, 77, 224, 0.14);
+  --night: #15141f;
+  --good: #0ca30c;
+  --critical: #d03b3b;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-panel: var(--panel);
+  --color-panel-2: var(--panel-2);
+  --color-edge: var(--edge);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-primary: var(--primary);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-soft: var(--primary-soft);
+  --color-night: var(--night);
+  --color-night-ink: var(--night-ink);
+  --color-night-muted: var(--night-muted);
+  --color-good: var(--good);
+  --color-critical: var(--critical);
+  --font-sans: var(--font-jakarta);
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 70% -10%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%),
+    var(--canvas);
+  /* The glow stays with the screen rather than ending where the first screenful does */
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The headline numbers: the one place the display allows itself a glow */
+.readout {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 24px var(--glow);
+}
+
+.tile {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pulse {
+    animation: pulse 3s ease-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 55%, transparent);
+  }
+  60%,
+  100% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
