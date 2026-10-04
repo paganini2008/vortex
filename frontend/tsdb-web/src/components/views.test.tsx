@@ -158,6 +158,27 @@ describe("HealthView", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
+  it("folds an instance to a line of figures, and all of them at once", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(ok(health(1000, NOW)));
+    render(<HealthView live={false} now={NOW} />);
+    const leader = await screen.findByRole("region", { name: "10.0.0.1:30080" });
+    const toggle = within(leader).getByRole("button", { expanded: true });
+    expect(within(leader).getByText("Replication")).toBeInTheDocument();
+
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(within(leader).queryByText("Replication")).not.toBeInTheDocument();
+    expect(within(leader).getByText("QPS")).toBeInTheDocument();
+    expect(within(leader).getByText("42")).toBeInTheDocument();
+    await userEvent.click(toggle);
+    expect(within(leader).getByText("Replication")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Collapse all" }));
+    expect(screen.queryByText("Replication")).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Expand all" }));
+    expect(screen.getAllByText("Replication")).toHaveLength(2);
+  });
+
   it("reports a failure to load", async () => {
     vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("refused"));
     render(<HealthView live={false} now={NOW} />);

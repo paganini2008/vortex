@@ -5,7 +5,7 @@ import { Line, LineChart, ResponsiveContainer, YAxis } from "recharts";
 import { ApiError, clusterHealth, type ClusterHealth, type InstanceHealth } from "@/lib/api";
 import { formatAge, formatUptime } from "@/lib/format";
 import { useChartColors } from "@/lib/useChartColors";
-import { ExpandIcon } from "./Icons";
+import { ChevronIcon, ExpandIcon } from "./Icons";
 import { ZoomDialog } from "./ZoomDialog";
 
 export const HEALTH_REFRESH_MS = 3000;
@@ -128,30 +128,41 @@ interface CardProps {
   now: number;
   onZoom?: () => void;
   large?: boolean;
+  /** Folded to its header and a line of key figures; absent where the card cannot fold */
+  expanded?: boolean;
+  onToggle?: () => void;
 }
 
-export function InstanceCard({ i, lag, qpsHistory, now, onZoom, large = false }: CardProps) {
+export function InstanceCard({ i, lag, qpsHistory, now, onZoom, large = false, expanded = true, onToggle }: CardProps) {
   const { status, reasons } = statusOf(i);
   const cache = cacheOf(i);
   const channel = i.spreader?.channels?.["spreader.cache"];
   const split = i.spreader?.cluster?.splitBrain;
   const mutex = i.spreader?.components?.mutex;
   const tasks = Object.entries(i.spreader?.components?.scheduled ?? {});
+  const name = `${i.host}:${i.serverPort ?? "?"}`;
+  const bodyId = `instance-${i.id}`;
+  const title = (
+    <>
+      <h3 className="truncate text-lg font-semibold">{name}</h3>
+      <p className="text-xs text-muted">
+        {i.leader ? "Leader" : "Follower"}, up {formatUptime(i.startTime, now)}
+        {i.reportedAt > 0 && `, reported ${formatAge(i.reportedAt, now)}`}
+      </p>
+    </>
+  );
   return (
-    <section aria-label={`${i.host}:${i.serverPort ?? "?"}`} className="tile rounded-[22px] p-5">
+    <section aria-label={name} className="tile rounded-[22px] p-5">
       <header className="flex flex-wrap items-center gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-lg font-semibold">
-            {i.host}:{i.serverPort ?? "?"}
-          </h3>
-          <p className="text-xs text-muted">
-            {i.leader ? "Leader" : "Follower"}, up {formatUptime(i.startTime, now)}
-            {i.reportedAt > 0 && `, reported ${formatAge(i.reportedAt, now)}`}
-          </p>
-        </div>
-        <span className="ml-auto">
-          <StatusBadge status={status} />
-        </span>
+        {onToggle ? (
+          <button type="button" onClick={onToggle} aria-expanded={expanded} aria-controls={bodyId} className="flex min-w-0 flex-1 items-center gap-3 text-left">
+            <span className="min-w-0">{title}</span>
+            <ChevronIcon className={`ml-auto shrink-0 text-muted transition-transform ${expanded ? "rotate-180" : ""}`} />
+          </button>
+        ) : (
+          <div className="min-w-0 flex-1">{title}</div>
+        )}
+        <StatusBadge status={status} />
         {onZoom && (
           <button type="button" onClick={onZoom} title="Enlarge" className="grid size-9 place-items-center rounded-xl text-muted hover:bg-panel-2 hover:text-ink">
             <ExpandIcon width={16} height={16} />
@@ -161,8 +172,27 @@ export function InstanceCard({ i, lag, qpsHistory, now, onZoom, large = false }:
       </header>
       {reasons.length > 0 && <p className="mt-2 text-xs text-ink-2">{reasons.join(", ")}</p>}
 
-      {i.reachable && (
-        <>
+      {i.reachable && !expanded && (
+        <dl className="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          {(
+            [
+              ["QPS", num(Math.round(i.http?.qps ?? 0))],
+              ["Errors", pct(i.http?.errorRate)],
+              ["Heap", i.jvm ? `${formatBytes(i.jvm.heapUsed)} / ${formatBytes(i.jvm.heapMax)}` : "–"],
+              ["Keys", num(cache.keyCount)],
+              ["Behind leader", i.leader || lag === undefined ? "–" : num(lag)],
+            ] as [string, string][]
+          ).map(([k, v]) => (
+            <div key={k} className="flex gap-1.5">
+              <dt className="text-muted">{k}</dt>
+              <dd className="font-semibold">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+
+      {i.reachable && expanded && (
+        <div id={bodyId}>
           <div className="mt-4 grid grid-cols-[auto_1fr] items-center gap-4 rounded-2xl bg-panel-2 p-3">
             <div>
               <div className="text-xs text-muted">Requests per second</div>
@@ -243,7 +273,7 @@ export function InstanceCard({ i, lag, qpsHistory, now, onZoom, large = false }:
               />
             )}
           </div>
-        </>
+        </div>
       )}
     </section>
   );
@@ -255,6 +285,7 @@ export function HealthView({ live, now, onSummary }: { live: boolean; now: numbe
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<Record<string, number[]>>({});
   const [zoomed, setZoomed] = useState<string | null>(null);
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const closeZoom = useCallback(() => setZoomed(null), []);
   const [writes, setWrites] = useState<number | null>(null);
   const lastLeader = useRef<{ version: number; at: number } | null>(null);
@@ -299,6 +330,16 @@ export function HealthView({ live, now, onSummary }: { live: boolean; now: numbe
     if (health) onSummary?.(`${up.length} of ${instances.length} instances reporting, leader ${health.leader ?? "none"}`);
   }, [health, up.length, instances.length, onSummary]);
 
+  const allCollapsed = instances.length > 0 && instances.every((i) => collapsed.has(i.id));
+  function toggle(id: string) {
+    setCollapsed((c) => {
+      const next = new Set(c);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   const kpis: [string, string][] = [
     ["Requests per second", num(Math.round(qps))],
     ["Error rate", qps > 0 ? pct(errors / qps) : "0%"],
@@ -326,9 +367,28 @@ export function HealthView({ live, now, onSummary }: { live: boolean; now: numbe
               </li>
             ))}
           </ul>
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-sm text-muted">Instances</h2>
+            <button
+              type="button"
+              onClick={() => setCollapsed(allCollapsed ? new Set() : new Set(instances.map((i) => i.id)))}
+              className="rounded-lg px-2 py-1 text-sm font-medium text-primary"
+            >
+              {allCollapsed ? "Expand all" : "Collapse all"}
+            </button>
+          </div>
           <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,520px),1fr))] items-start gap-4">
             {instances.map((i) => (
-              <InstanceCard key={i.id} i={i} lag={health.replicationLag?.[i.id]} qpsHistory={history[i.id] ?? []} now={now} onZoom={() => setZoomed(i.id)} />
+              <InstanceCard
+                key={i.id}
+                i={i}
+                lag={health.replicationLag?.[i.id]}
+                qpsHistory={history[i.id] ?? []}
+                now={now}
+                onZoom={() => setZoomed(i.id)}
+                expanded={!collapsed.has(i.id)}
+                onToggle={() => toggle(i.id)}
+              />
             ))}
           </div>
           {zoomedInstance && (
