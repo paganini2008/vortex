@@ -60,9 +60,14 @@ function categoryCalls(f: ReturnType<typeof backend>) {
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
+  // The fixtures are dated: keep the clock at their time, so "live" does not expire with the date.
+  // Only Date is faked; timers stay real for the polling and findBy* waits
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(NOW);
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   delete document.documentElement.dataset.theme;
   localStorage.clear();
 });

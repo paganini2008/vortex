@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vortex TSDB</title>
+<meta name="description" content="A lightweight distributed time series database: HTTP writes, per-minute aggregates, tumbling and sliding windows, replicated in memory.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --canvas: #08090f; --panel: #11121d; --panel-2: #181a29; --edge: #262a40; --rule: #1d2033;
+    --ink: #eef0fb; --ink-2: #b9bdd6; --muted: #7d82a3;
+    --primary: #8b81f4; --primary-soft: rgba(139,129,244,.14); --good: #3ecf8e;
+    --radius: 20px; --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --canvas: #f5f6fb; --panel: #ffffff; --panel-2: #eef0f8; --edge: #dde0ee; --rule: #e7e9f3;
+      --ink: #14162a; --ink-2: #3d4263; --muted: #6b7093; --primary: #6c5ff0; --primary-soft: rgba(108,95,240,.1);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--canvas); color: var(--ink);
+    font: 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+    background-image: radial-gradient(1200px 600px at 80% -10%, var(--primary-soft), transparent 60%);
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+  nav.top { display: flex; align-items: center; gap: 24px; padding: 20px 0; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; text-decoration: none; }
+  .logo span.mark { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: var(--primary); color: #fff; }
+  nav.top .links { margin-left: auto; display: flex; gap: 22px; font-size: 15px; }
+  nav.top .links a { color: var(--ink-2); text-decoration: none; }
+  nav.top .links a:hover { color: var(--ink); }
+
+  .hero { padding: 64px 0 40px; text-align: center; }
+  .pill { display: inline-flex; gap: 8px; align-items: center; padding: 6px 14px; border: 1px solid var(--edge); border-radius: 999px; font-size: 13px; color: var(--ink-2); }
+  .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--good); }
+  h1 { font-size: clamp(38px, 6vw, 64px); line-height: 1.05; letter-spacing: -0.03em; margin: 22px 0 18px; font-weight: 800; }
+  h1 em { font-style: normal; color: var(--primary); }
+  .lead { max-width: 720px; margin: 0 auto; font-size: 19px; color: var(--ink-2); }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 32px 0 0; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--edge); }
+  .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .btn:hover { filter: brightness(1.08); }
+  .hero-term { max-width: 760px; margin: 44px auto 0; text-align: left; }
+
+  section { padding: 64px 0; }
+  section > .wrap > h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -0.02em; margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 32px; max-width: 680px; }
+  .grid { display: grid; gap: 16px; }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 22px; }
+  .card h3 { margin: 12px 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--ink-2); font-size: 15px; }
+  .icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--primary-soft); color: var(--primary); }
+  .pain .from { color: var(--muted); font-size: 14px; text-decoration: line-through; text-decoration-color: var(--edge); }
+
+  .term { background: #0b0c14; border: 1px solid var(--edge); border-radius: 16px; overflow: hidden; color: #dfe2f5; }
+  .term .bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid #1d2033; font-size: 12px; color: #7d82a3; }
+  .term .bar b { width: 10px; height: 10px; border-radius: 50%; background: #2a2e45; }
+  .term .bar .copy { margin-left: auto; background: transparent; border: 1px solid #2a2e45; color: #b9bdd6; border-radius: 8px; padding: 3px 10px; font: inherit; cursor: pointer; }
+  .term pre { margin: 0; padding: 16px 18px; overflow-x: auto; font: 13.5px/1.65 var(--mono); }
+  .c { color: #7d82a3; } .k { color: #a99ff8; } .s { color: #7ee2b8; } .n { color: #f5c26b; }
+
+  .diagram { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 24px; overflow-x: auto; }
+  .diagram svg { display: block; width: 100%; min-width: 640px; height: auto; }
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .steps li { counter-increment: s; padding-left: 40px; position: relative; color: var(--ink-2); font-size: 15px; }
+  .steps li::before { content: counter(s); position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); font-weight: 700; font-size: 14px; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .tabs button { background: var(--panel-2); color: var(--ink-2); border: 1px solid var(--rule); border-radius: 10px; padding: 8px 14px; font: 500 14px Inter, sans-serif; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .panel[hidden] { display: none; }
+  .panel p.note { color: var(--ink-2); font-size: 15px; margin: 0 0 12px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+  td:first-child { color: var(--ink-2); }
+  .tablebox { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); overflow-x: auto; }
+  .tablebox table { min-width: 620px; }
+  .hl { color: var(--primary); font-weight: 600; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .stat { background: var(--panel); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px; }
+  .stat b { display: block; font-size: 32px; letter-spacing: -0.02em; }
+  .stat span { color: var(--muted); font-size: 14px; }
+  .env { color: var(--muted); font-size: 14px; margin: 14px 0 0; }
+
+  .shot { margin-top: 24px; border-radius: var(--radius); border: 1px solid var(--rule); overflow: hidden; background: var(--panel); }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption { padding: 10px 16px; color: var(--muted); font-size: 14px; }
+
+  a.card { text-decoration: none; transition: border-color .15s; }
+  a.card:hover { border-color: var(--primary); }
+  a.card .go { color: var(--primary); font-size: 14px; margin-top: 10px; display: inline-block; }
+
+  footer { border-top: 1px solid var(--rule); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+  footer nav { margin-left: auto; display: flex; gap: 18px; }
+  footer a { text-decoration: none; } footer a:hover { color: var(--ink); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 0 16px; }
+    nav.top .links a.hide-sm { display: none; }
+    section { padding: 44px 0; }
+    .hero { padding-top: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <nav class="top" aria-label="Main">
+    <a class="logo" href="#"><span class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 15l4-6 4 4 4-7 4 5"/></svg>
+    </span>vortex</a>
+    <div class="links">
+      <a class="hide-sm" href="#features">Features</a>
+      <a class="hide-sm" href="#how">How it works</a>
+      <a href="#start">Get started</a>
+      <a href="https://github.com/paganini2008/vortex">GitHub</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <!-- 1. Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="pill"><i></i>Open source · Apache 2.0 · Spring Boot 4 · openspreader</span>
+      <h1>A time series database<br>that starts as a <em>cluster</em>.</h1>
+      <p class="lead">Vortex TSDB is a lightweight, distributed time series database for real-time metrics.
+        Write samples over HTTP; read per-minute aggregates, instant values, and tumbling or sliding windows.
+        Every node holds a full replica in memory.</p>
+      <div class="cta">
+        <a class="btn primary" href="#start">Get started</a>
+        <a class="btn" href="https://github.com/paganini2008/vortex">GitHub</a>
+        <a class="btn" href="https://github.com/paganini2008/vortex#readme">Documentation</a>
+      </div>
+      <div class="term hero-term">
+        <div class="bar"><b></b><b></b><b></b>&nbsp; terminal</div>
+<pre><span class="k">$</span> ./run-docker.sh                                   <span class="c"># 3 nodes + gateway + Redis</span>
+<span class="k">$</span> curl -X POST <span class="s">'localhost:9080/tsd/push?t=long&amp;c=car&amp;d=speed&amp;v=44'</span>
+<span class="k">$</span> curl <span class="s">'localhost:9080/tsd/query?t=long&amp;c=car&amp;d=speed&amp;range=6h&amp;step=5&amp;window=15'</span>
+{ <span class="s">"step"</span>: <span class="n">5</span>, <span class="s">"window"</span>: <span class="n">15</span>, <span class="s">"last"</span>: { <span class="s">"value"</span>: <span class="n">44</span> }, <span class="s">"points"</span>: [ { <span class="s">"count"</span>: <span class="n">900</span>, <span class="s">"highestValue"</span>: <span class="n">131</span>, <span class="s">"averageValue"</span>: <span class="n">69.8</span> }, … ] }</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Why -->
+  <section id="why">
+    <div class="wrap">
+      <h2>Why Vortex?</h2>
+      <p class="sub">Live metrics need exact counts, fast windows and a node that can die. They rarely need a storage engine and a query language.</p>
+      <div class="grid g3 pain">
+        <div class="card"><div class="from">Several components to deploy and operate</div><h3>One service, one command</h3><p>A Spring Boot service and an optional Redis. <code>./run-docker.sh</code> starts a whole cluster.</p></div>
+        <div class="card"><div class="from">Counts drift under concurrent writers</div><h3>Exact without locks</h3><p>Every write is applied on the leader, one at a time, then replicated as an operation.</p></div>
+        <div class="card"><div class="from">Windows need tables or a query language</div><h3>Four HTTP parameters</h3><p><code>range</code>, <code>step</code>, <code>window</code>, <code>z</code>. Windows are folded from minute buckets at read time.</p></div>
+        <div class="card"><div class="from">A node goes down, so does the service</div><h3>Full replica on every node</h3><p>A new leader within 5 s after a crash; a graceful stop hands over at once.</p></div>
+        <div class="card"><div class="from">Memory grows with every series</div><h3>Bounded memory</h3><p>A per-node key limit; cold keys move to Redis and are read back on demand.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Features -->
+  <section id="features">
+    <div class="wrap">
+      <h2>Features</h2>
+      <p class="sub">Everything a real-time TSDB needs, except a query language.</p>
+      <div class="grid g3">
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 3 5-7"/></svg></div><h3>Per-minute aggregates</h3><p>Count, highest, lowest, total and average for <code>long</code>, <code>double</code> and <code>decimal</code>.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="6" height="12" rx="1"/><rect x="9" y="6" width="6" height="12" rx="1"/><path d="M15 9h6v6h-6"/></svg></div><h3>Tumbling &amp; sliding windows</h3><p>Any range up to the retention, any step, any window, aligned in the zone you ask for.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><h3>Instant values</h3><p>The latest sample of every series; a whole category in one read.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="18" r="2.5"/><path d="M8 7.5l2.6 8.5M16 7.5l-2.6 8.5M8.5 6h7"/></svg></div><h3>Replicated cluster</h3><p>Nodes find each other and elect a leader. Reads come from local memory on any node.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div><h3>Snapshots</h3><p>Written at shutdown and every 5 minutes. Restarts keep the data; expired buckets are dropped on load.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h10M10 6l6 6-6 6"/><path d="M20 4v16"/></svg></div><h3>Redis overflow</h3><p>Keys beyond <code>VORTEX_CACHE_MAX_KEYS</code> spill to Redis when one is configured.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div><h3>Cluster health API</h3><p>Per node QPS, error rate, cache, replication lag, leader and JVM at <code>/tsd/health</code>.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg></div><h3>Gateway &amp; OpenAPI</h3><p>Traefik load-balances healthy nodes; Swagger UI documents every endpoint.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/></svg></div><h3>Version 1 compatible</h3><p><code>/tsd/push</code>, <code>/tsd/test</code> and <code>/tsd/retrieve</code> keep their parameters and responses.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. How it works -->
+  <section id="how">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="sub">Writes are serialised on the leader and replicated as operations; reads fold minute buckets from local memory.</p>
+      <div class="diagram" role="img" aria-label="Clients call the Traefik gateway, which forwards to any of three nodes. Writes go to the leader and replicate to all nodes. The leader spills cold keys to Redis.">
+        <svg viewBox="0 0 900 300" fill="none" font-family="Inter, sans-serif" font-size="14">
+          <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs>
+          <rect x="20" y="120" width="130" height="60" rx="14" fill="var(--panel-2)" stroke="var(--edge)"/>
+          <text x="85" y="147" text-anchor="middle" fill="var(--ink)" font-weight="600">Clients</text>
+          <text x="85" y="166" text-anchor="middle" fill="var(--muted)" font-size="12">HTTP push / query</text>
+          <path d="M150 150H220" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/>
+          <rect x="225" y="120" width="140" height="60" rx="14" fill="var(--panel-2)" stroke="var(--edge)"/>
+          <text x="295" y="147" text-anchor="middle" fill="var(--ink)" font-weight="600">Traefik :9080</text>
+          <text x="295" y="166" text-anchor="middle" fill="var(--muted)" font-size="12">healthy nodes only</text>
+          <path d="M365 150C400 150 400 60 440 60M365 150H435M365 150C400 150 400 240 440 240" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/>
+          <rect x="445" y="30" width="190" height="60" rx="14" fill="var(--primary-soft)" stroke="var(--primary)"/>
+          <text x="540" y="57" text-anchor="middle" fill="var(--ink)" font-weight="600">node 1 · leader</text>
+          <text x="540" y="76" text-anchor="middle" fill="var(--muted)" font-size="12">applies every write</text>
+          <rect x="445" y="120" width="190" height="60" rx="14" fill="var(--panel-2)" stroke="var(--edge)"/>
+          <text x="540" y="147" text-anchor="middle" fill="var(--ink)" font-weight="600">node 2</text>
+          <text x="540" y="166" text-anchor="middle" fill="var(--muted)" font-size="12">full replica, local reads</text>
+          <rect x="445" y="210" width="190" height="60" rx="14" fill="var(--panel-2)" stroke="var(--edge)"/>
+          <text x="540" y="237" text-anchor="middle" fill="var(--ink)" font-weight="600">node 3</text>
+          <text x="540" y="256" text-anchor="middle" fill="var(--muted)" font-size="12">full replica, local reads</text>
+          <path d="M660 60C690 60 690 150 660 150M660 60C710 60 710 240 660 240" stroke="var(--primary)" stroke-width="1.6" stroke-dasharray="5 5" marker-end="url(#ar)"/>
+          <text x="712" y="140" fill="var(--primary)" font-size="12">replicate</text>
+          <text x="712" y="156" fill="var(--primary)" font-size="12">operations</text>
+          <path d="M635 45H760" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/>
+          <rect x="765" y="20" width="115" height="54" rx="14" fill="var(--panel-2)" stroke="var(--edge)"/>
+          <text x="822" y="44" text-anchor="middle" fill="var(--ink)" font-weight="600">Redis</text>
+          <text x="822" y="62" text-anchor="middle" fill="var(--muted)" font-size="12">optional overflow</text>
+        </svg>
+      </div>
+      <ol class="steps">
+        <li><b>Write</b>: any node forwards a sample to the leader, which applies max, min, sum(+count) and the latest value to the minute bucket.</li>
+        <li><b>Replicate</b>: each operation is broadcast to every node, so every node holds the whole dataset.</li>
+        <li><b>Read</b>: the node that receives a query folds the buckets it covers from its own memory.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. Quick start -->
+  <section id="start">
+    <div class="wrap">
+      <h2>Quick start</h2>
+      <p class="sub">Docker with BuildKit is all you need. The first run builds the images in a few minutes.</p>
+      <div class="term">
+        <div class="bar"><b></b><b></b><b></b>&nbsp; bash <button class="copy" type="button" data-copy="qs">Copy</button></div>
+<pre id="qs">git clone https://github.com/paganini2008/vortex.git
+cd vortex
+./run-docker.sh
+curl -X POST 'http://localhost:9080/tsd/push?t=long&amp;c=car&amp;d=speed&amp;v=44'
+curl 'http://localhost:9080/tsd/last?t=long&amp;c=car&amp;d=speed'</pre>
+      </div>
+      <div class="tablebox" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Entry point</th><th>URL</th></tr></thead>
+          <tbody>
+            <tr><td>HTTP API</td><td><code>http://localhost:9080/tsd/…</code></td></tr>
+            <tr><td>Swagger UI</td><td><code>http://localhost:9080/swagger-ui.html</code></td></tr>
+            <tr><td>Web console</td><td><code>http://localhost:9080/</code></td></tr>
+            <tr><td>Options</td><td><code>-n 5</code> · <code>--no-web</code> · <code>--no-redis</code> · <code>--max-keys 50000</code> · <code>status</code> · <code>down [--purge]</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Examples -->
+  <section id="examples">
+    <div class="wrap">
+      <h2>Examples</h2>
+      <p class="sub">Every response is wrapped as <code>{"code": 1, "msg": "ok", "data": …}</code>; <code>code</code> is 0 on failure.</p>
+      <div class="tabs" role="tablist" aria-label="Examples">
+        <button role="tab" aria-selected="true" aria-controls="ex1" id="t1">Push &amp; instant value</button>
+        <button role="tab" aria-selected="false" aria-controls="ex2" id="t2">Sliding window</button>
+        <button role="tab" aria-selected="false" aria-controls="ex3" id="t3">Category &amp; catalog</button>
+        <button role="tab" aria-selected="false" aria-controls="ex4" id="t4">Cluster health</button>
+      </div>
+      <div class="panel" id="ex1" role="tabpanel" aria-labelledby="t1">
+        <p class="note">Three writes land in the same minute bucket; the instant value is the last one.</p>
+        <div class="term"><pre><span class="k">for</span> v <span class="k">in</span> 44 67 112; <span class="k">do</span> curl -X POST <span class="s">"localhost:9080/tsd/push?t=long&amp;c=car&amp;d=speed&amp;v=$v"</span>; <span class="k">done</span>
+curl <span class="s">'localhost:9080/tsd/last?t=long&amp;c=car&amp;d=speed'</span>
+<span class="c">→ {"value": 112, "timestamp": 1791090941234}</span>
+curl <span class="s">'localhost:9080/tsd/retrieve?t=long&amp;c=car&amp;d=speed&amp;z=Asia/Shanghai'</span>
+<span class="c">→ "09:29:00": {"count": 3, "highestValue": 112, "lowestValue": 44, "totalValue": 223, "averageValue": 74.3333}</span></pre></div>
+      </div>
+      <div class="panel" id="ex2" role="tabpanel" aria-labelledby="t2" hidden>
+        <p class="note">Six hours, a point every 5 minutes, each folding the 15 minutes before it. <code>step = window</code> gives tumbling windows.</p>
+        <div class="term"><pre>curl <span class="s">'localhost:9080/tsd/query?t=long&amp;c=car&amp;d=speed&amp;range=6h&amp;step=5&amp;window=15&amp;z=Asia/Shanghai'</span>
+<span class="c">→ { "range": "6h", "step": 5, "window": 15,
+    "last":    {"value": 61},
+    "summary": {"count": 21540, "highestValue": 140, "lowestValue": 1, "averageValue": 70.02},
+    "points":  [{"from": 1791069300000, "to": 1791070200000, "count": 900, "averageValue": 69.8}, …] }</span></pre></div>
+      </div>
+      <div class="panel" id="ex3" role="tabpanel" aria-labelledby="t3" hidden>
+        <p class="note">All series of a category in one call, and the catalog of categories, busiest first.</p>
+        <div class="term"><pre>curl <span class="s">'localhost:9080/tsd/category?c=car&amp;range=1h'</span>
+curl <span class="s">'localhost:9080/tsd/categories'</span>
+<span class="c">→ [{"category": "car", "series": 4, "lastSeen": 1791090941234, "samplesPerMinute": 3600.0}, …]</span>
+curl <span class="s">'localhost:9080/tsd/series'</span></pre></div>
+      </div>
+      <div class="panel" id="ex4" role="tabpanel" aria-labelledby="t4" hidden>
+        <p class="note">Every node's API rates, cache, replication and JVM, served from replicated memory by any node.</p>
+        <div class="term"><pre>curl <span class="s">'localhost:9080/tsd/health'</span>
+<span class="c">→ { "leader": "10.230.0.11", "maxReplicationLag": 0,
+    "instances": [{ "host": "10.230.0.11", "leader": true,
+                    "http":  {"qps": 642.4, "errorRate": 0.0, "avgLatencyMs": 1.8},
+                    "jvm":   {"heapUsed": 214958080, "processCpu": 0.41}, … }, …] }</span></pre></div>
+        <figure class="shot"><img src="blogger/assets/system-health.png" alt="System health page of the web console: per node API rate, cache, replication and JVM" loading="lazy"><figcaption>The same figures in the bundled web console.</figcaption></figure>
+      </div>
+      <figure class="shot"><img src="blogger/assets/query-explorer.png" alt="Query explorer: a series queried with a range, step and window, as chart and table" loading="lazy"><figcaption>Query explorer in the bundled web console: any series, range, step and window, with the matching API call.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- 7. Performance -->
+  <section id="performance">
+    <div class="wrap">
+      <h2>Performance</h2>
+      <p class="sub">Writes are serialised on the leader: throughput is bounded by one node, consistency is exact.</p>
+      <div class="stats">
+        <div class="stat"><b>0</b><span>failures in 826,781 writes, identical totals on every node</span></div>
+        <div class="stat"><b>~1,000/s</b><span>samples where throughput levels off</span></div>
+        <div class="stat"><b>1,500/s</b><span>peak samples, leader CPU ~230%, heap ≤ 310 MB</span></div>
+        <div class="stat"><b>4.7 s</b><span>to a new leader after <code>kill -9</code></span></div>
+      </div>
+      <div class="tablebox">
+        <table>
+          <thead><tr><th></th><th>Vortex TSDB</th><th>Prometheus</th><th>InfluxDB</th><th>TimescaleDB</th></tr></thead>
+          <tbody>
+            <tr><td>Writes</td><td class="hl">HTTP push</td><td>Periodic pull</td><td>HTTP push</td><td>SQL</td></tr>
+            <tr><td>Queries</td><td class="hl">HTTP parameters</td><td>PromQL</td><td>InfluxQL / SQL</td><td>SQL</td></tr>
+            <tr><td>Storage</td><td class="hl">In-memory replicas + snapshots</td><td>Local disk</td><td>Disk</td><td>PostgreSQL</td></tr>
+            <tr><td>High availability</td><td class="hl">Built in</td><td>Extra setup</td><td>By edition</td><td>PostgreSQL tooling</td></tr>
+            <tr><td>Best for</td><td class="hl">Real-time metrics, days of retention</td><td>Monitoring &amp; alerting</td><td>General time series</td><td>Long-term analytics</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="env">Measured on Docker Desktop (4 CPUs, 8 GB), 3 nodes, k6 through the Traefik gateway. Leader killed at 600 samples/s: 0.28% of requests failed, all at the moment of the kill.</p>
+    </div>
+  </section>
+
+  <!-- 8. Documentation -->
+  <section id="docs">
+    <div class="wrap">
+      <h2>Documentation</h2>
+      <p class="sub">The README is the reference; the posts walk through the design.</p>
+      <div class="grid g3">
+        <a class="card" href="https://github.com/paganini2008/vortex#quick-start-docker-recommended"><h3>Getting started</h3><p>Run a cluster on Docker and push the first sample.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex#api"><h3>API reference</h3><p>Push, retrieve, last, query, category, categories, series, cluster, health.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex#configuration"><h3>Configuration</h3><p>Every <code>VORTEX_*</code> setting, per component <code>.env</code> file.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex#how-it-works"><h3>Architecture</h3><p>Buckets, catalog, replication, snapshots and overflow.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex#limits"><h3>Limits</h3><p>Write ceiling, failover, durability and precision, measured.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/blob/main/docs/blogger/vortex-tsdb.en.md"><h3>Blog post</h3><p>The design end to end, in <a href="https://github.com/paganini2008/vortex/blob/main/docs/blogger/vortex-tsdb.en.md">English</a> and <a href="https://github.com/paganini2008/vortex/blob/main/docs/blogger/vortex-tsdb.zh.md">中文</a>.</p><span class="go">Read →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Community -->
+  <section id="community">
+    <div class="wrap">
+      <h2>Open source</h2>
+      <p class="sub">Apache 2.0. Bug reports, ideas and pull requests are welcome.</p>
+      <div class="grid g3">
+        <a class="card" href="https://github.com/paganini2008/vortex"><h3>GitHub</h3><p>Source, releases and the README.</p><span class="go">Open →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/issues"><h3>Issues</h3><p>Report a bug or request a feature.</p><span class="go">Open →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/pulls"><h3>Contributing</h3><p>Tests gate at 80% coverage on both backend and frontend.</p><span class="go">Open →</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Vortex TSDB · Apache License 2.0</span>
+    <nav aria-label="Footer">
+      <a href="https://github.com/paganini2008/vortex">GitHub</a>
+      <a href="https://github.com/paganini2008/vortex#readme">Documentation</a>
+      <a href="https://github.com/paganini2008/vortex/blob/main/LICENSE">License</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll("[data-copy]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var text = document.getElementById(b.dataset.copy).innerText;
+      var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, function () {});
+    });
+  });
+  var tabs = document.querySelectorAll('[role="tab"]');
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () {
+      tabs.forEach(function (o) {
+        var on = o === t;
+        o.setAttribute("aria-selected", on);
+        document.getElementById(o.getAttribute("aria-controls")).hidden = !on;
+      });
+    });
+  });
+</script>
+</body>
+</html>

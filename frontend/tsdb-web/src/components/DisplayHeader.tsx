@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useSyncExternalStore, type ReactNode } from "react";
 import { RANGES, SMOOTHING_STEPS } from "@/lib/format";
 import type { Theme } from "@/lib/theme";
 import { BookIcon, MoonIcon, PlusIcon, SunIcon } from "./Icons";
@@ -19,18 +19,27 @@ interface Props {
   now: number;
 }
 
+const noSubscription = () => () => {};
+
+/** False while the page is pre-rendered or hydrated, true once it runs in the browser. */
+function useInBrowser() {
+  return useSyncExternalStore(noSubscription, () => true, () => false);
+}
+
 function Clock({ now, timeZone }: { now: number; timeZone: string }) {
-  const time = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23", timeZone }).format(now);
-  const date = new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone }).format(now);
+  // The page is pre-rendered at build time: a time rendered there would be the build's, and
+  // hydration keeps it. So the clock starts blank and fills in once in the browser
+  const inBrowser = useInBrowser();
+  const time = inBrowser
+    ? new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23", timeZone }).format(now)
+    : "--:--:--";
+  const date = inBrowser ? new Intl.DateTimeFormat("en-GB", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone }).format(now) : "\u00a0";
   return (
     <div className="text-right">
-      {/* The server's clock and the browser's differ; the browser's wins without a warning */}
-      <div className="readout text-3xl font-bold leading-none" aria-label="Current time" suppressHydrationWarning>
+      <div className="readout text-3xl font-bold leading-none" aria-label="Current time">
         {time}
       </div>
-      <div className="mt-1 text-xs text-muted" suppressHydrationWarning>
-        {date}
-      </div>
+      <div className="mt-1 text-xs text-muted">{date}</div>
     </div>
   );
 }

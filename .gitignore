@@ -52,6 +52,9 @@ CLAUDE.local.md
 .DS_Store
 Thumbs.db
 
+# ---- Development change logs (kept locally, not committed) ----
+change_logs/
+
 # ---- Runtime ----
 logs/
 *.log
