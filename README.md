@@ -43,6 +43,10 @@ query from its own copy, and writes it to disk so that a restart keeps the data.
 > docker pull fredfeng033/vortex-tsdb:latest
 > docker pull fredfeng033/vortex-tsdb-web:latest
 > ```
+>
+> The same images are on the GitHub Container Registry, `ghcr.io/paganini2008/vortex-tsdb` and
+> `ghcr.io/paganini2008/vortex-tsdb-web`; with the compose file below, set
+> `VORTEX_REGISTRY=ghcr.io/paganini2008` to pull from there.
 
 ### From Docker Hub: nothing to build
 

@@ -11,6 +11,7 @@
 #
 # Settings below can be overridden from the environment or a .env file beside this one, e.g.
 #   VORTEX_SUBNET_PREFIX=10.77.0   when 10.203.0.0/24 is taken on this host
+#   VORTEX_REGISTRY=ghcr.io/paganini2008   to pull the same images from GHCR instead of Docker Hub
 #   VORTEX_TAG=1.0.0 VORTEX_RETENTION=48h docker compose -f deploy/docker-compose.yml up -d
 #
 # Your own Redis for the cache overflow (none by default: keys beyond VORTEX_CACHE_MAX_KEYS are
