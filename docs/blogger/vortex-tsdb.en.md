@@ -39,12 +39,21 @@ and a highly available cluster**, all in memory, with Redis as an optional overf
 
 ## 2. Quick Start
 
+> **Now on Docker Hub, free to pull.** Ready-made images for `linux/amd64` and `linux/arm64`: no JDK, Node or build needed. `latest` always carries the newest build.
+>
+> ```bash
+> docker pull fredfeng033/vortex-tsdb:latest
+> docker pull fredfeng033/vortex-tsdb-web:latest
+> ```
+
 **Option 1: the Docker Hub images, nothing to build**
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
 docker compose up -d   # 3 nodes + web console + gateway; no Redis by default
 ```
+
+The nodes take 20-30 seconds to start. Until they report healthy the gateway sends every request to the web console: `/tsd/...` still works through it, Swagger UI answers 404. `docker compose ps` shows `(healthy)` on each node when they are ready.
 
 For the Redis overflow, set `VORTEX_REDIS_HOST` (and `VORTEX_REDIS_PASSWORD`...) to your own Redis.
 

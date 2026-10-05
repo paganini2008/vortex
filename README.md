@@ -37,6 +37,13 @@ query from its own copy, and writes it to disk so that a restart keeps the data.
 
 ## Quick start (Docker, recommended)
 
+> **Now on Docker Hub, free to pull.** Ready-made images for `linux/amd64` and `linux/arm64`: no JDK, Node or build needed. `latest` always carries the newest build.
+>
+> ```bash
+> docker pull fredfeng033/vortex-tsdb:latest
+> docker pull fredfeng033/vortex-tsdb-web:latest
+> ```
+
 ### From Docker Hub: nothing to build
 
 Images for `linux/amd64` and `linux/arm64`:
@@ -47,6 +54,8 @@ Images for `linux/amd64` and `linux/arm64`:
 curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
 docker compose up -d       # 3 nodes + web UI + gateway, on http://localhost:9080
 ```
+
+The nodes take 20-30 seconds to start. Until they report healthy the gateway sends every request to the web console: `/tsd/...` still works through it, Swagger UI answers 404. `docker compose ps` shows `(healthy)` on each node when they are ready.
 
 No Redis is started; set `VORTEX_REDIS_HOST` (and `VORTEX_REDIS_PASSWORD`...) to use your own for
 the cache's overflow. Everything else is in the comments of
