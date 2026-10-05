@@ -133,7 +133,7 @@ status() {
   for name in $(docker ps --filter "label=${LABEL}" --filter name=vortex-node- --format '{{.Names}}' | sort); do
     echo "  ${name}  direct: http://localhost:$(node_port "$name")"
   done
-  if docker ps -q --filter "label=${LABEL}" --filter name=vortex-gateway | grep -q .; then
+  if docker ps -q --filter "label=${LABEL}" --filter name=vortex-traefik | grep -q .; then
     echo
     print_cluster
   fi
@@ -242,7 +242,7 @@ start_redis() {
 # gateway configuration. Only containers carrying the script's label are considered.
 start_gateway() {
   log "Starting gateway (Traefik)"
-  docker run -d --name vortex-gateway --label "$LABEL" --network "$NETWORK" \
+  docker run -d --name vortex-traefik --label "$LABEL" --network "$NETWORK" \
     -p "${GATEWAY_PORT}:80" -p "${DASHBOARD_PORT}:8080" \
     -v /var/run/docker.sock:/var/run/docker.sock:ro \
     "$TRAEFIK_IMAGE" \
@@ -357,7 +357,7 @@ up() {
   fi
   rm -f "$labels"
 
-  wait_for "http://localhost:${GATEWAY_PORT}/tsd/cluster" vortex-gateway
+  wait_for "http://localhost:${GATEWAY_PORT}/tsd/cluster" vortex-traefik
   [[ $WEB -eq 1 ]] && wait_for "http://localhost:${GATEWAY_PORT}/" vortex-web
   # Membership converges over a few gossip rounds after the nodes report healthy
   sleep 3

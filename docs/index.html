@@ -48,6 +48,7 @@
   .btn.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
   .btn:hover { filter: brightness(1.08); }
   .hero-term { max-width: 760px; margin: 44px auto 0; text-align: left; }
+  .hero-shot { max-width: 1100px; margin: 36px auto 0; box-shadow: 0 30px 80px -30px rgba(139,129,244,.45); }
 
   section { padding: 64px 0; }
   section > .wrap > h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -0.02em; margin: 0 0 8px; }
@@ -152,6 +153,7 @@
 <span class="k">$</span> curl <span class="s">'localhost:9080/tsd/query?t=long&amp;c=car&amp;d=speed&amp;range=6h&amp;step=5&amp;window=15'</span>
 { <span class="s">"step"</span>: <span class="n">5</span>, <span class="s">"window"</span>: <span class="n">15</span>, <span class="s">"last"</span>: { <span class="s">"value"</span>: <span class="n">44</span> }, <span class="s">"points"</span>: [ { <span class="s">"count"</span>: <span class="n">900</span>, <span class="s">"highestValue"</span>: <span class="n">131</span>, <span class="s">"averageValue"</span>: <span class="n">69.8</span> }, … ] }</pre>
       </div>
+      <figure class="shot hero-shot"><img src="blogger/assets/dashboard.png" alt="Vortex TSDB web console: live values and trends of one category" loading="eager"></figure>
     </div>
   </section>
 
@@ -235,7 +237,7 @@
   <section id="start">
     <div class="wrap">
       <h2>Quick start</h2>
-      <p class="sub"><b style="color:var(--ink)">Now on <a href="https://hub.docker.com/r/fredfeng033/vortex-tsdb">Docker Hub</a>, free to pull.</b> Ready-made images for amd64 and arm64: no JDK, Node or build needed, and <code>latest</code> always carries the newest build.</p>
+      <p class="sub"><b style="color:var(--ink)">Now on <a href="https://hub.docker.com/r/fredfeng033/vortex-tsdb">Docker Hub</a>, free to pull.</b> Ready-made images for amd64 and arm64: no JDK, Node or build needed, and <code>latest</code> always carries the newest build. Also on <a href="https://github.com/paganini2008?tab=packages&amp;repo_name=vortex">GHCR</a>.</p>
       <div class="term">
         <div class="bar"><b></b><b></b><b></b>&nbsp; bash <button class="copy" type="button" data-copy="qs">Copy</button></div>
 <pre id="qs">curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
@@ -251,6 +253,7 @@ curl 'http://localhost:9080/tsd/last?t=long&amp;c=car&amp;d=speed'</pre>
             <tr><td>Swagger UI</td><td><code>http://localhost:9080/swagger-ui.html</code></td></tr>
             <tr><td>Web console</td><td><code>http://localhost:9080/</code></td></tr>
             <tr><td>Redis overflow (optional)</td><td><code>VORTEX_REDIS_HOST=… VORTEX_REDIS_PASSWORD=… docker compose up -d</code></td></tr>
+            <tr><td>From GHCR</td><td><code>docker pull ghcr.io/paganini2008/vortex-tsdb:latest</code> · or <code>VORTEX_REGISTRY=ghcr.io/paganini2008 docker compose up -d</code></td></tr>
             <tr><td>From source</td><td><code>git clone …/vortex.git &amp;&amp; ./run-docker.sh</code></td></tr>
           </tbody>
         </table>
@@ -338,11 +341,12 @@ curl <span class="s">'localhost:9080/tsd/series'</span></pre></div>
       <h2>Documentation</h2>
       <p class="sub">The README is the reference; the posts walk through the design.</p>
       <div class="grid g3">
-        <a class="card" href="https://github.com/paganini2008/vortex#quick-start-docker-recommended"><h3>Getting started</h3><p>Run a cluster on Docker and push the first sample.</p><span class="go">Read →</span></a>
-        <a class="card" href="https://github.com/paganini2008/vortex#api"><h3>API reference</h3><p>Push, retrieve, last, query, category, categories, series, cluster, health.</p><span class="go">Read →</span></a>
-        <a class="card" href="https://github.com/paganini2008/vortex#configuration"><h3>Configuration</h3><p>Every <code>VORTEX_*</code> setting, per component <code>.env</code> file.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex#quick-start"><h3>Getting started</h3><p>Two commands to a cluster, and the first sample.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/blob/main/docs/api.md"><h3>API reference</h3><p>Push, retrieve, last, query, category, categories, series, cluster, health.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/blob/main/docs/configuration.md"><h3>Configuration</h3><p>Every <code>VORTEX_*</code> setting, per component <code>.env</code> file.</p><span class="go">Read →</span></a>
         <a class="card" href="https://github.com/paganini2008/vortex#how-it-works"><h3>Architecture</h3><p>Buckets, catalog, replication, snapshots and overflow.</p><span class="go">Read →</span></a>
-        <a class="card" href="https://github.com/paganini2008/vortex#limits"><h3>Limits</h3><p>Write ceiling, failover, durability and precision, measured.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/blob/main/docs/development.md"><h3>Development &amp; tests</h3><p>Run from source, unit tests, functional and load test scripts.</p><span class="go">Read →</span></a>
+        <a class="card" href="https://github.com/paganini2008/vortex/blob/main/docs/faq.md"><h3>FAQ &amp; troubleshooting</h3><p>Ports, subnets, Redis, failover, data loss: symptom, cause, fix.</p><span class="go">Read →</span></a>
         <a class="card" href="https://github.com/paganini2008/vortex/blob/main/docs/blogger/vortex-tsdb.en.md"><h3>Blog post</h3><p>The design end to end, in <a href="https://github.com/paganini2008/vortex/blob/main/docs/blogger/vortex-tsdb.en.md">English</a> and <a href="https://github.com/paganini2008/vortex/blob/main/docs/blogger/vortex-tsdb.zh.md">中文</a>.</p><span class="go">Read →</span></a>
       </div>
     </div>
