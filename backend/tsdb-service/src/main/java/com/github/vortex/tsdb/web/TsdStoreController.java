@@ -47,7 +47,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * @Description: TsdStoreController
  * @Author: Fred Feng
  * @Date: 02/01/2025
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Tag(name = "Time series", description = "Push samples and read per-minute aggregates")
 @RequestMapping("/tsd")

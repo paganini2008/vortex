@@ -12,7 +12,7 @@
 
     <groupId>com.github.paganini2008</groupId>
     <artifactId>vortex-tsdb</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>vortex-tsdb</name>
     <description>
         A lightweight distributed time series database. Samples are aggregated into fixed

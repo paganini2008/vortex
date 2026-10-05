@@ -36,7 +36,7 @@ import io.micrometer.core.instrument.Timer;
  * @Description: JvmSampler
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Component
 public class JvmSampler {

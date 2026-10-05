@@ -28,7 +28,7 @@ import lombok.Data;
  * @Description: TsdStoreProperties
  * @Author: Fred Feng
  * @Date: 02/01/2025
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Data
 @ConfigurationProperties("vortex.tsd")

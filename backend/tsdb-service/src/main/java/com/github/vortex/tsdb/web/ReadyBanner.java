@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Description: ReadyBanner
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Slf4j
 @Component
@@ -51,11 +51,20 @@ public class ReadyBanner implements ApplicationListener<WebServerInitializedEven
         int port = event.getWebServer().getPort();
         log.info("Vortex TSDB node ready: http://{}:{} (API /tsd, docs /swagger-ui.html), cluster {}",
                 host, port, cluster.clusterName());
-        Map<String, Object> stats = cacheService.stats();
+        Map<String, Object> stats;
+        try {
+            stats = cacheService.stats();
+        } catch (RuntimeException e) {
+            // The overflow store is down. The node still serves everything held in memory, so it
+            // starts anyway; spilling resumes once the store answers
+            log.warn("The cache's overflow store (Redis) is unreachable: {}. Keys beyond the in-memory "
+                    + "limit cannot be moved there, nor read back, until it answers", e.getMessage());
+            return;
+        }
         if (!Boolean.TRUE.equals(stats.get("externalStore"))) {
             log.warn("No external store for the cache: beyond {} keys per node the least recently used "
-                    + "buckets are DELETED. Set spring.spreader.multiprocessing.cache.external.enabled=true "
-                    + "with a Redis (spring.data.redis.*) to move them there instead", stats.get("maxKeys"));
+                    + "buckets are DELETED. Set VORTEX_REDIS_HOST to move them to Redis instead",
+                    stats.get("maxKeys"));
         }
     }
 }

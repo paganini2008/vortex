@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @Description: WebMvcConfig
  * @Author: Fred Feng
  * @Date: 02/01/2025
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 public class WebMvcConfig implements WebMvcConfigurer {

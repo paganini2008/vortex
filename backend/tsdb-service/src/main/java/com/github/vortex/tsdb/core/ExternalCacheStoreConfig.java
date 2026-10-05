@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Description: ExternalCacheStoreConfig
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Slf4j
 @Configuration(proxyBeanMethods = false)

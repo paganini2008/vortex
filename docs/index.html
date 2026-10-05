@@ -135,7 +135,7 @@
   <!-- 1. Hero -->
   <section class="hero">
     <div class="wrap">
-      <span class="pill"><i></i>Open source · Apache 2.0 · Spring Boot 4 · openspreader</span>
+      <span class="pill"><i></i>v1.0.0 · Open source · Apache 2.0 · linux/amd64 &amp; arm64</span>
       <h1>A time series database<br>that starts as a <em>cluster</em>.</h1>
       <p class="lead">Vortex TSDB is a lightweight, distributed time series database for real-time metrics.
         Write samples over HTTP; read per-minute aggregates, instant values, and tumbling or sliding windows.
@@ -147,7 +147,7 @@
       </div>
       <div class="term hero-term">
         <div class="bar"><b></b><b></b><b></b>&nbsp; terminal</div>
-<pre><span class="k">$</span> ./run-docker.sh                                   <span class="c"># 3 nodes + gateway + Redis</span>
+<pre><span class="k">$</span> docker compose up -d                              <span class="c"># 3 nodes + gateway + console</span>
 <span class="k">$</span> curl -X POST <span class="s">'localhost:9080/tsd/push?t=long&amp;c=car&amp;d=speed&amp;v=44'</span>
 <span class="k">$</span> curl <span class="s">'localhost:9080/tsd/query?t=long&amp;c=car&amp;d=speed&amp;range=6h&amp;step=5&amp;window=15'</span>
 { <span class="s">"step"</span>: <span class="n">5</span>, <span class="s">"window"</span>: <span class="n">15</span>, <span class="s">"last"</span>: { <span class="s">"value"</span>: <span class="n">44</span> }, <span class="s">"points"</span>: [ { <span class="s">"count"</span>: <span class="n">900</span>, <span class="s">"highestValue"</span>: <span class="n">131</span>, <span class="s">"averageValue"</span>: <span class="n">69.8</span> }, … ] }</pre>
@@ -184,7 +184,7 @@
         <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h10M10 6l6 6-6 6"/><path d="M20 4v16"/></svg></div><h3>Redis overflow</h3><p>Keys beyond <code>VORTEX_CACHE_MAX_KEYS</code> spill to Redis when one is configured.</p></div>
         <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div><h3>Cluster health API</h3><p>Per node QPS, error rate, cache, replication lag, leader and JVM at <code>/tsd/health</code>.</p></div>
         <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg></div><h3>Gateway &amp; OpenAPI</h3><p>Traefik load-balances healthy nodes; Swagger UI documents every endpoint.</p></div>
-        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/></svg></div><h3>Version 1 compatible</h3><p><code>/tsd/push</code>, <code>/tsd/test</code> and <code>/tsd/retrieve</code> keep their parameters and responses.</p></div>
+        <div class="card"><div class="icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h7"/></svg></div><h3>Legacy Vortex compatible</h3><p><code>/tsd/push</code>, <code>/tsd/test</code> and <code>/tsd/retrieve</code> keep their parameters and responses.</p></div>
       </div>
     </div>
   </section>
@@ -235,12 +235,11 @@
   <section id="start">
     <div class="wrap">
       <h2>Quick start</h2>
-      <p class="sub">Docker with BuildKit is all you need. The first run builds the images in a few minutes.</p>
+      <p class="sub">Docker is all you need: the images come from <a href="https://hub.docker.com/r/fredfeng033/vortex-tsdb">Docker Hub</a>, for amd64 and arm64.</p>
       <div class="term">
         <div class="bar"><b></b><b></b><b></b>&nbsp; bash <button class="copy" type="button" data-copy="qs">Copy</button></div>
-<pre id="qs">git clone https://github.com/paganini2008/vortex.git
-cd vortex
-./run-docker.sh
+<pre id="qs">curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
+docker compose up -d
 curl -X POST 'http://localhost:9080/tsd/push?t=long&amp;c=car&amp;d=speed&amp;v=44'
 curl 'http://localhost:9080/tsd/last?t=long&amp;c=car&amp;d=speed'</pre>
       </div>
@@ -251,7 +250,8 @@ curl 'http://localhost:9080/tsd/last?t=long&amp;c=car&amp;d=speed'</pre>
             <tr><td>HTTP API</td><td><code>http://localhost:9080/tsd/…</code></td></tr>
             <tr><td>Swagger UI</td><td><code>http://localhost:9080/swagger-ui.html</code></td></tr>
             <tr><td>Web console</td><td><code>http://localhost:9080/</code></td></tr>
-            <tr><td>Options</td><td><code>-n 5</code> · <code>--no-web</code> · <code>--no-redis</code> · <code>--max-keys 50000</code> · <code>status</code> · <code>down [--purge]</code></td></tr>
+            <tr><td>Redis overflow (optional)</td><td><code>VORTEX_REDIS_HOST=… VORTEX_REDIS_PASSWORD=… docker compose up -d</code></td></tr>
+            <tr><td>From source</td><td><code>git clone …/vortex.git &amp;&amp; ./run-docker.sh</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -355,6 +355,7 @@ curl <span class="s">'localhost:9080/tsd/series'</span></pre></div>
       <p class="sub">Apache 2.0. Bug reports, ideas and pull requests are welcome.</p>
       <div class="grid g3">
         <a class="card" href="https://github.com/paganini2008/vortex"><h3>GitHub</h3><p>Source, releases and the README.</p><span class="go">Open →</span></a>
+        <a class="card" href="https://hub.docker.com/r/fredfeng033/vortex-tsdb"><h3>Docker Hub</h3><p>The <code>vortex-tsdb</code> and <code>vortex-tsdb-web</code> images, amd64 and arm64.</p><span class="go">Open →</span></a>
         <a class="card" href="https://github.com/paganini2008/vortex/issues"><h3>Issues</h3><p>Report a bug or request a feature.</p><span class="go">Open →</span></a>
         <a class="card" href="https://github.com/paganini2008/vortex/pulls"><h3>Contributing</h3><p>Tests gate at 80% coverage on both backend and frontend.</p><span class="go">Open →</span></a>
       </div>

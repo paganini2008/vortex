@@ -27,7 +27,7 @@ import io.swagger.v3.oas.models.servers.Server;
  * @Description: OpenApiConfig
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 public class OpenApiConfig {
@@ -35,7 +35,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI vortexOpenApi() {
         return new OpenAPI()
-                .info(new Info().title("Vortex TSDB API").version("2.0.0")
+                .info(new Info().title("Vortex TSDB API").version("1.0.0")
                         .description("Push numeric samples and read them back as per-minute "
                                 + "aggregates (count, highest, lowest, total, average). Any node "
                                 + "of the cluster, or the gateway in front of them, accepts every "

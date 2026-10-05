@@ -1,13 +1,62 @@
 name: Publish Docker Images
 
+# Every tag moves latest, pre-releases included: users always pull latest.
+#   v1.0.0-rc1 -> 1.0.0-rc1, latest
+#   v1.0.0     -> 1.0.0, 1.0, latest
 on:
   push:
     tags:
       - 'v*'
 
+permissions:
+  contents: read
+
+env:
+  NAMESPACE: fredfeng033
+
 jobs:
-  publish:
+  # Nothing is published unless both test suites, with their 80% coverage gates, pass
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: backend/tsdb-service/pom.xml
+
+      - name: Backend tests
+        working-directory: backend/tsdb-service
+        run: mvn -B verify
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/tsdb-web/package-lock.json
+
+      - name: Frontend tests
+        working-directory: frontend/tsdb-web
+        run: |
+          npm ci
+          npm run lint
+          npm run coverage
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: vortex-tsdb
+            context: ./backend/tsdb-service
+            description: Lightweight distributed time series database for real-time metrics
+          - image: vortex-tsdb-web
+            context: ./frontend/tsdb-web
+            description: Web console for Vortex TSDB
 
     steps:
       - name: Checkout
@@ -25,26 +74,29 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Get version
-        id: version
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+      - name: Tags and labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.NAMESPACE }}/${{ matrix.image }}
+          # latest on every tag, not only on releases (metadata-action's default)
+          flavor: |
+            latest=true
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+          labels: |
+            org.opencontainers.image.title=${{ matrix.image }}
+            org.opencontainers.image.description=${{ matrix.description }}
+            org.opencontainers.image.licenses=Apache-2.0
 
-      - name: Build and push Vortex TSDB
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./backend/tsdb-service
+          context: ${{ matrix.context }}
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            fredfeng033/vortex-tsdb:${{ steps.version.outputs.VERSION }}
-            fredfeng033/vortex-tsdb:latest
-
-      - name: Build and push Vortex TSDB Web
-        uses: docker/build-push-action@v6
-        with:
-          context: ./frontend/tsdb-web
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            fredfeng033/vortex-tsdb-web:${{ steps.version.outputs.VERSION }}
-            fredfeng033/vortex-tsdb-web:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,scope=${{ matrix.image }},mode=max

@@ -4,6 +4,8 @@
 
 Vortex TSDB is a lightweight distributed time series database for real-time metrics. Write numeric samples over HTTP; read back per-minute count / max / min / sum / avg, the latest value of every series, and tumbling or sliding windows over any range. The cluster elects its own leader, replicates and snapshots, with no ZooKeeper, broker or external database.
 
+**Version 1.0.0** · Image fredfeng033/vortex-tsdb (amd64 / arm64) · Source https://github.com/paganini2008/vortex · Apache 2.0
+
 ![Query explorer: a 5-minute sliding window, one point a minute over the last hour](https://paganini2008.github.io/vortex/blogger/assets/query-explorer.png)
 
 ---
@@ -23,6 +25,17 @@ Vortex does that one layer only: numeric sample writes, per-minute aggregates, w
 ---
 
 ## 2. Quick Start
+
+**Option 1: the Docker Hub images, nothing to build**
+
+```
+curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
+docker compose up -d   # 3 nodes + web console + gateway; no Redis by default
+```
+
+For the Redis overflow, set VORTEX_REDIS_HOST (and VORTEX_REDIS_PASSWORD...) to your own Redis.
+
+**Option 2: build from source**
 
 ```
 git clone https://github.com/paganini2008/vortex.git
@@ -115,7 +128,7 @@ Cluster health  tsd:health                                        Hash, each nod
 
 ## 5. Code Examples
 
-**Example 1: push, then read the last hour (version 1 API)**
+**Example 1: push, then read the last hour (legacy Vortex API)**
 
 Input:
 
@@ -246,7 +259,7 @@ Not a fit for: ledgers or anything that must never lose a record, months or year
 6. **Bounded memory**: a per-node key limit, cold keys overflow to Redis.
 7. **Restarts keep the data**: snapshots, loaded by the leader, copied to the rest.
 8. **Observable**: /tsd/health reports each node's QPS, cache, replication lag and JVM.
-9. **Version 1 compatible**: /tsd/push, /tsd/test and /tsd/retrieve are unchanged.
+9. **Legacy Vortex compatible**: /tsd/push, /tsd/test and /tsd/retrieve are unchanged.
 10. **A clear niche**: a lightweight real-time TSDB with days of retention; leave long-term storage and heavy analytics to a full TSDB.
 
 Project: https://github.com/paganini2008/vortex (Apache 2.0)

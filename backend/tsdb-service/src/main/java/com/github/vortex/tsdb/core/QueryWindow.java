@@ -44,7 +44,7 @@ import com.github.vortex.tsdb.timeseries.TimeWindowUnit;
  * @Description: QueryWindow
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 public record QueryWindow(Duration range, int stepMinutes, int windowMinutes, ZoneId zone) {
 
