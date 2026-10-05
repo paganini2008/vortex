@@ -14,6 +14,7 @@ memory; the nodes elect a leader, replicate and snapshot by themselves.
 | Source | https://github.com/paganini2008/vortex |
 | Website | https://paganini2008.github.io/vortex/ |
 | Web console image | [`fredfeng033/vortex-tsdb-web`](https://hub.docker.com/r/fredfeng033/vortex-tsdb-web) |
+| Also on GHCR | `docker pull ghcr.io/paganini2008/vortex-tsdb:latest` (the same build) |
 | Platforms | `linux/amd64`, `linux/arm64` |
 | License | Apache 2.0 |
 

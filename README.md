@@ -1,329 +1,229 @@
 # Vortex TSDB
 
+**Lightweight. Replicated. Real-time.**
+
+A distributed time series database for live metrics: push numbers over HTTP, read per-minute
+aggregates, instant values and tumbling or sliding windows. Every node holds the whole dataset in
+memory; one command starts a cluster.
+
 [![Version](https://img.shields.io/badge/version-1.0.0-blueviolet.svg)](https://github.com/paganini2008/vortex)
 [![Docker Hub](https://img.shields.io/badge/docker-fredfeng033%2Fvortex--tsdb-2496ED.svg?logo=docker&logoColor=white)](https://hub.docker.com/r/fredfeng033/vortex-tsdb)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![GHCR](https://img.shields.io/badge/ghcr-paganini2008%2Fvortex--tsdb-24292f.svg?logo=github)](https://github.com/paganini2008?tab=packages&repo_name=vortex)
+[![Platforms](https://img.shields.io/badge/platforms-amd64%20%7C%20arm64-555.svg)](https://hub.docker.com/r/fredfeng033/vortex-tsdb/tags)
 [![Java](https://img.shields.io/badge/Java-17+-brightgreen.svg)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![openspreader](https://img.shields.io/badge/cluster-openspreader-blue.svg)](https://github.com/chaconne-ai/openspreader)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
-Vortex TSDB is a lightweight, distributed time series database for real-time metrics. Push
-numeric samples over HTTP; read them back as per-minute aggregates (count, highest, lowest,
-total, average), the latest value of every series, and tumbling or sliding windows over the
-last day. Every node of the cluster holds the whole dataset in memory, so any node answers any
-query from its own copy, and writes it to disk so that a restart keeps the data.
+![Vortex TSDB web console: one category's live values and trends](docs/blogger/assets/dashboard.png)
+
+**[Website](https://paganini2008.github.io/vortex/) · [Quick start](#quick-start) · [API](docs/api.md) · [Configuration](docs/configuration.md) · [Blog post](docs/blogger/vortex-tsdb.en.md)**
+
+---
 
 ## Features
 
-- **Per-minute aggregates** for three value types: `long`, `double` and `decimal`
-- **Instant values**: the latest sample of each series
-- **Tumbling and sliding windows**, folded from the minute buckets at query time
-- **Self-contained cluster**: no ZooKeeper, no broker. The nodes find each other, elect a
-  leader, and each keeps a snapshot on disk
-- **Bounded memory, optional Redis**: each node holds at most `VORTEX_CACHE_MAX_KEYS` keys
-  (10,000 by default); with a Redis address configured the least recently used move there and
-  are read back transparently, without one they are dropped
-- **Any node, any call**: writes are replicated to every node; reads never leave the node
-- **One entry point**: a Traefik gateway load-balances the API across healthy nodes and serves
-  the web UI and Swagger UI
-- **Wall display**: one dashboard per category, a tile per dimension with its instant value,
-  trend, samples and range, refreshed every 3 seconds; any tile opens full screen
-- **Browse many categories**: pinned categories, the 10 busiest, a sortable table of all of them,
-  and a ⌘K jump box
-- **System health**: per node API rate, error rate and latency, cache size and spill to Redis,
-  replication lag, leader and split-brain state, JVM heap, CPU and GC
-- **Query explorer** for developers: any series, range, step and window, as a chart, a table and
-  the exact API call
+| | Feature | Problem it solves |
+|---|---|---|
+| ⚡ | **HTTP in, aggregates out** | Push `t/c/d/v`; read count · max · min · sum · avg per minute. No client library, no query language |
+| 🪟 | **Tumbling & sliding windows** | Any `range` / `step` / `window`, folded from minute buckets at read time; nothing extra stored |
+| 🎯 | **Exact under concurrency** | Every write is applied on the leader one at a time, then replicated: counts never drift, no locks |
+| 🧬 | **Full replica on every node** | Reads are served from local memory on whichever node answers |
+| 🛟 | **Self-healing cluster** | Nodes find each other and elect a leader; a new one within ~5 s after a crash |
+| 💾 | **Survives restarts** | Snapshot at stop and every 5 min; the leader reloads, the others copy |
+| 📦 | **Bounded memory** | 10,000 keys per node by default; the overflow moves to Redis if you have one |
+| 🚪 | **One entry point** | Traefik on `:9080` serves the API, Swagger UI and the web console, healthy nodes only |
+| 📊 | **Web console included** | Live boards, query explorer, cluster health (QPS, replication, JVM) |
+| 🐳 | **Ready-made images** | Docker Hub and GHCR, `linux/amd64` + `linux/arm64` |
 
-## Quick start (Docker, recommended)
+## How It Works
 
-> **Now on Docker Hub, free to pull.** Ready-made images for `linux/amd64` and `linux/arm64`: no JDK, Node or build needed. `latest` always carries the newest build.
->
-> ```bash
-> docker pull fredfeng033/vortex-tsdb:latest
-> docker pull fredfeng033/vortex-tsdb-web:latest
-> ```
->
-> The same images are on the GitHub Container Registry, `ghcr.io/paganini2008/vortex-tsdb` and
-> `ghcr.io/paganini2008/vortex-tsdb-web`; with the compose file below, set
-> `VORTEX_REGISTRY=ghcr.io/paganini2008` to pull from there.
+![Architecture](docs/blogger/assets/architecture.png)
 
-### From Docker Hub: nothing to build
+![One write, one read](docs/blogger/assets/dataflow.png)
 
-Images for `linux/amd64` and `linux/arm64`:
-[`fredfeng033/vortex-tsdb`](https://hub.docker.com/r/fredfeng033/vortex-tsdb) and
-[`fredfeng033/vortex-tsdb-web`](https://hub.docker.com/r/fredfeng033/vortex-tsdb-web).
+![Tumbling and sliding windows](docs/blogger/assets/windows.png)
+
+| Data | Key | Structure |
+|---|---|---|
+| Minute bucket | `tsd:<type>:<category>:<dimension>:<minute>` | STATS aggregate (max, min, sum, count); retention as TTL |
+| Latest value | `tsd:last:<category>` | Hash: a whole category in one read |
+| Series catalog | `tsd:catalog` | Sorted set by last sample; drives listings, pruned every minute |
+| Cluster health | `tsd:health` | Hash; each node writes its figures every 5 s |
+
+Built on the [openspreader](https://github.com/chaconne-ai/openspreader) replicated cache.
+
+## Requirements
+
+| To | You need | Version |
+|---|---|---|
+| Run the images (recommended) | Docker with compose v2 | Docker Desktop / Rancher Desktop / OrbStack, or Engine 23+ |
+| Overflow store (optional) | Redis | tested with 7.4 and 8.6 |
+| Build from source | JDK · Maven · Node.js | 17+ (images use 21) · 3.9 · 20+ |
+| Free on the host | Ports `9080`, `9081`; subnet `10.203.0.0/24` | changeable, see [Configuration](#configuration) |
+
+## Quick Start
+
+> **Now on Docker Hub and GHCR, free to pull.** `latest` always carries the newest build.
+
+**1. Start** (3 nodes + web console + gateway; nothing to build):
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
-docker compose up -d       # 3 nodes + web UI + gateway, on http://localhost:9080
+docker compose up -d
 ```
 
-The nodes take 20-30 seconds to start. Until they report healthy the gateway sends every request to the web console: `/tsd/...` still works through it, Swagger UI answers 404. `docker compose ps` shows `(healthy)` on each node when they are ready.
-
-No Redis is started; set `VORTEX_REDIS_HOST` (and `VORTEX_REDIS_PASSWORD`...) to use your own for
-the cache's overflow. Everything else is in the comments of
-[`deploy/docker-compose.yml`](deploy/docker-compose.yml) and on the
-[Docker Hub page](https://hub.docker.com/r/fredfeng033/vortex-tsdb).
-
-### From source, with `run-docker.sh`
-
-Requires Docker with BuildKit (Docker Desktop, or Docker Engine 23+).
+**2. Write and read:**
 
 ```bash
-git clone https://github.com/paganini2008/vortex.git
-cd vortex
-./run-docker.sh            # 3 nodes + web UI + gateway
+curl -X POST 'http://localhost:9080/tsd/push?t=long&c=car&d=speed&v=44'
+curl 'http://localhost:9080/tsd/last?t=long&c=car&d=speed'
 ```
 
-The first run builds the images (a few minutes, mostly downloading dependencies). Then:
-
-| | |
-|---|---|
-| Web UI | http://localhost:9080/ |
-| API | http://localhost:9080/tsd/... |
-| Swagger UI | http://localhost:9080/swagger-ui.html |
-| Traefik dashboard | http://localhost:9081/dashboard/ |
-| Node *i*, bypassing the gateway | a free port in 50000-60000, shown by `./run-docker.sh status` |
-
-```bash
-./run-docker.sh -n 5             # five nodes
-./run-docker.sh --no-web         # API and gateway only, no web UI
-./run-docker.sh --no-redis       # no Redis: keys beyond the limit are dropped instead of spilled
-./run-docker.sh --max-keys 50000 # keys each node keeps in memory (default 10000)
-./run-docker.sh --rebuild        # rebuild the images after changing the code
-./run-docker.sh status           # containers and cluster membership
-./run-docker.sh down             # stop the containers; the data stays in the volumes
-./run-docker.sh down --purge     # stop and delete the data too
-```
-
-Each node keeps its data in a Docker volume (`vortex-node-<i>-data`). It writes a snapshot when
-it stops and every 5 minutes; at the next start the new leader loads its snapshot and the other
-nodes copy it from the leader. So `down` then `./run-docker.sh` keeps the data. Losing one node
-loses nothing, since the others hold full copies; if every node is killed at once, the cluster
-comes back with the last snapshot, at most 5 minutes old.
-
-By default the script also starts a Redis (`vortex-redis`, volume `vortex-redis-data`) for the
-cache's overflow. Setting `VORTEX_REDIS_HOST` in `backend/tsdb-service/.env` points the nodes at
-your own Redis instead. Ports are set in the root `.env` (see [Configuration](#configuration));
-the script refuses to start if the gateway or dashboard port is already taken.
-
-```
-                      ┌────────────── Docker network ──────────────┐
-  browser / client    │                                            │
-  ─────────────────▶ Traefik ── /tsd/**, /swagger-ui ──▶ node 1 ◀─┐ │
-     :9080            │   │                             node 2 ◀─┤ gossip, leader,
-                      │   │                             node 3 ◀─┘ replicated cache
-                      │   │                               │ overflow (leader only)
-                      │   │                             Redis      │
-                      │   └── / ─────────────────────▶ web UI      │
-                      └────────────────────────────────────────────┘
-```
-
-## API
-
-Paths and parameters are unchanged from the legacy Vortex. Every response is wrapped as
-`{"code": 1, "msg": "ok", "data": ..., "elapsed": 3, "requestPath": "/tsd/..."}`; `code` is 0
-on failure, with the reason in `msg`.
-
-### Push a sample
-
-`POST /tsd/push?t=long&c=car&d=speed&v=44`
-
-| Parameter | Required | Description | Example |
-|---|---|---|---|
-| `t` | yes | Data type: `long`, `double` or `decimal` | `long` |
-| `c` | yes | Category, e.g. a device kind or module | `car` |
-| `d` | yes | Dimension, e.g. a metric name | `speed` |
-| `v` | yes | The value. A `long` series takes integers only | `44` |
-
-Category and dimension are 1 to 128 letters, digits, `_`, `.` or `-`.
-`POST /tsd/test?t=&c=&d=` pushes a random value in [1, 10000).
-
-### Retrieve the last hour
-
-`GET /tsd/retrieve?t=long&c=car&d=speed&z=Asia/Shanghai`
-
-`z` is optional (default `UTC`; the legacy Vortex used `Australia/Sydney`). Returns the latest 60 buckets, oldest first, keyed
-by bucket start as `HH:mm:ss` in that zone:
+**3. Expected output:**
 
 ```json
-{
-  "dataType": "long", "category": "car", "dimension": "speed",
-  "data": {
-    "09:28:00": {"count": 0, "highestValue": null, "lowestValue": null, "totalValue": null, "averageValue": null, "timestamp": 1790990880000},
-    "09:29:00": {"count": 101, "highestValue": 112, "lowestValue": 44, "totalValue": 6831, "averageValue": 67.6337, "timestamp": 1790990940000}
-  }
-}
+{"code":1,"data":{"value":44,"timestamp":1791182928819},"elapsed":1,"msg":"ok","requestPath":"/tsd/last"}
 ```
 
-An empty bucket reports `count: 0` and null values rather than zeros.
-
-### Instant value
-
-`GET /tsd/last?t=long&c=car&d=speed` returns `{"value": 44, "timestamp": 1790990941234}`, the
-latest sample, or `null` when the series has none.
-
-### Query a range, with tumbling or sliding windows
-
-`GET /tsd/query?t=long&c=car&d=speed&range=6h&step=5&window=15&z=Asia/Shanghai`
-
-| Parameter | Default | Description |
-|---|---|---|
-| `range` | `1h` | How far back: `30m`, `6h`, `1d`...; at most the retention |
-| `step` | about 60 points | Minutes between points. Must divide an hour (1-30) or a day (60-720) |
-| `window` | `step` | Minutes each point aggregates. Equal to `step`: **tumbling** windows, each bucket counted once. Larger: **sliding** windows, e.g. `window=15&step=1` is a 15-minute moving aggregate updated every minute |
-| `z` | `UTC` | Zone the steps are aligned in, so hourly points fall on the local hour |
-
-Returns the instant value (`last`), the bucket now filling (`current`), the whole range folded
-into one (`summary`), and `points`: one aggregate per step, each with the window it covers in
-`from`/`to`.
-
-`GET /tsd/category?c=car&range=6h` returns the same for every series in a category at once; it
-is what the dashboard calls.
-
-### Also
-
-| | |
+| Open | URL |
 |---|---|
-| `GET /tsd/series` | The series that received samples within the retention period |
-| `GET /tsd/categories` | Every category with its series count, samples per minute and last sample, busiest first |
-| `GET /tsd/cluster` | Cluster members and the current leader |
-| `GET /tsd/health` | Every node's API rates, cache and replication figures, and JVM, as the health page shows them |
-| `GET /tsd/health/self` | The same for the node that answers |
+| Web console | http://localhost:9080/ |
+| Swagger UI | http://localhost:9080/swagger-ui.html |
+| Traefik dashboard | http://localhost:9081/dashboard/ |
 
-The full description is at `/swagger-ui.html` and `/v3/api-docs`.
+| Other ways | Command |
+|---|---|
+| Pull only | `docker pull fredfeng033/vortex-tsdb:latest` · `docker pull fredfeng033/vortex-tsdb-web:latest` |
+| From GHCR | `docker pull ghcr.io/paganini2008/vortex-tsdb:latest` · or `VORTEX_REGISTRY=ghcr.io/paganini2008 docker compose up -d` |
+| Single node | `docker run -d -p 30080:30080 -v vortex-data:/data fredfeng033/vortex-tsdb` |
+| From source | `git clone https://github.com/paganini2008/vortex.git && cd vortex && ./run-docker.sh` |
+| Stop | `docker compose down` (keeps data) · `docker compose down -v` (deletes it) |
 
-## How it works
+> Nodes take 20-30 s to start. Until `docker compose ps` shows them `(healthy)`, `/tsd` answers
+> through the console and Swagger UI returns 404.
 
-Each bucket of each series is one statistical aggregate in the
-[openspreader](https://github.com/chaconne-ai/openspreader) replicated cache, under
-`tsd:<type>:<category>:<dimension>:<bucketStart>`. A sample is recorded with the cache's `max`,
-`min` and `sum` operations; `sum` counts the sample as it goes, so a bucket costs four numbers
-no matter how many samples it receives.
+## Examples
 
-The latest sample of each series goes into a hash per category, `tsd:last:<category>`, so a
-dashboard reads a whole category's instant values in one lookup. Coarser and sliding windows are
-not stored: a query folds the minute buckets it covers (highest of highest, lowest of lowest,
-totals and counts added), all from local memory.
+Every response is `{"code": 1, "msg": "ok", "data": …}`; `code` is `0` on failure, with the reason in `msg`.
 
-Writes are forwarded to the cluster leader, applied there one at a time, and replicated to every
-node as operations. That is what makes concurrent writes from many clients and nodes add up
-exactly, with no locking in this code. Bucket keys carry the retention as a TTL, so expiry needs
-no sweeper.
+### 1. Push and read back (legacy-compatible API)
 
-openspreader writes each node's copy to disk when it stops (`cache.persistent`), and Vortex adds a
-snapshot every `vortex.tsd.snapshot-interval`. Only the leader loads its file at start; the other
-nodes take a full copy from the leader, so the replicas never diverge. Expiry times are stored as
-instants, so buckets that expired while the cluster was down are dropped on load.
+| Input | Output |
+|---|---|
+| `for v in 44 67 112; do curl -X POST "localhost:9080/tsd/push?t=long&c=car&d=speed&v=$v"; done` | three samples in this minute's bucket |
+| `curl 'localhost:9080/tsd/last?t=long&c=car&d=speed'` | `{"value": 112, "timestamp": …}` |
+| `curl 'localhost:9080/tsd/retrieve?t=long&c=car&d=speed&z=Asia/Shanghai'` | 60 buckets keyed `HH:mm:ss`, e.g. `"09:29:00": {"count": 3, "highestValue": 112, "lowestValue": 44, "totalValue": 223, "averageValue": 74.3333}` |
 
-A catalog, `tsd:catalog`, records every series with the time of its last sample. It drives
-`/tsd/series` and `/tsd/categories`, lets a query skip buckets that cannot exist (newer than the
-series' last sample), and is pruned every minute by one node of the cluster.
+### 2. Window queries
 
-Each node holds at most `VORTEX_CACHE_MAX_KEYS` keys. With Redis configured, openspreader's
-`RedisCacheStore` takes the least recently used beyond that: only the leader writes to Redis, a
-key lives either in memory or in Redis, and a read that misses memory looks in Redis. Without
-Redis those keys are deleted.
+```bash
+curl 'localhost:9080/tsd/query?t=long&c=car&d=speed&range=6h&step=5&window=15&z=Asia/Shanghai'
+```
 
-Every 5 seconds each node writes its own health figures (API rates from Micrometer, the cache and
-replication figures of `/actuator/spreader`, JVM) into the replicated hash `tsd:health`, so any
-node can answer `/tsd/health` for the whole cluster from memory, without calling its peers.
+| Parameters | Result |
+|---|---|
+| `range=6h step=5 window=15` | 72 points, each over the 15 minutes before it (**sliding**) |
+| `range=1h step=5` (window = step) | 12 points, each bucket counted once (**tumbling**) |
+| `range=1d` (no step) | about 60 points, step chosen for you |
+| always included | `last` (instant value), `current` (bucket filling now), `summary` (whole range) |
+
+```json
+{"range": "6h", "step": 5, "window": 15,
+ "last": {"value": 61}, "summary": {"count": 21540, "highestValue": 140, "averageValue": 70.02},
+ "points": [{"from": 1791069300000, "to": 1791070200000, "count": 900, "highestValue": 131, "averageValue": 69.8}]}
+```
+
+![Query explorer: the same query in the web console](docs/blogger/assets/query-explorer.png)
+
+### 3. Categories, catalog and cluster
+
+| Input | Output |
+|---|---|
+| `curl 'localhost:9080/tsd/category?c=car&range=1h'` | `/tsd/query` for every series of `car` |
+| `curl 'localhost:9080/tsd/categories'` | `[{"category": "car", "series": 4, "samplesPerMinute": 3600.0, "lastSeen": …}]`, busiest first |
+| `curl 'localhost:9080/tsd/series'` | every series seen within the retention |
+| `curl 'localhost:9080/tsd/health'` | per node: QPS, error rate, cache, replication lag, leader, JVM |
+
+![System health](docs/blogger/assets/system-health.png)
+
+### 4. The web console
+
+| Board | Categories | Zoom | Light theme |
+|---|---|---|---|
+| ![](docs/blogger/assets/dashboard.png) | ![](docs/blogger/assets/categories.png) | ![](docs/blogger/assets/zoom.png) | ![](docs/blogger/assets/dashboard-light.png) |
+
+### Best practices
+
+| Do | Why |
+|---|---|
+| Keep `category` small and stable (a device kind, a service) and put metrics in `dimension` | A board shows one category; `/tsd/category` reads all of it at once |
+| Use `long` for counters, `double` for gauges, `decimal` for money | `long` is exact to 2^53; `decimal` keeps 8 places |
+| Pick `step` that divides an hour or a day | Points line up on the clock in the zone you query |
+| Size `VORTEX_CACHE_MAX_KEYS` to your working set | One series at 1-minute buckets for 24 h is up to 1,440 keys; Redis reads are slower |
+| Retry a failed write only if a duplicate is acceptable | A write that failed during a leader change may already be stored |
 
 ## Configuration
 
-Every setting is a `VORTEX_*` variable, read from a `.env` file per component. Copy the
-`.env.example` beside it and edit; `.env` files are not committed. A variable already set in the
-environment wins over the file, and a commented-out setting takes its default.
-
-| File | Read by | What it holds |
-|---|---|---|
-| `.env` (repository root) | `run-docker.sh` | How the cluster is deployed: nodes, web UI, Redis, ports, images |
-| `backend/tsdb-service/.env` | each node; `run-docker.sh` hands it to every node | Storage, cluster, Redis |
-| `frontend/tsdb-web/.env` | the web UI, outside Docker | Where to send API calls, dev server port |
-
-**Deployment** (root `.env`; `-n`, `--no-web`, `--no-redis` and `--max-keys` override it):
+Settings are `VORTEX_*` variables: in the environment or in a `.env` beside `docker-compose.yml`.
 
 | Variable | Default | Description |
 |---|---|---|
-| `VORTEX_NODES` | `3` | Nodes to start |
-| `VORTEX_WEB` | `true` | Start the web UI |
-| `VORTEX_REDIS` | `true` | Start a Redis for the overflow (unless `VORTEX_REDIS_HOST` names one) |
-| `VORTEX_GATEWAY_PORT` | `9080` | Web UI, API and Swagger UI |
-| `VORTEX_DASHBOARD_PORT` | `9081` | Traefik dashboard |
-| `VORTEX_NODE_PORT_RANGE` | `50000-60000` | Where each node's HTTP port is published on the host |
-
-**Nodes** (`backend/tsdb-service/.env`):
-
-| Variable | Default | Description |
-|---|---|---|
-| `VORTEX_SERVER_PORT` | unset | HTTP port. Unset: a free port in `VORTEX_PORT_RANGE` (`50000-60000`), logged at start-up. `30080` inside Docker |
+| `VORTEX_RETENTION` | `24h` | How long data is kept |
 | `VORTEX_SPAN_MINUTES` | `1` | Bucket width in minutes; must divide 60 |
-| `VORTEX_DISPLAY_SIZE` | `60` | Buckets returned by `/tsd/retrieve` |
-| `VORTEX_RETENTION` | `24h` | How long a bucket is kept |
-| `VORTEX_TIME_ZONE` | `UTC` | Zone used when `z` is omitted. The web UI sends the browser's zone, and lets the viewer pick another |
-| `VORTEX_SNAPSHOT_INTERVAL` | `5m` | How often each node writes its copy to disk, besides at shutdown. `0` for shutdown only. Each write briefly pauses writes on the leader |
-| `VORTEX_DATA_DIR` | `~/.vortex-tsdb` | Where the snapshot lives; `/data` in Docker |
-| `VORTEX_CACHE_MAX_KEYS` | `10000` | Keys **per node** in memory; every node holds a full copy |
-| `VORTEX_REDIS_HOST` | blank | Redis for keys beyond the limit. Blank: no Redis, those keys are deleted. With `VORTEX_REDIS_PORT`, `_PASSWORD`, `_DATABASE`, `_KEY_PREFIX` |
-| `VORTEX_CLUSTER_NAME` | `vortex-tsd-cluster` | Cluster name; the only isolation between environments |
-| `VORTEX_CLUSTER_PEERS` | `127.0.0.1` | Where nodes look for each other |
-| `VORTEX_CORS_ORIGINS` | `http://localhost:3000` | Origins that may call the API from a browser directly |
+| `VORTEX_TIME_ZONE` | `UTC` | Zone when a request has no `z` |
+| `VORTEX_CACHE_MAX_KEYS` | `10000` | Keys per node in memory |
+| `VORTEX_REDIS_HOST` | blank | Overflow Redis; blank deletes keys beyond the limit. Also `_PORT`, `_PASSWORD`, `_DATABASE`, `_KEY_PREFIX` |
+| `VORTEX_SNAPSHOT_INTERVAL` | `5m` | Snapshot interval; `0` for shutdown only |
+| `VORTEX_GATEWAY_PORT` / `VORTEX_DASHBOARD_PORT` | `9080` / `9081` | Host ports |
+| `VORTEX_REGISTRY` / `VORTEX_TAG` | `fredfeng033` / `latest` | Which images compose pulls |
+| `VORTEX_SUBNET_PREFIX` | `10.203.0` | The nodes' subnet |
+| `VORTEX_CONTAINER_PREFIX` | `vortex` | Container and network names |
 
-**Web UI** (`frontend/tsdb-web/.env`): `VORTEX_API_URLS`, comma-separated gateway or node
-addresses the UI's server proxies `/tsd/*` to (default `http://localhost:9080`, tried in turn when
-one is down), and `VORTEX_WEB_PORT` (`3000`) for `npm run dev`. On Docker the UI sits behind the
-gateway and needs neither.
+Every setting, with `run-docker.sh` and the web console's: **[docs/configuration.md](docs/configuration.md)**.
 
-## Limits
+## Performance
 
-Know these before relying on it. Figures measured on Docker Desktop (4 CPUs, 8 GB), 3 nodes,
-through the gateway.
+| Scenario | Result |
+|---|---|
+| 826,781 writes at rising rates | **0 failures**, identical totals on all 3 nodes |
+| Sustained write rate | **~1,000 samples/s** (≈ 6,800 cache operations/s on the leader) |
+| Peak | **1,400–1,500 samples/s**, leader CPU ~230%, heap ≤ 310 MB |
+| `kill -9` the leader at 600 samples/s | new leader in **4.7 s**; 0.28% of requests failed, all at the kill |
+| Graceful stop of the leader | immediate hand-over, no failed request |
+| Restart of the whole cluster | data back from the snapshots |
+
+Docker Desktop, 4 CPUs / 8 GB, 3 nodes, k6 through the gateway. Reproduce with [`test/loadtest.sh`](docs/development.md#load-test).
+
+|  | Vortex TSDB | Prometheus | InfluxDB | TimescaleDB |
+|---|---|---|---|---|
+| Writes | HTTP push | periodic pull | HTTP push | SQL |
+| Queries | HTTP parameters | PromQL | InfluxQL / SQL | SQL |
+| Storage | in-memory replicas + snapshots | local disk | disk | PostgreSQL |
+| High availability | built in | extra setup | by edition | PostgreSQL tooling |
+| Best for | live metrics, days of retention | monitoring & alerting | general time series | long-term analytics |
+
+| Trade-off | Consequence |
+|---|---|
+| Writes go through one leader | Throughput does not grow with nodes |
+| Data lives in memory | Killing every node at once loses up to one snapshot interval |
+| Asynchronous replication | Writes in flight when the leader crashes fail or are lost |
+| No query language, alerting or auth | Put it behind your own network controls |
+
+## Documentation
+
+| Guide | Contents |
+|---|---|
+| [API reference](docs/api.md) | Every endpoint, parameter and response · Swagger UI at `/swagger-ui.html` |
+| [Configuration](docs/configuration.md) | Every `VORTEX_*` setting: compose, nodes, `run-docker.sh`, web console |
+| [Development & tests](docs/development.md) | Run from source, unit tests, `test/functest.sh`, `test/loadtest.sh` |
+| [FAQ & troubleshooting](docs/faq.md) | Ports, subnets, Redis, Swagger 404 at start-up, failover, data loss |
+| [Blog post](docs/blogger/vortex-tsdb.en.md) · [中文](docs/blogger/vortex-tsdb.zh.md) | The design, end to end |
+
+## Contributing & License
 
 | | |
 |---|---|
-| **In memory, with snapshots** | A restart keeps what was in the last snapshot: everything, after a clean stop; up to the last 5 minutes if every node is killed at once |
-| **Key budget** | One series at 1-minute buckets and 24-hour retention is up to 1,440 bucket keys. The 10,000 keys per node held in memory are enough for the recent buckets of a few hundred busy series; beyond that, keys go to Redis or are dropped |
-| **Redis is slower** | A read of a key that moved to Redis is a network round trip, on any node. Raise `VORTEX_CACHE_MAX_KEYS` so the working set stays in memory |
-| **Write ceiling** | Writes are serialised on the leader and do not scale with node count. Each sample is four cache writes. Throughput levels off at about 1,000 samples/s and peaks at 1,400-1,500 samples/s; 826,781 samples at increasing rates with no failure, the same totals on every node |
-| **Leader failover** | Killing the leader with `kill -9`: a new leader within 5 s. Writes in flight on the dead leader fail (0.28% of requests at 600 samples/s during the test, nearly all within that second) and should be retried by the client. A graceful stop hands over at once, with no failed request |
-| **Writes lost on a leader crash** | Replication is asynchronous. Samples the leader acknowledged but had not yet broadcast are lost when it crashes. Fine for metrics; not for data that must never be lost |
-| **Precision** | Aggregates are doubles. `long` values are exact up to 2^53; `decimal` results are rounded to 8 places |
-
-## Local development
-
-Docker is the supported way to run Vortex. To run the pieces directly (JDK 17+, Maven, Node 20+):
-
-```bash
-# backend: each instance takes a free port in 50000-60000 and logs it; instances on one machine
-# form a cluster by themselves. Settings in backend/tsdb-service/.env
-cd backend/tsdb-service && mvn spring-boot:run
-
-# frontend: proxies /tsd/* to VORTEX_API_URLS from frontend/tsdb-web/.env
-cd frontend/tsdb-web && npm install && npm run dev
-```
-
-Tests, with an 80% coverage gate on both sides:
-
-```bash
-cd backend/tsdb-service && mvn verify      # JUnit + JaCoCo, report in target/site/jacoco
-cd frontend/tsdb-web && npm run coverage   # Vitest + V8, report in coverage/
-```
-
-The Redis overflow tests run against a local Redis when one answers on `localhost:6379`
-(`VORTEX_TEST_REDIS_HOST`, `_PORT`, `_PASSWORD` to point them elsewhere), and are skipped otherwise.
-
-## Project layout
-
-| | |
-|---|---|
-| `backend/tsdb-service/` | Spring Boot service: API, storage on openspreader, Swagger UI |
-| `frontend/tsdb-web/` | Next.js, React, TypeScript, Tailwind web UI |
-| `run-docker.sh` | Builds the images and runs the cluster, Redis, gateway and UI on Docker |
-| `deploy/` | `docker-compose.yml` for the published images, and the Docker Hub descriptions |
-| `.github/workflows/` | Publishes both images to Docker Hub for every `v*` tag |
-| `.env.example` | Deployment settings for `run-docker.sh`; each component has its own beside its code |
-
-## License
-
-Licensed under the [Apache License, Version 2.0](LICENSE).
+| Report a bug or ask for a feature | [Issues](https://github.com/paganini2008/vortex/issues) |
+| Send a change | Fork → branch → `mvn verify` and `npm run coverage` (80% gates) → [pull request](https://github.com/paganini2008/vortex/pulls) |
+| Layout | `backend/tsdb-service` (Spring Boot) · `frontend/tsdb-web` (Next.js) · `deploy/` (compose) · `test/` · `run-docker.sh` |
+| License | [Apache License 2.0](LICENSE) |

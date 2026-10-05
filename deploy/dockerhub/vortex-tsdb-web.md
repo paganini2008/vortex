@@ -9,6 +9,7 @@ series with any range, step and window, check each node's health, and browse eve
 |---|---|
 | Source | https://github.com/paganini2008/vortex |
 | Database image | [`fredfeng033/vortex-tsdb`](https://hub.docker.com/r/fredfeng033/vortex-tsdb) |
+| Also on GHCR | `docker pull ghcr.io/paganini2008/vortex-tsdb-web:latest` (the same build) |
 | Platforms | `linux/amd64`, `linux/arm64` |
 | License | Apache 2.0 |
 
