@@ -1,6 +1,7 @@
 name: Publish Docker Images
 
-# Every tag moves latest, pre-releases included: users always pull latest.
+# Publishes both images to Docker Hub and to the GitHub Container Registry (GHCR), the same
+# build to both. Every tag moves latest, pre-releases included: users always pull latest.
 #   v1.0.0-rc1 -> 1.0.0-rc1, latest
 #   v1.0.0     -> 1.0.0, 1.0, latest
 on:
@@ -12,7 +13,9 @@ permissions:
   contents: read
 
 env:
-  NAMESPACE: fredfeng033
+  DOCKERHUB_NAMESPACE: fredfeng033
+  # GHCR names must be lowercase
+  GHCR_NAMESPACE: ghcr.io/paganini2008
 
 jobs:
   # Nothing is published unless both test suites, with their 80% coverage gates, pass
@@ -48,6 +51,10 @@ jobs:
   publish:
     needs: test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Push to GHCR with the workflow's own GITHUB_TOKEN
+      packages: write
     strategy:
       matrix:
         include:
@@ -74,11 +81,21 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Tags and labels
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.NAMESPACE }}/${{ matrix.image }}
+          # One build, tagged for both registries
+          images: |
+            ${{ env.DOCKERHUB_NAMESPACE }}/${{ matrix.image }}
+            ${{ env.GHCR_NAMESPACE }}/${{ matrix.image }}
           # latest on every tag, not only on releases (metadata-action's default)
           flavor: |
             latest=true
@@ -89,6 +106,8 @@ jobs:
             org.opencontainers.image.title=${{ matrix.image }}
             org.opencontainers.image.description=${{ matrix.description }}
             org.opencontainers.image.licenses=Apache-2.0
+          # metadata-action also sets org.opencontainers.image.source to this repository, which is
+          # what links the GHCR packages to it
 
       - name: Build and push
         uses: docker/build-push-action@v6
