@@ -32,7 +32,7 @@ import java.util.Map;
  * @Description: InstanceHealth
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 public record InstanceHealth(String id, String host, String serverPort, String state, long startTime,
         boolean leader, long reportedAt, boolean reachable, String error, Map<String, Object> spreader,

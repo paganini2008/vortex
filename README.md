@@ -1,5 +1,7 @@
 # Vortex TSDB
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blueviolet.svg)](https://github.com/paganini2008/vortex)
+[![Docker Hub](https://img.shields.io/badge/docker-fredfeng033%2Fvortex--tsdb-2496ED.svg?logo=docker&logoColor=white)](https://hub.docker.com/r/fredfeng033/vortex-tsdb)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-17+-brightgreen.svg)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
@@ -34,6 +36,24 @@ query from its own copy, and writes it to disk so that a restart keeps the data.
   the exact API call
 
 ## Quick start (Docker, recommended)
+
+### From Docker Hub: nothing to build
+
+Images for `linux/amd64` and `linux/arm64`:
+[`fredfeng033/vortex-tsdb`](https://hub.docker.com/r/fredfeng033/vortex-tsdb) and
+[`fredfeng033/vortex-tsdb-web`](https://hub.docker.com/r/fredfeng033/vortex-tsdb-web).
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
+docker compose up -d       # 3 nodes + web UI + gateway, on http://localhost:9080
+```
+
+No Redis is started; set `VORTEX_REDIS_HOST` (and `VORTEX_REDIS_PASSWORD`...) to use your own for
+the cache's overflow. Everything else is in the comments of
+[`deploy/docker-compose.yml`](deploy/docker-compose.yml) and on the
+[Docker Hub page](https://hub.docker.com/r/fredfeng033/vortex-tsdb).
+
+### From source, with `run-docker.sh`
 
 Requires Docker with BuildKit (Docker Desktop, or Docker Engine 23+).
 
@@ -89,7 +109,7 @@ the script refuses to start if the gateway or dashboard port is already taken.
 
 ## API
 
-Paths and parameters are unchanged from version 1. Every response is wrapped as
+Paths and parameters are unchanged from the legacy Vortex. Every response is wrapped as
 `{"code": 1, "msg": "ok", "data": ..., "elapsed": 3, "requestPath": "/tsd/..."}`; `code` is 0
 on failure, with the reason in `msg`.
 
@@ -111,7 +131,7 @@ Category and dimension are 1 to 128 letters, digits, `_`, `.` or `-`.
 
 `GET /tsd/retrieve?t=long&c=car&d=speed&z=Asia/Shanghai`
 
-`z` is optional (default `UTC`; version 1 used `Australia/Sydney`). Returns the latest 60 buckets, oldest first, keyed
+`z` is optional (default `UTC`; the legacy Vortex used `Australia/Sydney`). Returns the latest 60 buckets, oldest first, keyed
 by bucket start as `HH:mm:ss` in that zone:
 
 ```json
@@ -287,6 +307,8 @@ The Redis overflow tests run against a local Redis when one answers on `localhos
 | `backend/tsdb-service/` | Spring Boot service: API, storage on openspreader, Swagger UI |
 | `frontend/tsdb-web/` | Next.js, React, TypeScript, Tailwind web UI |
 | `run-docker.sh` | Builds the images and runs the cluster, Redis, gateway and UI on Docker |
+| `deploy/` | `docker-compose.yml` for the published images, and the Docker Hub descriptions |
+| `.github/workflows/` | Publishes both images to Docker Hub for every `v*` tag |
 | `.env.example` | Deployment settings for `run-docker.sh`; each component has its own beside its code |
 
 ## License

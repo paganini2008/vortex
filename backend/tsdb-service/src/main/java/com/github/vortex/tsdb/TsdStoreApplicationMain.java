@@ -29,7 +29,7 @@ import com.github.vortex.tsdb.core.TsdStoreProperties;
  * @Description: TsdStoreApplicationMain
  * @Author: Fred Feng
  * @Date: 02/01/2025
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @EnableScheduling
 @EnableConfigurationProperties(TsdStoreProperties.class)

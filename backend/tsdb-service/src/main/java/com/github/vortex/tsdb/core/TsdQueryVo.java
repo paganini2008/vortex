@@ -26,7 +26,7 @@ import java.util.Map;
  * @Description: TsdQueryVo
  * @Author: Fred Feng
  * @Date: 04/01/2025
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 public record TsdQueryVo(String dataType, String category, String dimension,
         Map<String, Object> data) {

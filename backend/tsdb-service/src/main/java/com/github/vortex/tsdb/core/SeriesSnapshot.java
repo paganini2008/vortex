@@ -33,7 +33,7 @@ import java.util.Map;
  * @Description: SeriesSnapshot
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 public record SeriesSnapshot(String dataType, String category, String dimension, String range,
         int step, int window, LastValue last, Map<String, Object> current, Map<String, Object> summary,

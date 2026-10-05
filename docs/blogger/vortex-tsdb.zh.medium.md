@@ -4,6 +4,8 @@
 
 Vortex TSDB 是一个面向实时指标的轻量级分布式时序数据库。用 HTTP 写入数值样本，读回按分钟聚合的 count / max / min / sum / avg、每条序列的最新值，以及任意范围内的滚动或滑动窗口。集群自行选主、复制和快照，不依赖 ZooKeeper、消息队列或外部数据库。
 
+**版本 1.0.0** · 镜像 fredfeng033/vortex-tsdb（amd64 / arm64）· 源码 https://github.com/paganini2008/vortex · Apache 2.0
+
 ![Query explorer：最近 1 小时、每分钟一个点的 5 分钟滑动窗口](https://paganini2008.github.io/vortex/blogger/assets/query-explorer.png)
 
 ---
@@ -23,6 +25,17 @@ Vortex 只做这一层：数值样本写入、分钟级聚合、窗口查询、�
 ---
 
 ## 2. Quick Start
+
+**方式一：直接用 Docker Hub 镜像（无需构建）**
+
+```
+curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
+docker compose up -d   # 3 个节点 + Web 控制台 + 网关，默认不起 Redis
+```
+
+需要 Redis 溢出存储时，设置 VORTEX_REDIS_HOST（以及 VORTEX_REDIS_PASSWORD 等）指向你自己的 Redis。
+
+**方式二：从源码构建运行**
 
 ```
 git clone https://github.com/paganini2008/vortex.git
@@ -115,7 +128,7 @@ POST /tsd/push ──▶ 任意节点 ──转发──▶ leader 串行执行 
 
 ## 5. Code Examples
 
-**Example 1：推送并读取最近一小时（v1 兼容接口）**
+**Example 1：推送并读取最近一小时（兼容旧版 Vortex 的接口）**
 
 Input：
 
@@ -246,7 +259,7 @@ VORTEX_PORT_RANGE          50000-60000    未指定端口时的随机端口范�
 6. **内存可控**：每节点 key 上限，冷数据溢出到 Redis。
 7. **重启不丢**：快照 + leader 加载 + 全量同步。
 8. **可观测**：/tsd/health 给出每个节点的 QPS、缓存、复制延迟和 JVM。
-9. **兼容 v1**：/tsd/push、/tsd/test、/tsd/retrieve 不变。
+9. **兼容旧版 Vortex**：/tsd/push、/tsd/test、/tsd/retrieve 不变。
 10. **定位清晰**：轻量级实时 TSDB，天级保留；长期存储与复杂分析交给重量级 TSDB。
 
 项目地址：https://github.com/paganini2008/vortex（Apache 2.0）

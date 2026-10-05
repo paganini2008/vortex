@@ -45,7 +45,7 @@ import tools.jackson.databind.json.JsonMapper;
  * @Description: HealthService
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 @Slf4j
 @Service
@@ -193,7 +193,14 @@ public class HealthService {
         if (endpoint == null) {
             return Map.of();
         }
-        Map<String, Object> figures = new LinkedHashMap<>(endpoint.snapshot());
+        Map<String, Object> figures;
+        try {
+            figures = new LinkedHashMap<>(endpoint.snapshot());
+        } catch (RuntimeException e) {
+            // The cache's figures include a key count from the overflow store; when that store is
+            // down the rest of the reading (API, JVM) still goes out, with the reason
+            return Map.of("error", String.valueOf(e.getMessage()));
+        }
         figures.remove("timestamp");
         return figures;
     }

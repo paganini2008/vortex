@@ -1,0 +1,153 @@
+# Vortex TSDB from the published images: 3 nodes, the web console, and a Traefik gateway in front.
+#
+#   docker compose -f deploy/docker-compose.yml up -d
+#   docker compose -f deploy/docker-compose.yml down        # keeps the data volumes; -v deletes them
+#
+# Then, all on one port:
+#   http://localhost:9080/                   web console
+#   http://localhost:9080/tsd/...            HTTP API, load balanced across healthy nodes
+#   http://localhost:9080/swagger-ui.html    API documentation
+#   http://localhost:9081/dashboard/         Traefik dashboard
+#
+# Settings below can be overridden from the environment or a .env file beside this one, e.g.
+#   VORTEX_SUBNET_PREFIX=10.77.0   when 10.203.0.0/24 is taken on this host
+#   VORTEX_TAG=1.0.0 VORTEX_RETENTION=48h docker compose -f deploy/docker-compose.yml up -d
+#
+# Your own Redis for the cache overflow (none by default: keys beyond VORTEX_CACHE_MAX_KEYS are
+# deleted). Redis on this machine is host.docker.internal from inside the containers:
+#   VORTEX_REDIS_HOST=host.docker.internal VORTEX_REDIS_PASSWORD=secret docker compose ... up -d
+#
+# More nodes: copy a vortex-node-N block with the next IP, add that IP to VORTEX_CLUSTER_PEERS
+# (x-node below) and to the web console's VORTEX_API_URLS, and add its volume. Membership is
+# fixed at start, so recreate the whole stack after changing it.
+
+name: vortex-tsdb
+
+x-node: &node
+  image: ${VORTEX_REGISTRY:-fredfeng033}/vortex-tsdb:${VORTEX_TAG:-latest}
+  restart: unless-stopped
+  # A node writes its snapshot to /data as it stops; give it the time to
+  stop_grace_period: 60s
+  # Docker Desktop, Rancher Desktop and OrbStack resolve host.docker.internal to this machine.
+  # On Linux with Docker Engine, uncomment this for a Redis running on the host:
+  # extra_hosts:
+  #   - host.docker.internal:host-gateway
+  environment: &node-env
+    # Every node, by its fixed address on the vortex network below
+    VORTEX_CLUSTER_PEERS: ${VORTEX_SUBNET_PREFIX:-10.203.0}.11,${VORTEX_SUBNET_PREFIX:-10.203.0}.12,${VORTEX_SUBNET_PREFIX:-10.203.0}.13
+    VORTEX_CLUSTER_NAME: ${VORTEX_CLUSTER_NAME:-vortex-tsd-cluster}
+    # The snapshot, on the node's volume
+    VORTEX_DATA_DIR: /data
+    VORTEX_RETENTION: ${VORTEX_RETENTION:-24h}
+    VORTEX_TIME_ZONE: ${VORTEX_TIME_ZONE:-UTC}
+    VORTEX_SNAPSHOT_INTERVAL: ${VORTEX_SNAPSHOT_INTERVAL:-5m}
+    VORTEX_CACHE_MAX_KEYS: ${VORTEX_CACHE_MAX_KEYS:-10000}
+    # Keys beyond VORTEX_CACHE_MAX_KEYS move to this Redis; blank: they are deleted
+    VORTEX_REDIS_HOST: ${VORTEX_REDIS_HOST:-}
+    VORTEX_REDIS_PORT: ${VORTEX_REDIS_PORT:-6379}
+    VORTEX_REDIS_PASSWORD: ${VORTEX_REDIS_PASSWORD:-}
+    VORTEX_REDIS_DATABASE: ${VORTEX_REDIS_DATABASE:-0}
+    VORTEX_REDIS_KEY_PREFIX: ${VORTEX_REDIS_KEY_PREFIX:-vortex:cache:}
+  labels: &node-labels
+    vortex.compose: "1"
+    traefik.enable: "true"
+    traefik.http.routers.vortex-api.entrypoints: web
+    traefik.http.routers.vortex-api.rule: PathPrefix(`/tsd`) || PathPrefix(`/v3/api-docs`) || PathPrefix(`/swagger-ui`)
+    traefik.http.routers.vortex-api.service: vortex-api
+    traefik.http.routers.vortex-api.middlewares: vortex-retry
+    # Retries only a request that could not reach a node, so a push is never applied twice
+    traefik.http.middlewares.vortex-retry.retry.attempts: "3"
+    traefik.http.middlewares.vortex-retry.retry.initialinterval: 200ms
+    traefik.http.services.vortex-api.loadbalancer.server.port: "30080"
+    traefik.http.services.vortex-api.loadbalancer.healthcheck.path: /actuator/health
+    traefik.http.services.vortex-api.loadbalancer.healthcheck.interval: 2s
+    traefik.http.services.vortex-api.loadbalancer.healthcheck.timeout: 1s
+
+services:
+  vortex-node-1:
+    <<: *node
+    hostname: vortex-node-1
+    environment:
+      <<: *node-env
+      VORTEX_ADVERTISE_HOST: ${VORTEX_SUBNET_PREFIX:-10.203.0}.11
+    networks:
+      vortex:
+        ipv4_address: ${VORTEX_SUBNET_PREFIX:-10.203.0}.11
+    volumes:
+      - node-1-data:/data
+
+  vortex-node-2:
+    <<: *node
+    hostname: vortex-node-2
+    environment:
+      <<: *node-env
+      VORTEX_ADVERTISE_HOST: ${VORTEX_SUBNET_PREFIX:-10.203.0}.12
+    networks:
+      vortex:
+        ipv4_address: ${VORTEX_SUBNET_PREFIX:-10.203.0}.12
+    volumes:
+      - node-2-data:/data
+
+  vortex-node-3:
+    <<: *node
+    hostname: vortex-node-3
+    environment:
+      <<: *node-env
+      VORTEX_ADVERTISE_HOST: ${VORTEX_SUBNET_PREFIX:-10.203.0}.13
+    networks:
+      vortex:
+        ipv4_address: ${VORTEX_SUBNET_PREFIX:-10.203.0}.13
+    volumes:
+      - node-3-data:/data
+
+  web:
+    image: ${VORTEX_REGISTRY:-fredfeng033}/vortex-tsdb-web:${VORTEX_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      # Behind the gateway the browser's /tsd calls go straight to the nodes; this is the
+      # console's own fallback proxy
+      VORTEX_API_URLS: http://vortex-node-1:30080,http://vortex-node-2:30080,http://vortex-node-3:30080
+    labels:
+      vortex.compose: "1"
+      traefik.enable: "true"
+      traefik.http.routers.vortex-web.entrypoints: web
+      traefik.http.routers.vortex-web.rule: PathPrefix(`/`)
+      traefik.http.routers.vortex-web.priority: "1"
+      traefik.http.routers.vortex-web.service: vortex-web
+      traefik.http.services.vortex-web.loadbalancer.server.port: "3000"
+    networks:
+      - vortex
+
+  gateway:
+    image: traefik:v3
+    restart: unless-stopped
+    command:
+      - --entrypoints.web.address=:80
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.network=vortex-tsdb_vortex
+      # Only this stack's containers, even if other Traefik-labelled ones run on the host
+      - --providers.docker.constraints=Label(`vortex.compose`,`1`)
+      # A dead node's address stops answering: fail over to another within a second
+      - --serverstransport.forwardingtimeouts.dialtimeout=1s
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --ping=true
+    ports:
+      - "${VORTEX_GATEWAY_PORT:-9080}:80"
+      - "${VORTEX_DASHBOARD_PORT:-9081}:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - vortex
+
+networks:
+  vortex:
+    ipam:
+      config:
+        - subnet: ${VORTEX_SUBNET_PREFIX:-10.203.0}.0/24
+
+volumes:
+  node-1-data:
+  node-2-data:
+  node-3-data:

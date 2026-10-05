@@ -27,7 +27,7 @@ package com.github.vortex.tsdb.core;
  * @Description: CategoryInfo
  * @Author: Fred Feng
  * @Date: 03/10/2026
- * @Version 2.0.0
+ * @Version 1.0.0
  */
 public record CategoryInfo(String category, int series, long lastSeen, double samplesPerMinute) {
 }

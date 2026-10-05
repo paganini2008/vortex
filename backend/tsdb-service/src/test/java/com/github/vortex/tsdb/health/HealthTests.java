@@ -168,6 +168,18 @@ class HealthTests {
     }
 
     @Test
+    void anUnreachableOverflowStoreStillLeavesTheRestOfTheReading() {
+        @SuppressWarnings("unchecked")
+        ObjectProvider<SpreaderMetricsEndpoint> provider = mock(ObjectProvider.class);
+        SpreaderMetricsEndpoint e = mock(SpreaderMetricsEndpoint.class);
+        when(e.snapshot()).thenThrow(new IllegalStateException("Unable to connect to Redis"));
+        when(provider.getIfAvailable()).thenReturn(e);
+        HealthService service = new HealthService(mock(GossipCluster.class), provider, mock(ProcessingCache.class),
+                new HttpRateTracker(new SimpleMeterRegistry()), jvm(), json);
+        assertThat(service.spreaderFigures()).containsEntry("error", "Unable to connect to Redis");
+    }
+
+    @Test
     void reportsItselfAndTheLeaderDropsDepartedInstances() {
         GossipCluster cluster = mock(GossipCluster.class);
         ProcessingCache cache = mock(ProcessingCache.class);
