@@ -26,12 +26,21 @@ Vortex 只做这一层：数值样本写入、分钟级聚合、窗口查询、�
 
 ## 2. Quick Start
 
+**镜像已上架 Docker Hub，免费拉取即用。** 提供 linux/amd64 与 linux/arm64 版本，无需安装 JDK、Node，也无需构建；latest 始终是最新版本。
+
+```
+docker pull fredfeng033/vortex-tsdb:latest
+docker pull fredfeng033/vortex-tsdb-web:latest
+```
+
 **方式一：直接用 Docker Hub 镜像（无需构建）**
 
 ```
 curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/docker-compose.yml
 docker compose up -d   # 3 个节点 + Web 控制台 + 网关，默认不起 Redis
 ```
+
+节点启动约需 20-30 秒。节点通过健康检查之前，网关会把请求都交给 Web 控制台：/tsd/... 仍可经它访问，Swagger UI 则返回 404。docker compose ps 里每个节点显示 (healthy) 即已就绪。
 
 需要 Redis 溢出存储时，设置 VORTEX_REDIS_HOST（以及 VORTEX_REDIS_PASSWORD 等）指向你自己的 Redis。
 

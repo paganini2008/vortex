@@ -34,6 +34,8 @@ curl -fsSLO https://raw.githubusercontent.com/paganini2008/vortex/main/deploy/do
 docker compose up -d
 ```
 
+The nodes take 20-30 seconds to start. Until they report healthy the gateway sends every request to the web console: `/tsd/...` still works through it, Swagger UI answers 404. `docker compose ps` shows `(healthy)` on each node when they are ready.
+
 | Entry point | URL |
 |---|---|
 | HTTP API, load balanced across healthy nodes | http://localhost:9080/tsd/... |
